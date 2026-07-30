@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AppCardComponent } from '../../shared/components/app-card/app-card';
 
 interface StatisticCard {
   title: string;
@@ -12,7 +13,7 @@ interface StatisticCard {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, AppCardComponent],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
