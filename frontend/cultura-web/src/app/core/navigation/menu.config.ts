@@ -1,0 +1,44 @@
+import { MenuItem } from './menu.model';
+
+export const MENU_CONFIG: MenuItem[] = [
+  {
+    label: 'Dashboard',
+    icon: 'dashboard',
+    route: '/dashboard',
+  },
+  {
+    label: 'Parques',
+    icon: 'park',
+    route: '/parks',
+  },
+  {
+    label: 'Jardines',
+    icon: 'local_florist',
+    route: '/gardens',
+  },
+  {
+    label: 'Monumentos',
+    icon: 'account_balance',
+    route: '/monuments',
+  },
+  {
+    label: 'Plazas',
+    icon: 'location_city',
+    route: '/squares',
+  },
+  {
+    label: 'Calles',
+    icon: 'signpost',
+    route: '/streets',
+  },
+  {
+    label: 'Avenidas',
+    icon: 'add_road',
+    route: '/avenues',
+  },
+  {
+    label: 'Personajes',
+    icon: 'groups',
+    route: '/people',
+  },
+];

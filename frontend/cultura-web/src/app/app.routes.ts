@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { LayoutComponent } from './core/layout/layout/layout';
-import { Dashboard } from './features/dashboard/dashboard';
-import { DesignSystem } from './features/design-system/design-system/design-system';
 
 export const routes: Routes = [
   {
@@ -11,19 +9,20 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: Dashboard,
-        title: 'Dashboard | SIGPAC',
+        loadChildren: () =>
+          import('./features/dashboard/dashboard.routes').then((routes) => routes.DASHBOARD_ROUTES),
+      },
+      {
+        path: 'design-system',
+        loadChildren: () =>
+          import('./features/design-system/design-system.routes').then(
+            (routes) => routes.DESIGN_SYSTEM_ROUTES,
+          ),
       },
       {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',
-      },
-
-      {
-        path: 'design-system',
-        component: DesignSystem,
-        title: 'Design System | SIGPAC',
       },
     ],
   },
