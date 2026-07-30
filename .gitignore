@@ -1,27 +1,21 @@
-# Dependencias
-node_modules/
+# Dependencies
+**/node_modules/
 
-# Angular
-.angular/
-dist/
+# Builds and caches
+**/dist/
+**/.angular/
+**/coverage/
 
-# NestJS
-coverage/
-
-# Variables de entorno
-.env
-.env.*
+# Environment variables
+**/.env
+**/.env.*
+!**/.env.example
 
 # Logs
 *.log
+npm-debug.log*
 
-# Archivos del sistema
+# Editors and operating system
+.vscode/
 .DS_Store
 Thumbs.db
-
-# VS Code (opcional)
-.vscode/settings.json
-
-# Carpeta de imágenes
-uploads/*
-!uploads/.gitkeep
