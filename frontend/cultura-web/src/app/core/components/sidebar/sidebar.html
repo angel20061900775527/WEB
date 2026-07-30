@@ -1,0 +1,31 @@
+<div class="brand">
+  <div class="brand__logo">
+    <mat-icon>museum</mat-icon>
+  </div>
+
+  <div class="brand__text">
+    <strong>SIGPAC</strong>
+    <span>GADM Zamora</span>
+  </div>
+</div>
+
+<div class="navigation-title">MENÚ PRINCIPAL</div>
+
+<mat-nav-list class="navigation">
+  @for (item of navigationItems; track item.route) {
+    <a
+      mat-list-item
+      [routerLink]="item.route"
+      routerLinkActive="navigation__item--active"
+      class="navigation__item"
+    >
+      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+      <span matListItemTitle>{{ item.label }}</span>
+    </a>
+  }
+</mat-nav-list>
+
+<div class="sidebar-footer">
+  <span>Sistema de Gestión del</span>
+  <strong>Patrimonio Cultural</strong>
+</div>

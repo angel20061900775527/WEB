@@ -4,37 +4,7 @@
     mode="side"
     [opened]="sidebarOpened()"
   >
-    <div class="brand">
-      <div class="brand__logo">
-        <mat-icon>museum</mat-icon>
-      </div>
-
-      <div class="brand__text">
-        <strong>SIGPAC</strong>
-        <span>GADM Zamora</span>
-      </div>
-    </div>
-
-    <div class="navigation-title">MENÚ PRINCIPAL</div>
-
-    <mat-nav-list class="navigation">
-      @for (item of navigationItems; track item.route) {
-        <a
-          mat-list-item
-          [routerLink]="item.route"
-          routerLinkActive="navigation__item--active"
-          class="navigation__item"
-        >
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-        </a>
-      }
-    </mat-nav-list>
-
-    <div class="sidebar-footer">
-      <span>Sistema de Gestión del</span>
-      <strong>Patrimonio Cultural</strong>
-    </div>
+    <app-sidebar></app-sidebar>
   </mat-sidenav>
 
   <mat-sidenav-content class="app-content">
@@ -65,7 +35,11 @@
         <mat-icon>notifications_none</mat-icon>
       </button>
 
-      <button class="user-button" mat-button type="button">
+      <button
+        class="user-button"
+        mat-button
+        type="button"
+      >
         <span class="user-avatar">AO</span>
 
         <span class="user-information">
@@ -78,7 +52,7 @@
     </mat-toolbar>
 
     <main class="page-content">
-      <router-outlet />
+      <router-outlet></router-outlet>
     </main>
 
     <footer class="footer">
