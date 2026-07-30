@@ -1,0 +1,88 @@
+<mat-sidenav-container class="app-container">
+  <mat-sidenav
+    class="sidebar"
+    mode="side"
+    [opened]="sidebarOpened()"
+  >
+    <div class="brand">
+      <div class="brand__logo">
+        <mat-icon>museum</mat-icon>
+      </div>
+
+      <div class="brand__text">
+        <strong>SIGPAC</strong>
+        <span>GADM Zamora</span>
+      </div>
+    </div>
+
+    <div class="navigation-title">MENÚ PRINCIPAL</div>
+
+    <mat-nav-list class="navigation">
+      @for (item of navigationItems; track item.route) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          routerLinkActive="navigation__item--active"
+          class="navigation__item"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+
+    <div class="sidebar-footer">
+      <span>Sistema de Gestión del</span>
+      <strong>Patrimonio Cultural</strong>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="app-content">
+    <mat-toolbar class="toolbar">
+      <button
+        mat-icon-button
+        type="button"
+        matTooltip="Mostrar u ocultar menú"
+        aria-label="Mostrar u ocultar menú"
+        (click)="toggleSidebar()"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <div class="toolbar__title">
+        <span>Panel administrativo</span>
+        <small>Sistema de Gestión del Patrimonio Cultural</small>
+      </div>
+
+      <span class="toolbar__spacer"></span>
+
+      <button
+        mat-icon-button
+        type="button"
+        matTooltip="Notificaciones"
+        aria-label="Notificaciones"
+      >
+        <mat-icon>notifications_none</mat-icon>
+      </button>
+
+      <button class="user-button" mat-button type="button">
+        <span class="user-avatar">AO</span>
+
+        <span class="user-information">
+          <strong>Angel Ortiz</strong>
+          <small>Administrador</small>
+        </span>
+
+        <mat-icon>expand_more</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+
+    <footer class="footer">
+      © 2026 GADM Zamora · SIGPAC
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

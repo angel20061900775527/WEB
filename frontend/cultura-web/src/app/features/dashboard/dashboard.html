@@ -1,0 +1,84 @@
+<section class="welcome">
+  <div>
+    <span class="welcome__eyebrow">PANEL GENERAL</span>
+    <h1>Bienvenido a SIGPAC</h1>
+    <p>
+      Administra y publica la información del patrimonio cultural del cantón
+      Zamora.
+    </p>
+  </div>
+
+  <button mat-flat-button type="button">
+    <mat-icon>add</mat-icon>
+    Nuevo registro
+  </button>
+</section>
+
+<section class="statistics">
+  @for (statistic of statistics; track statistic.title) {
+    <article class="statistic-card">
+      <div class="statistic-card__icon">
+        <mat-icon>{{ statistic.icon }}</mat-icon>
+      </div>
+
+      <div class="statistic-card__content">
+        <span>{{ statistic.title }}</span>
+        <strong>{{ statistic.total }}</strong>
+        <small>{{ statistic.description }}</small>
+      </div>
+
+      <button
+        mat-icon-button
+        type="button"
+        aria-label="Abrir categoría"
+      >
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </article>
+  }
+</section>
+
+<section class="dashboard-grid">
+  <article class="panel">
+    <div class="panel__header">
+      <div>
+        <h2>Actividad reciente</h2>
+        <p>Últimos cambios realizados en el sistema</p>
+      </div>
+
+      <button mat-button type="button">Ver todo</button>
+    </div>
+
+    <div class="empty-state">
+      <mat-icon>history</mat-icon>
+      <strong>Todavía no hay actividad</strong>
+      <span>Los registros creados o modificados aparecerán aquí.</span>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="panel__header">
+      <div>
+        <h2>Accesos rápidos</h2>
+        <p>Operaciones frecuentes</p>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button type="button">
+        <mat-icon>park</mat-icon>
+        <span>Nuevo parque</span>
+      </button>
+
+      <button type="button">
+        <mat-icon>account_balance</mat-icon>
+        <span>Nuevo monumento</span>
+      </button>
+
+      <button type="button">
+        <mat-icon>person_add</mat-icon>
+        <span>Nuevo personaje</span>
+      </button>
+    </div>
+  </article>
+</section>

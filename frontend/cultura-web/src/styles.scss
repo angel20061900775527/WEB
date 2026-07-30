@@ -1,0 +1,33 @@
+:root {
+  --sigpac-primary: #1b5e20;
+  --sigpac-primary-hover: #144818;
+  --sigpac-primary-soft: #e8f3e9;
+  --sigpac-accent: #c9a227;
+
+  --sigpac-background: #f5f7fa;
+  --sigpac-surface: #ffffff;
+
+  --sigpac-text: #263238;
+  --sigpac-text-muted: #667085;
+
+  --sigpac-border: #e4e7ec;
+  --sigpac-border-dark: #b8c0cc;
+
+  --sigpac-shadow: 0 4px 18px rgba(16, 24, 40, 0.05);
+  --sigpac-shadow-hover: 0 12px 30px rgba(16, 24, 40, 0.1);
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--sigpac-text);
+  background: var(--sigpac-background);
+}
+
+* {
+  box-sizing: border-box;
+}
