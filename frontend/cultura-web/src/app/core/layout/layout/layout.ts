@@ -7,7 +7,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import { Sidebar } from '../components/sidebar/sidebar';
+import { SidebarComponent } from '../sidebar/sidebar';
 
 @Component({
   selector: 'app-layout',
@@ -18,12 +18,12 @@ import { Sidebar } from '../components/sidebar/sidebar';
     MatSidenavModule,
     MatToolbarModule,
     MatTooltipModule,
-    Sidebar,
+    SidebarComponent,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
-export class Layout {
+export class LayoutComponent {
   readonly sidebarOpened = signal(true);
 
   toggleSidebar(): void {

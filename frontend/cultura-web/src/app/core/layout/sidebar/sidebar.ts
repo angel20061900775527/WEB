@@ -21,7 +21,7 @@ interface NavigationItem {
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
 })
-export class Sidebar {
+export class SidebarComponent {
   readonly navigationItems: NavigationItem[] = [
     {
       label: 'Dashboard',

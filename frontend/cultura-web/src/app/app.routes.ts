@@ -1,12 +1,12 @@
 import { Routes } from '@angular/router';
 
-import { Layout } from './core/layout/layout';
+import { LayoutComponent } from './core/layout/layout/layout';
 import { Dashboard } from './features/dashboard/dashboard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Layout,
+    component: LayoutComponent,
     children: [
       {
         path: 'dashboard',
