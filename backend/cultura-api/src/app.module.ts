@@ -25,8 +25,8 @@ import { ParquesModule } from './modules/parques/parques.module';
         autoLoadEntities: true,
 
         /*
-         * Solo durante el desarrollo.
-         * En producción utilizaremos migraciones.
+         * La estructura de la base de datos se administrará
+         * mediante migraciones de TypeORM.
          */
         synchronize: true,
 
