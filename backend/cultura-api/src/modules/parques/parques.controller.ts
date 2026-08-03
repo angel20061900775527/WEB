@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,6 +16,7 @@ import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -135,5 +137,22 @@ export class ParquesController {
     @Body() updateEstadoParqueDto: UpdateEstadoParqueDto,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
     return this.parquesService.updateEstado(id, updateEstadoParqueDto);
+  }
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Eliminar lógicamente un parque',
+    description:
+      'Marca el parque como eliminado y conserva el registro para fines de auditoría.',
+  })
+  @ApiOkResponse({
+    description: 'Parque eliminado correctamente.',
+  })
+  @ApiNotFoundResponse({
+    description:
+      'No se encontró un parque activo con el identificador indicado.',
+  })
+  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
+    return this.parquesService.delete(id);
   }
 }

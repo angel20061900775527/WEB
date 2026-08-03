@@ -14,6 +14,7 @@ import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
 import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
+import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 
 @Injectable()
 export class ParquesService {
@@ -26,7 +27,9 @@ export class ParquesService {
     const page = query.page;
     const limit = query.limit;
 
-    const where: FindOptionsWhere<Parque> = {};
+    const where: FindOptionsWhere<Parque> = {
+      estadoRegistro: EstadoRegistro.ACTIVO,
+    };
 
     if (query.search) {
       where.nombre = ILike(`%${query.search.trim()}%`);
@@ -150,14 +153,28 @@ export class ParquesService {
       ParqueResponseDto.fromEntity(parqueActualizado),
     );
   }
+  async delete(id: number): Promise<ApiResponseDto<null>> {
+    const parque = await this.findEntityById(id);
+
+    parque.estadoRegistro = EstadoRegistro.ELIMINADO;
+    parque.fechaEliminacion = new Date();
+    parque.usuarioEliminadorId = '1';
+
+    await this.parquesRepository.save(parque);
+
+    return new ApiResponseDto('Parque eliminado correctamente.', null);
+  }
   private async findEntityById(id: number): Promise<Parque> {
     const parque = await this.parquesRepository.findOne({
-      where: { id },
+      where: {
+        id,
+        estadoRegistro: EstadoRegistro.ACTIVO,
+      },
     });
 
     if (!parque) {
       throw new NotFoundException(
-        `No se encontró un parque con el identificador ${id}.`,
+        `No se encontró un parque activo con el identificador ${id}.`,
       );
     }
 
@@ -170,6 +187,7 @@ export class ParquesService {
   ): Promise<void> {
     const where: FindOptionsWhere<Parque> = {
       nombre: ILike(nombre),
+      estadoRegistro: EstadoRegistro.ACTIVO,
     };
 
     if (parqueIdExcluir !== undefined) {
@@ -182,7 +200,7 @@ export class ParquesService {
 
     if (parqueExistente) {
       throw new ConflictException(
-        'Ya existe un parque registrado con ese nombre.',
+        'Ya existe un parque activo registrado con ese nombre.',
       );
     }
   }
