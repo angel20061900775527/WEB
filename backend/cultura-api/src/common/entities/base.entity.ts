@@ -9,7 +9,7 @@ export abstract class BaseEntity {
     type: 'bigint',
     name: 'id',
   })
-  declare id: string;
+  declare id: number;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',

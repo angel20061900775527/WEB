@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
@@ -45,6 +46,19 @@ export class ParquesService {
       limit,
       totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
     };
+  }
+  async findById(id: number): Promise<ParqueResponseDto> {
+    const parque = await this.parquesRepository.findOne({
+      where: { id },
+    });
+
+    if (!parque) {
+      throw new NotFoundException(
+        `No se encontró un parque con el identificador ${id}.`,
+      );
+    }
+
+    return ParqueResponseDto.fromEntity(parque);
   }
 
   async create(

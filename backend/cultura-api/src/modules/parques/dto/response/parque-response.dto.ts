@@ -5,7 +5,7 @@ import { EstadoParque } from '../../enums/estado-parque.enum';
 
 export class ParqueResponseDto {
   @ApiProperty({ example: '1' })
-  declare id: string;
+  declare id: number;
 
   @ApiProperty({ example: 'Parque Central de Zamora' })
   declare nombre: string;

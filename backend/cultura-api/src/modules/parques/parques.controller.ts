@@ -4,6 +4,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -77,5 +79,14 @@ export class ParquesController {
   })
   findAll(@Query() query: PaginationQueryDto) {
     return this.parquesService.findAll(query);
+  }
+  @Get(':id')
+  @ApiOperation({
+    summary: 'Obtener detalle de un parque',
+    description:
+      'Obtiene la información completa de un parque por su identificador.',
+  })
+  findById(@Param('id', ParseIntPipe) id: number): Promise<ParqueResponseDto> {
+    return this.parquesService.findById(id);
   }
 }
