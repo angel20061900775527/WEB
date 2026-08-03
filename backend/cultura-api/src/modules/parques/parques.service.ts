@@ -5,11 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
+import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
 
@@ -47,16 +48,9 @@ export class ParquesService {
       totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
     };
   }
-  async findById(id: number): Promise<ParqueResponseDto> {
-    const parque = await this.parquesRepository.findOne({
-      where: { id },
-    });
 
-    if (!parque) {
-      throw new NotFoundException(
-        `No se encontró un parque con el identificador ${id}.`,
-      );
-    }
+  async findById(id: number): Promise<ParqueResponseDto> {
+    const parque = await this.findEntityById(id);
 
     return ParqueResponseDto.fromEntity(parque);
   }
@@ -68,17 +62,7 @@ export class ParquesService {
 
     const nombreNormalizado = createParqueDto.nombre.trim();
 
-    const parqueExistente = await this.parquesRepository.findOne({
-      where: {
-        nombre: ILike(nombreNormalizado),
-      },
-    });
-
-    if (parqueExistente) {
-      throw new ConflictException(
-        'Ya existe un parque registrado con ese nombre.',
-      );
-    }
+    await this.validateNombreUnico(nombreNormalizado);
 
     const parque = this.parquesRepository.create({
       ...createParqueDto,
@@ -98,6 +82,93 @@ export class ParquesService {
       'Parque registrado correctamente.',
       ParqueResponseDto.fromEntity(parqueGuardado),
     );
+  }
+
+  async update(
+    id: number,
+    updateParqueDto: UpdateParqueDto,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    const parque = await this.findEntityById(id);
+
+    if (updateParqueDto.nombre !== undefined) {
+      const nombreNormalizado = updateParqueDto.nombre.trim();
+
+      await this.validateNombreUnico(nombreNormalizado, id);
+
+      parque.nombre = nombreNormalizado;
+    }
+
+    if (updateParqueDto.descripcion !== undefined) {
+      parque.descripcion = updateParqueDto.descripcion.trim();
+    }
+
+    if (updateParqueDto.resenaHistorica !== undefined) {
+      parque.resenaHistorica = updateParqueDto.resenaHistorica?.trim() || null;
+    }
+
+    if (updateParqueDto.fechaCreacion !== undefined) {
+      this.validateFechaCreacion(updateParqueDto.fechaCreacion);
+
+      parque.fechaCreacion = updateParqueDto.fechaCreacion ?? null;
+    }
+
+    if (updateParqueDto.ubicacion !== undefined) {
+      parque.ubicacion = updateParqueDto.ubicacion.trim();
+    }
+
+    if (updateParqueDto.latitud !== undefined) {
+      parque.latitud = updateParqueDto.latitud ?? null;
+    }
+
+    if (updateParqueDto.longitud !== undefined) {
+      parque.longitud = updateParqueDto.longitud ?? null;
+    }
+
+    parque.usuarioModificadorId = '1';
+
+    const parqueActualizado = await this.parquesRepository.save(parque);
+
+    return new ApiResponseDto(
+      'Parque actualizado correctamente.',
+      ParqueResponseDto.fromEntity(parqueActualizado),
+    );
+  }
+
+  private async findEntityById(id: number): Promise<Parque> {
+    const parque = await this.parquesRepository.findOne({
+      where: { id },
+    });
+
+    if (!parque) {
+      throw new NotFoundException(
+        `No se encontró un parque con el identificador ${id}.`,
+      );
+    }
+
+    return parque;
+  }
+
+  private async validateNombreUnico(
+    nombre: string,
+    parqueIdExcluir?: number,
+  ): Promise<void> {
+    const where: FindOptionsWhere<Parque> = {
+      nombre: ILike(nombre),
+    };
+
+    if (parqueIdExcluir !== undefined) {
+      where.id = Not(parqueIdExcluir);
+    }
+
+    const parqueExistente = await this.parquesRepository.findOne({
+      where,
+    });
+
+    if (parqueExistente) {
+      throw new ConflictException(
+        'Ya existe un parque registrado con ese nombre.',
+      );
+    }
   }
 
   private validateFechaCreacion(fechaCreacion?: string): void {

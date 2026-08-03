@@ -7,22 +7,25 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
+import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
+import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { ParquesService } from './parques.service';
-import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 
 @ApiTags('Parques')
 @Controller('parques')
@@ -80,6 +83,7 @@ export class ParquesController {
   findAll(@Query() query: PaginationQueryDto) {
     return this.parquesService.findAll(query);
   }
+
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener detalle de un parque',
@@ -88,5 +92,27 @@ export class ParquesController {
   })
   findById(@Param('id', ParseIntPipe) id: number): Promise<ParqueResponseDto> {
     return this.parquesService.findById(id);
+  }
+
+  @Put(':id')
+  @ApiOperation({
+    summary: 'Actualizar un parque',
+    description: 'Actualiza la información de un parque existente.',
+  })
+  @ApiOkResponse({
+    description: 'Parque actualizado correctamente.',
+    type: ParqueResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Los datos enviados no cumplen las reglas de validación.',
+  })
+  @ApiConflictResponse({
+    description: 'Ya existe un parque registrado con ese nombre.',
+  })
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateParqueDto: UpdateParqueDto,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    return this.parquesService.update(id, updateParqueDto);
   }
 }
