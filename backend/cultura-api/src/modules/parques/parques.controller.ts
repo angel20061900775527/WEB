@@ -155,4 +155,26 @@ export class ParquesController {
   delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
     return this.parquesService.delete(id);
   }
+  @Patch(':id/restaurar')
+  @ApiOperation({
+    summary: 'Restaurar un parque eliminado',
+    description:
+      'Restaura un parque eliminado lógicamente y lo vuelve a dejar activo.',
+  })
+  @ApiOkResponse({
+    description: 'Parque restaurado correctamente.',
+    type: ParqueResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description:
+      'No se encontró un parque eliminado con el identificador indicado.',
+  })
+  @ApiConflictResponse({
+    description: 'Ya existe un parque activo registrado con el mismo nombre.',
+  })
+  restore(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    return this.parquesService.restore(id);
+  }
 }

@@ -9,12 +9,12 @@ import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
+import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
+import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
-import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
-import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 
 @Injectable()
 export class ParquesService {
@@ -137,6 +137,7 @@ export class ParquesService {
       ParqueResponseDto.fromEntity(parqueActualizado),
     );
   }
+
   async updateEstado(
     id: number,
     updateEstadoParqueDto: UpdateEstadoParqueDto,
@@ -153,6 +154,7 @@ export class ParquesService {
       ParqueResponseDto.fromEntity(parqueActualizado),
     );
   }
+
   async delete(id: number): Promise<ApiResponseDto<null>> {
     const parque = await this.findEntityById(id);
 
@@ -164,17 +166,50 @@ export class ParquesService {
 
     return new ApiResponseDto('Parque eliminado correctamente.', null);
   }
+
+  async restore(id: number): Promise<ApiResponseDto<ParqueResponseDto>> {
+    const parque = await this.findDeletedEntityById(id);
+
+    await this.validateNombreUnico(parque.nombre);
+
+    parque.estadoRegistro = EstadoRegistro.ACTIVO;
+    parque.fechaEliminacion = null;
+    parque.usuarioEliminadorId = null;
+    parque.usuarioModificadorId = '1';
+
+    const parqueRestaurado = await this.parquesRepository.save(parque);
+
+    return new ApiResponseDto(
+      'Parque restaurado correctamente.',
+      ParqueResponseDto.fromEntity(parqueRestaurado),
+    );
+  }
+
   private async findEntityById(id: number): Promise<Parque> {
+    return this.findEntity(id, EstadoRegistro.ACTIVO);
+  }
+
+  private async findDeletedEntityById(id: number): Promise<Parque> {
+    return this.findEntity(id, EstadoRegistro.ELIMINADO);
+  }
+
+  private async findEntity(
+    id: number,
+    estadoRegistro: EstadoRegistro,
+  ): Promise<Parque> {
     const parque = await this.parquesRepository.findOne({
       where: {
         id,
-        estadoRegistro: EstadoRegistro.ACTIVO,
+        estadoRegistro,
       },
     });
 
     if (!parque) {
+      const descripcionEstado =
+        estadoRegistro === EstadoRegistro.ACTIVO ? 'activo' : 'eliminado';
+
       throw new NotFoundException(
-        `No se encontró un parque activo con el identificador ${id}.`,
+        `No se encontró un parque ${descripcionEstado} con el identificador ${id}.`,
       );
     }
 
