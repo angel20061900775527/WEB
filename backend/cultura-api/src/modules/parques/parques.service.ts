@@ -13,6 +13,7 @@ import { CreateParqueDto } from './dto/request/create-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
+import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 
 @Injectable()
 export class ParquesService {
@@ -133,7 +134,22 @@ export class ParquesService {
       ParqueResponseDto.fromEntity(parqueActualizado),
     );
   }
+  async updateEstado(
+    id: number,
+    updateEstadoParqueDto: UpdateEstadoParqueDto,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    const parque = await this.findEntityById(id);
 
+    parque.estado = updateEstadoParqueDto.estado;
+    parque.usuarioModificadorId = '1';
+
+    const parqueActualizado = await this.parquesRepository.save(parque);
+
+    return new ApiResponseDto(
+      'Estado del parque actualizado correctamente.',
+      ParqueResponseDto.fromEntity(parqueActualizado),
+    );
+  }
   private async findEntityById(id: number): Promise<Parque> {
     const parque = await this.parquesRepository.findOne({
       where: { id },

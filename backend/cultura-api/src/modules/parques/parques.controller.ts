@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -26,6 +27,7 @@ import { CreateParqueDto } from './dto/request/create-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { ParquesService } from './parques.service';
+import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 
 @ApiTags('Parques')
 @Controller('parques')
@@ -114,5 +116,24 @@ export class ParquesController {
     @Body() updateParqueDto: UpdateParqueDto,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
     return this.parquesService.update(id, updateParqueDto);
+  }
+  @Patch(':id/estado')
+  @ApiOperation({
+    summary: 'Actualizar estado de un parque',
+    description:
+      'Actualiza el estado de un parque (BORRADOR, PUBLICADO o INACTIVO).',
+  })
+  @ApiOkResponse({
+    description: 'Estado del parque actualizado correctamente.',
+    type: ParqueResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Los datos enviados no cumplen las reglas de validación.',
+  })
+  updateEstado(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateEstadoParqueDto: UpdateEstadoParqueDto,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    return this.parquesService.updateEstado(id, updateEstadoParqueDto);
   }
 }
