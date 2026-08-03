@@ -44,6 +44,19 @@ export class ParqueResponseDto {
   @ApiPropertyOptional({ example: -78.9567, nullable: true })
   declare longitud: number | null;
 
+  @ApiPropertyOptional({
+    example:
+      'Archivo Histórico del GADM Zamora; Ordenanza Municipal No. 015-2024.',
+    nullable: true,
+  })
+  declare fuentesInformacion: string | null;
+
+  @ApiPropertyOptional({
+    example: 'Información pendiente de validación por la Dirección de Cultura.',
+    nullable: true,
+  })
+  declare observaciones: string | null;
+
   @ApiPropertyOptional({ example: null, nullable: true })
   declare fotografiaPrincipalId: string | null;
 
@@ -64,6 +77,8 @@ export class ParqueResponseDto {
       ubicacion: parque.ubicacion,
       latitud: parque.latitud,
       longitud: parque.longitud,
+      fuentesInformacion: parque.fuentesInformacion,
+      observaciones: parque.observaciones,
       fotografiaPrincipalId: parque.fotografiaPrincipalId,
       fechaRegistro: parque.fechaRegistro,
       fechaModificacion: parque.fechaModificacion,

@@ -68,7 +68,9 @@ export class CreateParqueDto {
     maxLength: PARQUE_RESENA_MAX_LENGTH,
   })
   @IsOptional()
-  @IsString({ message: 'La reseña histórica debe ser una cadena de texto.' })
+  @IsString({
+    message: 'La reseña histórica debe ser una cadena de texto.',
+  })
   @MaxLength(PARQUE_RESENA_MAX_LENGTH, {
     message: `La reseña histórica no puede superar los ${PARQUE_RESENA_MAX_LENGTH} caracteres.`,
   })
@@ -103,6 +105,39 @@ export class CreateParqueDto {
     message: `La ubicación no puede superar los ${PARQUE_UBICACION_MAX_LENGTH} caracteres.`,
   })
   declare ubicacion: string;
+
+  @ApiPropertyOptional({
+    example:
+      'Archivo Histórico del GADM Zamora; Ordenanza Municipal N.° 015-2024; entrevista al cronista local.',
+    description:
+      'Documentos, archivos, entrevistas, publicaciones u otras fuentes utilizadas para respaldar la información de la ficha.',
+    maxLength: 5000,
+  })
+  @IsOptional()
+  @IsString({
+    message: 'Las fuentes de información deben ser una cadena de texto.',
+  })
+  @MaxLength(5000, {
+    message:
+      'Las fuentes de información no pueden superar los 5000 caracteres.',
+  })
+  declare fuentesInformacion?: string;
+
+  @ApiPropertyOptional({
+    example:
+      'La fecha de creación está pendiente de confirmación mediante documentación histórica.',
+    description:
+      'Notas administrativas o información pendiente de revisión. Este campo no está destinado a la publicación ciudadana.',
+    maxLength: 2000,
+  })
+  @IsOptional()
+  @IsString({
+    message: 'Las observaciones deben ser una cadena de texto.',
+  })
+  @MaxLength(2000, {
+    message: 'Las observaciones no pueden superar los 2000 caracteres.',
+  })
+  declare observaciones?: string;
 
   @ApiPropertyOptional({
     example: -4.0697,

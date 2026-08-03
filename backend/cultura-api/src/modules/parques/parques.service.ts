@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
@@ -10,6 +9,7 @@ import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
+import { BaseCatalogService } from '../../common/services/base-catalog.service';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
 import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
@@ -17,11 +17,13 @@ import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
 
 @Injectable()
-export class ParquesService {
+export class ParquesService extends BaseCatalogService<Parque> {
   constructor(
     @InjectRepository(Parque)
     private readonly parquesRepository: Repository<Parque>,
-  ) {}
+  ) {
+    super(parquesRepository, 'parque');
+  }
 
   async findAll(query: PaginationQueryDto) {
     const page = query.page;
@@ -77,6 +79,8 @@ export class ParquesService {
       ubicacion: createParqueDto.ubicacion.trim(),
       latitud: createParqueDto.latitud ?? null,
       longitud: createParqueDto.longitud ?? null,
+      fuentesInformacion: createParqueDto.fuentesInformacion?.trim() || null,
+      observaciones: createParqueDto.observaciones?.trim() || null,
       usuarioCreadorId: '1',
     });
 
@@ -126,6 +130,14 @@ export class ParquesService {
 
     if (updateParqueDto.longitud !== undefined) {
       parque.longitud = updateParqueDto.longitud ?? null;
+    }
+    if (updateParqueDto.fuentesInformacion !== undefined) {
+      parque.fuentesInformacion =
+        updateParqueDto.fuentesInformacion?.trim() || null;
+    }
+
+    if (updateParqueDto.observaciones !== undefined) {
+      parque.observaciones = updateParqueDto.observaciones?.trim() || null;
     }
 
     parque.usuarioModificadorId = '1';
@@ -183,37 +195,6 @@ export class ParquesService {
       'Parque restaurado correctamente.',
       ParqueResponseDto.fromEntity(parqueRestaurado),
     );
-  }
-
-  private async findEntityById(id: number): Promise<Parque> {
-    return this.findEntity(id, EstadoRegistro.ACTIVO);
-  }
-
-  private async findDeletedEntityById(id: number): Promise<Parque> {
-    return this.findEntity(id, EstadoRegistro.ELIMINADO);
-  }
-
-  private async findEntity(
-    id: number,
-    estadoRegistro: EstadoRegistro,
-  ): Promise<Parque> {
-    const parque = await this.parquesRepository.findOne({
-      where: {
-        id,
-        estadoRegistro,
-      },
-    });
-
-    if (!parque) {
-      const descripcionEstado =
-        estadoRegistro === EstadoRegistro.ACTIVO ? 'activo' : 'eliminado';
-
-      throw new NotFoundException(
-        `No se encontró un parque ${descripcionEstado} con el identificador ${id}.`,
-      );
-    }
-
-    return parque;
   }
 
   private async validateNombreUnico(

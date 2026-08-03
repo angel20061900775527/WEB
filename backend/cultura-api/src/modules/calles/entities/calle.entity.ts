@@ -1,13 +1,13 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { AuditableEntity } from '../../../common/entities/auditable.entity';
-import { EstadoParque } from '../enums/estado-parque.enum';
+import { EstadoCalle } from '../enums/estado-calle.enum';
 
 @Entity({
-  name: 'parques',
+  name: 'calles',
 })
-export class Parque extends AuditableEntity {
-  @Index('idx_parques_nombre')
+export class Calle extends AuditableEntity {
+  @Index('idx_calles_nombre')
   @Column({
     type: 'varchar',
     length: 150,
@@ -30,19 +30,19 @@ export class Parque extends AuditableEntity {
 
   @Column({
     type: 'date',
-    name: 'fecha_creacion',
+    name: 'fecha_denominacion',
     nullable: true,
   })
-  declare fechaCreacion: string | null;
+  declare fechaDenominacion: string | null;
 
-  @Index('idx_parques_estado')
+  @Index('idx_calles_estado')
   @Column({
     type: 'enum',
-    enum: EstadoParque,
+    enum: EstadoCalle,
     name: 'estado',
-    default: EstadoParque.BORRADOR,
+    default: EstadoCalle.BORRADOR,
   })
-  declare estado: EstadoParque;
+  declare estado: EstadoCalle;
 
   @Column({
     type: 'varchar',
@@ -50,6 +50,21 @@ export class Parque extends AuditableEntity {
     name: 'ubicacion',
   })
   declare ubicacion: string;
+
+  @Column({
+    type: 'varchar',
+    length: 150,
+    name: 'sector',
+    nullable: true,
+  })
+  declare sector: string | null;
+
+  @Column({
+    type: 'text',
+    name: 'referencias_bibliograficas',
+    nullable: true,
+  })
+  declare referenciasBibliograficas: string | null;
 
   @Column({
     type: 'numeric',
@@ -78,20 +93,6 @@ export class Parque extends AuditableEntity {
     },
   })
   declare longitud: number | null;
-
-  @Column({
-    type: 'text',
-    name: 'fuentes_informacion',
-    nullable: true,
-  })
-  declare fuentesInformacion: string | null;
-
-  @Column({
-    type: 'text',
-    name: 'observaciones',
-    nullable: true,
-  })
-  declare observaciones: string | null;
 
   @Column({
     type: 'bigint',
