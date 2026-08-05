@@ -61,10 +61,17 @@ export class Calle extends AuditableEntity {
 
   @Column({
     type: 'text',
-    name: 'referencias_bibliograficas',
+    name: 'fuentes_informacion',
     nullable: true,
   })
-  declare referenciasBibliograficas: string | null;
+  declare fuentesInformacion: string | null;
+
+  @Column({
+    type: 'text',
+    name: 'observaciones',
+    nullable: true,
+  })
+  declare observaciones: string | null;
 
   @Column({
     type: 'numeric',

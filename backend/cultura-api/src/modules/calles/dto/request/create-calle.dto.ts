@@ -17,8 +17,10 @@ import {
 import {
   FICHA_DESCRIPCION_MAX_LENGTH,
   FICHA_DESCRIPCION_MIN_LENGTH,
+  FICHA_FUENTES_MAX_LENGTH,
   FICHA_NOMBRE_MAX_LENGTH,
   FICHA_NOMBRE_MIN_LENGTH,
+  FICHA_OBSERVACIONES_MAX_LENGTH,
   FICHA_RESENA_MAX_LENGTH,
   FICHA_UBICACION_MAX_LENGTH,
   FICHA_UBICACION_MIN_LENGTH,
@@ -26,14 +28,12 @@ import {
   LATITUD_MIN,
   LONGITUD_MAX,
   LONGITUD_MIN,
-  FICHA_FUENTES_MAX_LENGTH,
-  FICHA_OBSERVACIONES_MAX_LENGTH,
 } from '../../../../common/constants/ficha-patrimonial.constants';
 
-export class CreateParqueDto {
+export class CreateCalleDto {
   @ApiProperty({
-    example: 'Parque Central de Zamora',
-    description: 'Nombre oficial o común del parque.',
+    example: 'Calle Sevilla de Oro',
+    description: 'Nombre oficial o común de la calle.',
     minLength: FICHA_NOMBRE_MIN_LENGTH,
     maxLength: FICHA_NOMBRE_MAX_LENGTH,
   })
@@ -48,8 +48,9 @@ export class CreateParqueDto {
   declare nombre: string;
 
   @ApiProperty({
-    example: 'Espacio público ubicado en el centro de la ciudad de Zamora.',
-    description: 'Descripción general del parque.',
+    example:
+      'Vía urbana ubicada en el centro de la ciudad de Zamora, reconocida por su importancia histórica.',
+    description: 'Descripción general de la calle.',
     minLength: FICHA_DESCRIPCION_MIN_LENGTH,
     maxLength: FICHA_DESCRIPCION_MAX_LENGTH,
   })
@@ -65,8 +66,8 @@ export class CreateParqueDto {
 
   @ApiPropertyOptional({
     example:
-      'El parque fue establecido durante el crecimiento urbano de la ciudad...',
-    description: 'Antecedentes o reseña histórica del parque.',
+      'La calle recibió su nombre en reconocimiento a la antigua denominación histórica de la ciudad.',
+    description: 'Antecedentes o reseña histórica de la calle.',
     maxLength: FICHA_RESENA_MAX_LENGTH,
   })
   @IsOptional()
@@ -80,21 +81,23 @@ export class CreateParqueDto {
 
   @ApiPropertyOptional({
     example: '1985-05-20',
-    description: 'Fecha histórica de creación, en formato AAAA-MM-DD.',
+    description:
+      'Fecha de denominación oficial de la calle, en formato AAAA-MM-DD.',
     format: 'date',
   })
   @IsOptional()
   @IsDateString(
     {},
     {
-      message: 'La fecha de creación debe tener un formato de fecha válido.',
+      message:
+        'La fecha de denominación debe tener un formato de fecha válido.',
     },
   )
-  declare fechaCreacion?: string;
+  declare fechaDenominacion?: string;
 
   @ApiProperty({
-    example: 'Centro de Zamora, entre las calles Sevilla de Oro y Amazonas',
-    description: 'Dirección o referencia de ubicación del parque.',
+    example: 'Centro urbano de Zamora',
+    description: 'Dirección o referencia general de ubicación de la calle.',
     minLength: FICHA_UBICACION_MIN_LENGTH,
     maxLength: FICHA_UBICACION_MAX_LENGTH,
   })
@@ -109,10 +112,22 @@ export class CreateParqueDto {
   declare ubicacion: string;
 
   @ApiPropertyOptional({
+    example: 'Barrio Central',
+    description: 'Sector o barrio en el que se encuentra la calle.',
+    maxLength: 150,
+  })
+  @IsOptional()
+  @IsString({ message: 'El sector debe ser una cadena de texto.' })
+  @MaxLength(150, {
+    message: 'El sector no puede superar los 150 caracteres.',
+  })
+  declare sector?: string;
+
+  @ApiPropertyOptional({
     example:
-      'Archivo Histórico del GADM Zamora; Ordenanza Municipal N.° 015-2024; entrevista al cronista local.',
+      'Archivo Histórico del GADM Zamora; ordenanzas municipales; entrevistas a moradores del sector.',
     description:
-      'Documentos, archivos, entrevistas, publicaciones u otras fuentes utilizadas para respaldar la información de la ficha.',
+      'Documentos, archivos, entrevistas o publicaciones que respaldan la información de la ficha.',
     maxLength: FICHA_FUENTES_MAX_LENGTH,
   })
   @IsOptional()
@@ -120,16 +135,15 @@ export class CreateParqueDto {
     message: 'Las fuentes de información deben ser una cadena de texto.',
   })
   @MaxLength(FICHA_FUENTES_MAX_LENGTH, {
-    message:
-      'Las fuentes de información no pueden superar los 5000 caracteres.',
+    message: `Las fuentes de información no pueden superar los ${FICHA_FUENTES_MAX_LENGTH} caracteres.`,
   })
   declare fuentesInformacion?: string;
 
   @ApiPropertyOptional({
     example:
-      'La fecha de creación está pendiente de confirmación mediante documentación histórica.',
+      'La fecha de denominación está pendiente de confirmación documental.',
     description:
-      'Notas administrativas o información pendiente de revisión. Este campo no está destinado a la publicación ciudadana.',
+      'Notas administrativas o información pendiente de verificación.',
     maxLength: FICHA_OBSERVACIONES_MAX_LENGTH,
   })
   @IsOptional()
@@ -137,18 +151,19 @@ export class CreateParqueDto {
     message: 'Las observaciones deben ser una cadena de texto.',
   })
   @MaxLength(FICHA_OBSERVACIONES_MAX_LENGTH, {
-    message: 'Las observaciones no pueden superar los 2000 caracteres.',
+    message: `Las observaciones no pueden superar los ${FICHA_OBSERVACIONES_MAX_LENGTH} caracteres.`,
   })
   declare observaciones?: string;
 
   @ApiPropertyOptional({
     example: -4.0697,
-    description: 'Latitud del parque. Debe enviarse junto con la longitud.',
+    description:
+      'Latitud referencial de la calle. Debe enviarse junto con la longitud.',
     minimum: LATITUD_MIN,
     maximum: LATITUD_MAX,
   })
   @ValidateIf(
-    (dto: CreateParqueDto) =>
+    (dto: CreateCalleDto) =>
       dto.latitud !== undefined || dto.longitud !== undefined,
   )
   @IsDefined({
@@ -169,12 +184,13 @@ export class CreateParqueDto {
 
   @ApiPropertyOptional({
     example: -78.9567,
-    description: 'Longitud del parque. Debe enviarse junto con la latitud.',
+    description:
+      'Longitud referencial de la calle. Debe enviarse junto con la latitud.',
     minimum: LONGITUD_MIN,
     maximum: LONGITUD_MAX,
   })
   @ValidateIf(
-    (dto: CreateParqueDto) =>
+    (dto: CreateCalleDto) =>
       dto.latitud !== undefined || dto.longitud !== undefined,
   )
   @IsDefined({

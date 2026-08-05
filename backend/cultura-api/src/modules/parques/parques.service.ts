@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import {ConflictException, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
 
@@ -15,6 +11,7 @@ import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
+import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 
 @Injectable()
 export class ParquesService extends BaseCatalogService<Parque> {
@@ -64,7 +61,10 @@ export class ParquesService extends BaseCatalogService<Parque> {
   async create(
     createParqueDto: CreateParqueDto,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
-    this.validateFechaCreacion(createParqueDto.fechaCreacion);
+    validateHistoricalDate(
+      createParqueDto.fechaCreacion,
+      'La fecha de creación',
+    );
 
     const nombreNormalizado = createParqueDto.nombre.trim();
 
@@ -115,7 +115,10 @@ export class ParquesService extends BaseCatalogService<Parque> {
     }
 
     if (updateParqueDto.fechaCreacion !== undefined) {
-      this.validateFechaCreacion(updateParqueDto.fechaCreacion);
+      validateHistoricalDate(
+        updateParqueDto.fechaCreacion,
+        'La fecha de creación',
+      );
 
       parque.fechaCreacion = updateParqueDto.fechaCreacion ?? null;
     }
@@ -217,27 +220,6 @@ export class ParquesService extends BaseCatalogService<Parque> {
     if (parqueExistente) {
       throw new ConflictException(
         'Ya existe un parque activo registrado con ese nombre.',
-      );
-    }
-  }
-
-  private validateFechaCreacion(fechaCreacion?: string): void {
-    if (!fechaCreacion) {
-      return;
-    }
-
-    const fecha = new Date(`${fechaCreacion}T00:00:00.000Z`);
-
-    if (Number.isNaN(fecha.getTime())) {
-      throw new BadRequestException('La fecha de creación no es válida.');
-    }
-
-    const hoy = new Date();
-    hoy.setUTCHours(23, 59, 59, 999);
-
-    if (fecha > hoy) {
-      throw new BadRequestException(
-        'La fecha de creación no puede ser posterior a la fecha actual.',
       );
     }
   }

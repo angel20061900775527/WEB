@@ -1,0 +1,19 @@
+export const FICHA_NOMBRE_MIN_LENGTH = 3;
+export const FICHA_NOMBRE_MAX_LENGTH = 150;
+
+export const FICHA_DESCRIPCION_MIN_LENGTH = 10;
+export const FICHA_DESCRIPCION_MAX_LENGTH = 5000;
+
+export const FICHA_RESENA_MAX_LENGTH = 20000;
+
+export const FICHA_UBICACION_MIN_LENGTH = 3;
+export const FICHA_UBICACION_MAX_LENGTH = 255;
+
+export const FICHA_FUENTES_MAX_LENGTH = 5000;
+export const FICHA_OBSERVACIONES_MAX_LENGTH = 2000;
+
+export const LATITUD_MIN = -90;
+export const LATITUD_MAX = 90;
+
+export const LONGITUD_MIN = -180;
+export const LONGITUD_MAX = 180;
