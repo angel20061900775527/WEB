@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ParquesModule } from './modules/parques/parques.module';
 import { CallesModule } from './modules/calles/calles.module';
+import { MonumentosModule } from './modules/monumentos/monumentos.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { CallesModule } from './modules/calles/calles.module';
 
     ParquesModule,
     CallesModule,
+    MonumentosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

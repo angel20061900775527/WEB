@@ -1,0 +1,11 @@
+export enum TipoMonumento {
+  ESTATUA = 'ESTATUA',
+  BUSTO = 'BUSTO',
+  ESCULTURA = 'ESCULTURA',
+  OBELISCO = 'OBELISCO',
+  MONOLITO = 'MONOLITO',
+  PLACA = 'PLACA',
+  MEMORIAL = 'MEMORIAL',
+  FUENTE = 'FUENTE',
+  OTRO = 'OTRO',
+}
