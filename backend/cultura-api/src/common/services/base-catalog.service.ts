@@ -7,7 +7,7 @@ import { AuditableEntity } from '../entities/auditable.entity';
 export abstract class BaseCatalogService<TEntity extends AuditableEntity> {
   constructor(
     protected readonly repository: Repository<TEntity>,
-    private readonly entityName: string,
+    protected readonly entityName: string,
   ) {}
 
   protected async findEntity(

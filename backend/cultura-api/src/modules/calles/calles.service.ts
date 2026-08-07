@@ -1,15 +1,13 @@
 import {
-  BadRequestException,
-  ConflictException,
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
-import { BaseCatalogService } from '../../common/services/base-catalog.service';
+import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { CreateCalleDto } from './dto/request/create-calle.dto';
 import { UpdateCalleDto } from './dto/request/update-calle.dto';
 import { UpdateEstadoCalleDto } from './dto/request/update-estado-calle.dto';
@@ -18,7 +16,7 @@ import { Calle } from './entities/calle.entity';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 
 @Injectable()
-export class CallesService extends BaseCatalogService<Calle> {
+export class CallesService extends BasePatrimonialService<Calle> {
   constructor(
     @InjectRepository(Calle)
     private readonly callesRepository: Repository<Calle>,
@@ -72,7 +70,7 @@ export class CallesService extends BaseCatalogService<Calle> {
 
     const nombreNormalizado = createCalleDto.nombre.trim();
 
-    await this.validateNombreUnico(nombreNormalizado);
+    await this.validateUniqueName(nombreNormalizado);
 
     const calle = this.callesRepository.create({
       ...createCalleDto,
@@ -106,7 +104,7 @@ export class CallesService extends BaseCatalogService<Calle> {
     if (updateCalleDto.nombre !== undefined) {
       const nombreNormalizado = updateCalleDto.nombre.trim();
 
-      await this.validateNombreUnico(nombreNormalizado, id);
+      await this.validateUniqueName(nombreNormalizado, id);
 
       calle.nombre = nombreNormalizado;
     }
@@ -194,7 +192,7 @@ export class CallesService extends BaseCatalogService<Calle> {
   async restore(id: number): Promise<ApiResponseDto<CalleResponseDto>> {
     const calle = await this.findDeletedEntityById(id);
 
-    await this.validateNombreUnico(calle.nombre);
+    await this.validateUniqueName(calle.nombre);
 
     calle.estadoRegistro = EstadoRegistro.ACTIVO;
     calle.fechaEliminacion = null;
@@ -207,29 +205,5 @@ export class CallesService extends BaseCatalogService<Calle> {
       'Calle restaurada correctamente.',
       CalleResponseDto.fromEntity(calleRestaurada),
     );
-  }
-
-  private async validateNombreUnico(
-    nombre: string,
-    calleIdExcluir?: number,
-  ): Promise<void> {
-    const where: FindOptionsWhere<Calle> = {
-      nombre: ILike(nombre),
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (calleIdExcluir !== undefined) {
-      where.id = Not(calleIdExcluir);
-    }
-
-    const calleExistente = await this.callesRepository.findOne({
-      where,
-    });
-
-    if (calleExistente) {
-      throw new ConflictException(
-        'Ya existe una calle activa registrada con ese nombre.',
-      );
-    }
   }
 }

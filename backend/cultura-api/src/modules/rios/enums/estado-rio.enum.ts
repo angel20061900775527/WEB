@@ -1,0 +1,5 @@
+export enum EstadoRio {
+  BORRADOR = 'BORRADOR',
+  PUBLICADO = 'PUBLICADO',
+  INACTIVO = 'INACTIVO',
+}

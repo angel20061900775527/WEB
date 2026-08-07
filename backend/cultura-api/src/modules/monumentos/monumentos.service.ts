@@ -1,11 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
-
+import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
-import { BaseCatalogService } from '../../common/services/base-catalog.service';
+import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 import { CreateMonumentoDto } from './dto/request/create-monumento.dto';
 import { UpdateEstadoMonumentoDto } from './dto/request/update-estado-monumento.dto';
@@ -14,7 +13,7 @@ import { MonumentoResponseDto } from './dto/response/monumento-response.dto';
 import { Monumento } from './entities/monumento.entity';
 
 @Injectable()
-export class MonumentosService extends BaseCatalogService<Monumento> {
+export class MonumentosService extends BasePatrimonialService<Monumento> {
   constructor(
     @InjectRepository(Monumento)
     private readonly monumentosRepository: Repository<Monumento>,
@@ -70,7 +69,7 @@ export class MonumentosService extends BaseCatalogService<Monumento> {
 
     const nombreNormalizado = createMonumentoDto.nombre.trim();
 
-    await this.validateNombreUnico(nombreNormalizado);
+    await this.validateUniqueName(nombreNormalizado);
 
     const monumento = this.monumentosRepository.create({
       ...createMonumentoDto,
@@ -106,7 +105,7 @@ export class MonumentosService extends BaseCatalogService<Monumento> {
     if (updateMonumentoDto.nombre !== undefined) {
       const nombreNormalizado = updateMonumentoDto.nombre.trim();
 
-      await this.validateNombreUnico(nombreNormalizado, id);
+      await this.validateUniqueName(nombreNormalizado, id);
 
       monumento.nombre = nombreNormalizado;
     }
@@ -209,7 +208,7 @@ export class MonumentosService extends BaseCatalogService<Monumento> {
   async restore(id: number): Promise<ApiResponseDto<MonumentoResponseDto>> {
     const monumento = await this.findDeletedEntityById(id);
 
-    await this.validateNombreUnico(monumento.nombre);
+    await this.validateUniqueName(monumento.nombre);
 
     monumento.estadoRegistro = EstadoRegistro.ACTIVO;
     monumento.fechaEliminacion = null;
@@ -222,29 +221,5 @@ export class MonumentosService extends BaseCatalogService<Monumento> {
       'Monumento restaurado correctamente.',
       MonumentoResponseDto.fromEntity(monumentoRestaurado),
     );
-  }
-
-  private async validateNombreUnico(
-    nombre: string,
-    monumentoIdExcluir?: number,
-  ): Promise<void> {
-    const where: FindOptionsWhere<Monumento> = {
-      nombre: ILike(nombre),
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (monumentoIdExcluir !== undefined) {
-      where.id = Not(monumentoIdExcluir);
-    }
-
-    const monumentoExistente = await this.monumentosRepository.findOne({
-      where,
-    });
-
-    if (monumentoExistente) {
-      throw new ConflictException(
-        'Ya existe un monumento activo registrado con ese nombre.',
-      );
-    }
   }
 }

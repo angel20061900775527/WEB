@@ -1,11 +1,9 @@
 import {ConflictException, Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
-
+import { Repository } from 'typeorm';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
-import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
-import { BaseCatalogService } from '../../common/services/base-catalog.service';
+import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
 import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
@@ -14,7 +12,7 @@ import { Parque } from './entities/parque.entity';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 
 @Injectable()
-export class ParquesService extends BaseCatalogService<Parque> {
+export class ParquesService extends BasePatrimonialService<Parque> {
   constructor(
     @InjectRepository(Parque)
     private readonly parquesRepository: Repository<Parque>,
@@ -23,32 +21,16 @@ export class ParquesService extends BaseCatalogService<Parque> {
   }
 
   async findAll(query: PaginationQueryDto) {
-    const page = query.page;
-    const limit = query.limit;
-
-    const where: FindOptionsWhere<Parque> = {
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (query.search) {
-      where.nombre = ILike(`%${query.search.trim()}%`);
-    }
-
-    const [parques, total] = await this.parquesRepository.findAndCount({
-      where,
-      order: {
-        nombre: query.order,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const result = await this.findAllActive(query, (parque) =>
+      ParqueResponseDto.fromEntity(parque),
+    );
 
     return {
-      parques: parques.map((parque) => ParqueResponseDto.fromEntity(parque)),
-      total,
-      page,
-      limit,
-      totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
+      parques: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     };
   }
 
@@ -68,7 +50,7 @@ export class ParquesService extends BaseCatalogService<Parque> {
 
     const nombreNormalizado = createParqueDto.nombre.trim();
 
-    await this.validateNombreUnico(nombreNormalizado);
+    await this.validateUniqueName(nombreNormalizado);
 
     const parque = this.parquesRepository.create({
       ...createParqueDto,
@@ -101,7 +83,7 @@ export class ParquesService extends BaseCatalogService<Parque> {
     if (updateParqueDto.nombre !== undefined) {
       const nombreNormalizado = updateParqueDto.nombre.trim();
 
-      await this.validateNombreUnico(nombreNormalizado, id);
+      await this.validateUniqueName(nombreNormalizado, id);
 
       parque.nombre = nombreNormalizado;
     }
@@ -171,56 +153,17 @@ export class ParquesService extends BaseCatalogService<Parque> {
   }
 
   async delete(id: number): Promise<ApiResponseDto<null>> {
-    const parque = await this.findEntityById(id);
-
-    parque.estadoRegistro = EstadoRegistro.ELIMINADO;
-    parque.fechaEliminacion = new Date();
-    parque.usuarioEliminadorId = '1';
-
-    await this.parquesRepository.save(parque);
+    await this.softDeleteEntity(id, '1');
 
     return new ApiResponseDto('Parque eliminado correctamente.', null);
   }
 
   async restore(id: number): Promise<ApiResponseDto<ParqueResponseDto>> {
-    const parque = await this.findDeletedEntityById(id);
-
-    await this.validateNombreUnico(parque.nombre);
-
-    parque.estadoRegistro = EstadoRegistro.ACTIVO;
-    parque.fechaEliminacion = null;
-    parque.usuarioEliminadorId = null;
-    parque.usuarioModificadorId = '1';
-
-    const parqueRestaurado = await this.parquesRepository.save(parque);
+    const parqueRestaurado = await this.restoreEntity(id, '1');
 
     return new ApiResponseDto(
       'Parque restaurado correctamente.',
       ParqueResponseDto.fromEntity(parqueRestaurado),
     );
-  }
-
-  private async validateNombreUnico(
-    nombre: string,
-    parqueIdExcluir?: number,
-  ): Promise<void> {
-    const where: FindOptionsWhere<Parque> = {
-      nombre: ILike(nombre),
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (parqueIdExcluir !== undefined) {
-      where.id = Not(parqueIdExcluir);
-    }
-
-    const parqueExistente = await this.parquesRepository.findOne({
-      where,
-    });
-
-    if (parqueExistente) {
-      throw new ConflictException(
-        'Ya existe un parque activo registrado con ese nombre.',
-      );
-    }
   }
 }

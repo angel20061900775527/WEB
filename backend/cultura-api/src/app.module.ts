@@ -7,6 +7,10 @@ import { AppService } from './app.service';
 import { ParquesModule } from './modules/parques/parques.module';
 import { CallesModule } from './modules/calles/calles.module';
 import { MonumentosModule } from './modules/monumentos/monumentos.module';
+import { RiosModule } from './modules/rios/rios.module';
+import { PlazasModule } from './modules/plazas/plazas.module';
+import { MuseosModule } from './modules/museos/museos.module';
+import { AuditoriosModule } from './modules/auditorios/auditorios.module';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { MonumentosModule } from './modules/monumentos/monumentos.module';
     ParquesModule,
     CallesModule,
     MonumentosModule,
+    RiosModule,
+    PlazasModule,
+    MuseosModule,
+    AuditoriosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

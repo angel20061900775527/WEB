@@ -3,10 +3,10 @@ import { IsDateString, IsOptional } from 'class-validator';
 
 import { BasePatrimonialDto } from '../../../../common/dto/request/base-patrimonial.dto';
 
-export class CreateParqueDto extends BasePatrimonialDto {
+export class CreatePlazaDto extends BasePatrimonialDto {
   @ApiPropertyOptional({
-    example: '1985-05-20',
-    description: 'Fecha histórica de creación, en formato AAAA-MM-DD.',
+    example: '1950-08-15',
+    description: 'Fecha histórica de creación o inauguración de la plaza.',
     format: 'date',
   })
   @IsOptional()

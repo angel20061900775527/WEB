@@ -1,0 +1,6 @@
+export enum TipoRio {
+  PRINCIPAL = 'PRINCIPAL',
+  AFLUENTE = 'AFLUENTE',
+  QUEBRADA = 'QUEBRADA',
+  ESTERO = 'ESTERO',
+}
