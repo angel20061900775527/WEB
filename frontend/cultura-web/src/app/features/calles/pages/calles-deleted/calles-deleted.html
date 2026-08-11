@@ -1,0 +1,118 @@
+<section class="calles-deleted-page">
+  <div class="deleted-header">
+    <div>
+      <h1>Calles eliminadas</h1>
+      <p>Registros eliminados lógicamente disponibles para restauración.</p>
+    </div>
+
+    <button
+      type="button"
+      (click)="volver()"
+    >
+      Volver a Calles
+    </button>
+  </div>
+
+  <div class="calles-filtros">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, descripción..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando calles eliminadas...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total eliminadas: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (calles().length === 0) {
+      <p>No existen calles eliminadas.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Sector</th>
+            <th>Estado</th>
+            <th>Fecha de modificación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (calle of calles(); track calle.id) {
+            <tr>
+              <td>{{ calle.nombre }}</td>
+              <td>{{ calle.ubicacion }}</td>
+              <td>{{ calle.sector || '-' }}</td>
+              <td>{{ calle.estado }}</td>
+              <td>{{ calle.fechaModificacion }}</td>
+
+              <td>
+                <button
+                  type="button"
+                  (click)="restaurarCalle(calle)"
+                >
+                  Restaurar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="paginacion">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>

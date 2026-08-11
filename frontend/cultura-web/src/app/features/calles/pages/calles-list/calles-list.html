@@ -1,0 +1,215 @@
+<section class="calles-page">
+  <div class="calles-header">
+    <div>
+      <h1>Calles</h1>
+      <p>Listado de calles registradas en SIGPAC.</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        type="button"
+        (click)="verEliminadas()"
+      >
+        Ver eliminadas
+      </button>
+
+      <button
+        type="button"
+        (click)="nuevaCalle()"
+      >
+        Nueva calle
+      </button>
+    </div>
+  </div>
+
+  <div class="calles-filtros">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, sector, descripción..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #estadoSelect
+      [value]="estado()"
+      (change)="
+        cambiarEstado(
+          estadoSelect.value === 'BORRADOR' ||
+          estadoSelect.value === 'PUBLICADO' ||
+          estadoSelect.value === 'INACTIVO'
+            ? estadoSelect.value
+            : ''
+        )
+      "
+    >
+      <option value="">Todos los estados</option>
+      <option value="BORRADOR">Borrador</option>
+      <option value="PUBLICADO">Publicado</option>
+      <option value="INACTIVO">Inactivo</option>
+    </select>
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando calles...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total de registros: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (calles().length === 0) {
+      <p>No se encontraron calles.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Sector</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (calle of calles(); track calle.id) {
+            <tr>
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(calle.nombre);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark>{{ segmento.texto }}</mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+
+                @if (obtenerCoincidenciaSecundaria(calle); as coincidencia) {
+                  <div class="coincidencia-secundaria">
+                    <strong>{{ coincidencia.etiqueta }}:</strong>
+
+                    @for (
+                      segmento of segmentarCoincidencias(coincidencia.texto);
+                      track $index
+                    ) {
+                      @if (segmento.coincide) {
+                        <mark>{{ segmento.texto }}</mark>
+                      } @else {
+                        {{ segmento.texto }}
+                      }
+                    }
+                  </div>
+                }
+              </td>
+
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(calle.ubicacion);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark>{{ segmento.texto }}</mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+              </td>
+
+              <td>
+                @if (calle.sector) {
+                  @for (
+                    segmento of segmentarCoincidencias(calle.sector);
+                    track $index
+                  ) {
+                    @if (segmento.coincide) {
+                      <mark>{{ segmento.texto }}</mark>
+                    } @else {
+                      {{ segmento.texto }}
+                    }
+                  }
+                } @else {
+                  -
+                }
+              </td>
+
+              <td>{{ calle.estado }}</td>
+
+              <td>
+                <button
+                  type="button"
+                  (click)="verDetalle(calle.id)"
+                >
+                  Ver
+                </button>
+
+                <button
+                  type="button"
+                  (click)="editarCalle(calle.id)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  (click)="eliminarCalle(calle)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="paginacion">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>

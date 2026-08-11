@@ -1,0 +1,158 @@
+.calles-deleted-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.deleted-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+  }
+
+  button {
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: #e5e7eb;
+    color: #111827;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.calles-filtros {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) auto auto;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  input,
+  select {
+    padding: 11px 12px;
+    font: inherit;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    outline: none;
+
+    &:focus {
+      border-color: #6b7280;
+      box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.12);
+    }
+  }
+}
+
+table {
+  width: 100%;
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 14px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  th {
+    background: #f9fafb;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  td {
+    color: #4b5563;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 22px;
+
+  span {
+    color: #4b5563;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 9px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #111827;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .calles-deleted-page {
+    padding: 16px;
+  }
+
+  .deleted-header {
+    flex-direction: column;
+    align-items: stretch;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .calles-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .paginacion {
+    flex-wrap: wrap;
+  }
+}

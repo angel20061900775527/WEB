@@ -1,0 +1,287 @@
+.calles-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.calles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 6px 0 0;
+    color: #6b7280;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+
+  button {
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:first-child {
+    background: #e5e7eb;
+    color: #111827;
+  }
+
+  button:last-child {
+    background: #111827;
+    color: #ffffff;
+  }
+}
+
+.calles-filtros {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto auto auto;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  input,
+  select {
+    height: 44px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    font-size: 14px;
+    outline: none;
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  input {
+    padding: 0 16px;
+
+    &:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+  }
+
+  select {
+    min-width: 150px;
+    padding: 0 12px;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #111827;
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+    }
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+
+  th,
+  td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #111827;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  td {
+    font-size: 14px;
+    color: #374151;
+  }
+
+  tbody tr {
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #f9fafb;
+    }
+
+    &:last-child td {
+      border-bottom: 0;
+    }
+  }
+
+  td:last-child {
+    white-space: nowrap;
+
+    button {
+      margin-right: 6px;
+      padding: 7px 10px;
+
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+
+      background: #ffffff;
+      color: #111827;
+
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+
+      &:hover {
+        background: #111827;
+        border-color: #111827;
+        color: #ffffff;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+mark {
+  padding: 1px 3px;
+  border-radius: 3px;
+  background: #fde68a;
+  color: #111827;
+  font-weight: 600;
+}
+
+.coincidencia-secundaria {
+  margin-top: 6px;
+  max-width: 520px;
+
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.45;
+
+  strong {
+    color: #4b5563;
+  }
+}
+
+.paginacion {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+
+  span {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  button {
+    min-width: 90px;
+    height: 38px;
+    padding: 0 14px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #111827;
+
+    font-weight: 500;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #111827;
+      border-color: #111827;
+      color: #ffffff;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .calles-filtros {
+    grid-template-columns: 1fr 1fr;
+
+    input {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .calles-page {
+    padding: 16px;
+  }
+
+  .calles-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .calles-filtros {
+    grid-template-columns: 1fr;
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+    }
+
+    input {
+      grid-column: auto;
+    }
+  }
+
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .coincidencia-secundaria {
+    white-space: normal;
+  }
+
+  .paginacion {
+    justify-content: space-between;
+
+    span {
+      text-align: center;
+    }
+  }
+}

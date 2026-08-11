@@ -2,11 +2,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
-import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { CreateCalleDto } from './dto/request/create-calle.dto';
 import { UpdateCalleDto } from './dto/request/update-calle.dto';
@@ -25,32 +24,29 @@ export class CallesService extends BasePatrimonialService<Calle> {
   }
 
   async findAll(query: PaginationQueryDto) {
-    const page = query.page;
-    const limit = query.limit;
-
-    const where: FindOptionsWhere<Calle> = {
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (query.search) {
-      where.nombre = ILike(`%${query.search.trim()}%`);
-    }
-
-    const [calles, total] = await this.callesRepository.findAndCount({
-      where,
-      order: {
-        nombre: query.order,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const result = await this.findAllActive(query, (calle) =>
+      CalleResponseDto.fromEntity(calle),
+    );
 
     return {
-      calles: calles.map((calle) => CalleResponseDto.fromEntity(calle)),
-      total,
-      page,
-      limit,
-      totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
+      calles: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+  async findDeleted(query: PaginationQueryDto) {
+    const result = await this.findAllDeleted(query, (calle) =>
+      CalleResponseDto.fromEntity(calle),
+    );
+
+    return {
+      calles: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     };
   }
 
@@ -178,28 +174,13 @@ export class CallesService extends BasePatrimonialService<Calle> {
   }
 
   async delete(id: number): Promise<ApiResponseDto<null>> {
-    const calle = await this.findEntityById(id);
-
-    calle.estadoRegistro = EstadoRegistro.ELIMINADO;
-    calle.fechaEliminacion = new Date();
-    calle.usuarioEliminadorId = '1';
-
-    await this.callesRepository.save(calle);
+    await this.softDeleteEntity(id, '1');
 
     return new ApiResponseDto('Calle eliminada correctamente.', null);
   }
 
   async restore(id: number): Promise<ApiResponseDto<CalleResponseDto>> {
-    const calle = await this.findDeletedEntityById(id);
-
-    await this.validateUniqueName(calle.nombre);
-
-    calle.estadoRegistro = EstadoRegistro.ACTIVO;
-    calle.fechaEliminacion = null;
-    calle.usuarioEliminadorId = null;
-    calle.usuarioModificadorId = '1';
-
-    const calleRestaurada = await this.callesRepository.save(calle);
+    const calleRestaurada = await this.restoreEntity(id, '1');
 
     return new ApiResponseDto(
       'Calle restaurada correctamente.',

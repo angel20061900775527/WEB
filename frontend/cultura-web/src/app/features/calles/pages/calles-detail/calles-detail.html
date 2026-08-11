@@ -1,0 +1,135 @@
+<section class="calle-detail-page">
+  <div class="detail-actions">
+    <a routerLink="/calles" class="volver-link">
+      ← Volver a Calles
+    </a>
+
+    <button
+      type="button"
+      (click)="editar()"
+    >
+      Editar calle
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando información de la calle...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && calle(); as calleActual) {
+    <div class="detail-header">
+      <div>
+        <h1>{{ calleActual.nombre }}</h1>
+        <p>{{ calleActual.ubicacion }}</p>
+      </div>
+
+      <div class="estado-control">
+        <label for="estado">Estado</label>
+
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="calleActual.estado"
+          [disabled]="cambiandoEstado()"
+          (change)="
+            cambiarEstado(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+
+        @if (cambiandoEstado()) {
+          <span>Actualizando...</span>
+        }
+
+        @if (mensajeEstado()) {
+          <span>{{ mensajeEstado() }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="detail-content">
+      <div>
+        <h2>Descripción</h2>
+        <p>{{ calleActual.descripcion }}</p>
+      </div>
+
+      @if (calleActual.resenaHistorica) {
+        <div>
+          <h2>Reseña histórica</h2>
+          <p>{{ calleActual.resenaHistorica }}</p>
+        </div>
+      }
+
+      @if (calleActual.fechaDenominacion) {
+        <div>
+          <h2>Fecha de denominación</h2>
+          <p>{{ calleActual.fechaDenominacion }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Ubicación</h2>
+        <p>{{ calleActual.ubicacion }}</p>
+      </div>
+
+      @if (calleActual.sector) {
+        <div>
+          <h2>Sector</h2>
+          <p>{{ calleActual.sector }}</p>
+        </div>
+      }
+
+      @if (
+        calleActual.latitud !== null &&
+        calleActual.latitud !== undefined &&
+        calleActual.longitud !== null &&
+        calleActual.longitud !== undefined
+      ) {
+        <div>
+          <h2>Coordenadas</h2>
+          <p>
+            Latitud: {{ calleActual.latitud }}
+            <br />
+            Longitud: {{ calleActual.longitud }}
+          </p>
+        </div>
+      }
+
+      @if (calleActual.fuentesInformacion) {
+        <div>
+          <h2>Fuentes de información</h2>
+          <p>{{ calleActual.fuentesInformacion }}</p>
+        </div>
+      }
+
+      @if (calleActual.observaciones) {
+        <div>
+          <h2>Observaciones</h2>
+          <p>{{ calleActual.observaciones }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Información del registro</h2>
+        <p>
+          Registrado: {{ calleActual.fechaRegistro }}
+          <br />
+          Última modificación: {{ calleActual.fechaModificacion }}
+        </p>
+      </div>
+    </div>
+  }
+</section>

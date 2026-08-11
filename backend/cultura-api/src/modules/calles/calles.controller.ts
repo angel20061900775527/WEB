@@ -80,6 +80,12 @@ export class CallesController {
     example: 'Sevilla',
   })
   @ApiQuery({
+    name: 'estado',
+    required: false,
+    enum: ['BORRADOR', 'PUBLICADO', 'INACTIVO'],
+    example: 'PUBLICADO',
+  })
+  @ApiQuery({
     name: 'order',
     required: false,
     example: 'ASC',
@@ -87,7 +93,20 @@ export class CallesController {
   findAll(@Query() query: PaginationQueryDto) {
     return this.callesService.findAll(query);
   }
-
+  @Get('eliminados')
+  @ApiOperation({
+    summary: 'Listar calles eliminadas',
+    description:
+      'Obtiene un listado paginado de calles eliminadas lógicamente.',
+  })
+  @ApiOkResponse({
+    description: 'Listado de calles eliminadas.',
+    type: CalleResponseDto,
+    isArray: true,
+  })
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.callesService.findDeleted(query);
+  }
   @Get(':id')
   @ApiOperation({
     summary: 'Obtener detalle de una calle',

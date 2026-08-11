@@ -25,6 +25,11 @@ export const routes: Routes = [
           import('./features/parques/parques.routes').then((routes) => routes.PARQUES_ROUTES),
       },
       {
+        path: 'calles',
+        loadChildren: () =>
+          import('./features/calles/calles.routes').then((routes) => routes.CALLES_ROUTES),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',
