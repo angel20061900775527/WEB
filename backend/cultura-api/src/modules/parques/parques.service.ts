@@ -33,6 +33,19 @@ export class ParquesService extends BasePatrimonialService<Parque> {
       totalPages: result.totalPages,
     };
   }
+  async findDeleted(query: PaginationQueryDto) {
+    const result = await this.findAllDeleted(query, (parque) =>
+      ParqueResponseDto.fromEntity(parque),
+    );
+
+    return {
+      parques: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
 
   async findById(id: number): Promise<ParqueResponseDto> {
     const parque = await this.findEntityById(id);

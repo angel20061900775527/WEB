@@ -1,0 +1,120 @@
+<section class="parque-detail-page">
+  <div class="detail-actions">
+  <a routerLink="/parques" class="volver-link">
+    ← Volver a Parques
+  </a>
+
+  <button
+    type="button"
+    (click)="editar()"
+  >
+    Editar parque
+  </button>
+</div>
+  @if (loading()) {
+    <p>Cargando información del parque...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && parque(); as parqueActual) {
+    <div class="detail-header">
+      <div>
+        <h1>{{ parqueActual.nombre }}</h1>
+        <p>{{ parqueActual.ubicacion }}</p>
+      </div>
+
+<div class="estado-control">
+  <label for="estado">Estado</label>
+
+  <select
+    #estadoSelect
+    id="estado"
+    [value]="parqueActual.estado"
+    [disabled]="cambiandoEstado()"
+    (change)="
+      cambiarEstado(
+        estadoSelect.value === 'PUBLICADO'
+          ? 'PUBLICADO'
+          : estadoSelect.value === 'INACTIVO'
+            ? 'INACTIVO'
+            : 'BORRADOR'
+      )
+    "
+  >
+    <option value="BORRADOR">Borrador</option>
+    <option value="PUBLICADO">Publicado</option>
+    <option value="INACTIVO">Inactivo</option>
+  </select>
+
+  @if (cambiandoEstado()) {
+    <span>Actualizando...</span>
+  }
+
+  @if (mensajeEstado()) {
+    <span>{{ mensajeEstado() }}</span>
+  }
+</div>
+    </div>
+
+    <div class="detail-content">
+      <div>
+        <h2>Descripción</h2>
+        <p>{{ parqueActual.descripcion }}</p>
+      </div>
+
+      @if (parqueActual.resenaHistorica) {
+        <div>
+          <h2>Reseña histórica</h2>
+          <p>{{ parqueActual.resenaHistorica }}</p>
+        </div>
+      }
+
+      @if (parqueActual.fechaCreacion) {
+        <div>
+          <h2>Fecha de creación</h2>
+          <p>{{ parqueActual.fechaCreacion }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Ubicación</h2>
+        <p>{{ parqueActual.ubicacion }}</p>
+
+        @if (
+          parqueActual.latitud !== null &&
+          parqueActual.latitud !== undefined &&
+          parqueActual.longitud !== null &&
+          parqueActual.longitud !== undefined
+        ) {
+          <p>
+            Latitud: {{ parqueActual.latitud }} |
+            Longitud: {{ parqueActual.longitud }}
+          </p>
+        }
+      </div>
+
+      @if (parqueActual.fuentesInformacion) {
+        <div>
+          <h2>Fuentes de información</h2>
+          <p>{{ parqueActual.fuentesInformacion }}</p>
+        </div>
+      }
+
+      @if (parqueActual.observaciones) {
+        <div>
+          <h2>Observaciones</h2>
+          <p>{{ parqueActual.observaciones }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Información del registro</h2>
+        <p>Registrado: {{ parqueActual.fechaRegistro }}</p>
+        <p>Última modificación: {{ parqueActual.fechaModificacion }}</p>
+      </div>
+    </div>
+  }
+</section>

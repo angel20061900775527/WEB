@@ -1,11 +1,4 @@
-import { 
-  FindOptionsOrder, 
-  FindOptionsWhere, 
-  ILike, 
-  Not, 
-  Repository,
-} from 'typeorm';
-
+import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
 import { PaginationQueryDto } from '../dto/request/pagination-query.dto';
 import { PatrimonialEntity } from '../entities/patrimonial.entity';
 import { EstadoRegistro } from '../enums/estado-registro.enum';
@@ -26,7 +19,6 @@ export abstract class BasePatrimonialService<
   constructor(repository: Repository<TEntity>, entityName: string) {
     super(repository, entityName);
   }
-
   protected async findAllActive<TResponse>(
     query: PaginationQueryDto,
     mapper: (entity: TEntity) => TResponse,
@@ -34,26 +26,92 @@ export abstract class BasePatrimonialService<
     const page = query.page;
     const limit = query.limit;
 
-    const where = {
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    } as FindOptionsWhere<TEntity>;
+    const alias = 'patrimonial';
 
-    if (query.search) {
-      Object.assign(where, {
-        nombre: ILike(`%${query.search.trim()}%`),
+    const queryBuilder = this.repository
+      .createQueryBuilder(alias)
+      .where(`${alias}.estadoRegistro = :estadoRegistro`, {
+        estadoRegistro: EstadoRegistro.ACTIVO,
+      });
+
+    if (query.estado) {
+      queryBuilder.andWhere(`${alias}.estado = :estado`, {
+        estado: query.estado,
       });
     }
 
-    const order = {
-      nombre: query.order,
-    } as FindOptionsOrder<TEntity>;
+    const search = query.search?.trim();
 
-    const [entities, total] = await this.repository.findAndCount({
-      where,
-      order,
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    if (search) {
+      queryBuilder.andWhere(
+        `(
+        ${alias}.nombre ILIKE :search
+        OR ${alias}.descripcion ILIKE :search
+        OR ${alias}.resenaHistorica ILIKE :search
+        OR ${alias}.ubicacion ILIKE :search
+        OR ${alias}.fuentesInformacion ILIKE :search
+        OR ${alias}.observaciones ILIKE :search
+      )`,
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    queryBuilder
+      .orderBy(`${alias}.nombre`, query.order)
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [entities, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      items: entities.map(mapper),
+      total,
+      page,
+      limit,
+      totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
+    };
+  }
+  protected async findAllDeleted<TResponse>(
+    query: PaginationQueryDto,
+    mapper: (entity: TEntity) => TResponse,
+  ): Promise<PatrimonialListResult<TResponse>> {
+    const page = query.page;
+    const limit = query.limit;
+
+    const alias = 'patrimonial';
+
+    const queryBuilder = this.repository
+      .createQueryBuilder(alias)
+      .where(`${alias}.estadoRegistro = :estadoRegistro`, {
+        estadoRegistro: EstadoRegistro.ELIMINADO,
+      });
+
+    const search = query.search?.trim();
+
+    if (search) {
+      queryBuilder.andWhere(
+        `(
+        ${alias}.nombre ILIKE :search
+        OR ${alias}.descripcion ILIKE :search
+        OR ${alias}.resenaHistorica ILIKE :search
+        OR ${alias}.ubicacion ILIKE :search
+        OR ${alias}.fuentesInformacion ILIKE :search
+        OR ${alias}.observaciones ILIKE :search
+      )`,
+        {
+          search: `%${search}%`,
+        },
+      );
+    }
+
+    queryBuilder
+      .orderBy(`${alias}.nombre`, query.order)
+      .skip((page - 1) * limit)
+      .take(limit);
+
+    const [entities, total] = await queryBuilder.getManyAndCount();
 
     return {
       items: entities.map(mapper),

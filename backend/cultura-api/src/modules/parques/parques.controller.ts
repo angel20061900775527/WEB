@@ -87,6 +87,20 @@ export class ParquesController {
   findAll(@Query() query: PaginationQueryDto) {
     return this.parquesService.findAll(query);
   }
+  @Get('eliminados')
+  @ApiOperation({
+    summary: 'Listar parques eliminados',
+    description:
+      'Obtiene un listado paginado de parques eliminados lógicamente.',
+  })
+  @ApiOkResponse({
+    description: 'Listado de parques eliminados.',
+    type: ParqueResponseDto,
+    isArray: true,
+  })
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.parquesService.findDeleted(query);
+  }
 
   @Get(':id')
   @ApiOperation({

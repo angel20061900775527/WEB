@@ -1,0 +1,115 @@
+<section class="parques-deleted-page">
+  <div class="deleted-header">
+    <div>
+      <h1>Parques eliminados</h1>
+      <p>Registros eliminados lógicamente disponibles para restauración.</p>
+    </div>
+
+    <button
+      type="button"
+      (click)="volver()"
+    >
+      Volver a Parques
+    </button>
+  </div>
+
+  <div class="parques-filtros">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, descripción..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando parques eliminados...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total eliminados: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (parques().length === 0) {
+      <p>No existen parques eliminados.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th>Fecha de modificación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (parque of parques(); track parque.id) {
+            <tr>
+              <td>{{ parque.nombre }}</td>
+              <td>{{ parque.ubicacion }}</td>
+              <td>{{ parque.estado }}</td>
+              <td>{{ parque.fechaModificacion }}</td>
+              <td>
+                <button
+                  type="button"
+                  (click)="restaurarParque(parque)"
+                >
+                  Restaurar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="paginacion">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>

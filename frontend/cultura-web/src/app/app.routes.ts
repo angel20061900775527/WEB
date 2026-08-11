@@ -20,6 +20,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'parques',
+        loadChildren: () =>
+          import('./features/parques/parques.routes').then((routes) => routes.PARQUES_ROUTES),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',

@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class PaginationQueryDto {
   @ApiPropertyOptional({
@@ -35,6 +35,15 @@ export class PaginationQueryDto {
   search?: string;
 
   @ApiPropertyOptional({
+    description: 'Filtrar por estado.',
+    example: 'PUBLICADO',
+    enum: ['BORRADOR', 'PUBLICADO', 'INACTIVO'],
+  })
+  @IsOptional()
+  @IsIn(['BORRADOR', 'PUBLICADO', 'INACTIVO'])
+  estado?: 'BORRADOR' | 'PUBLICADO' | 'INACTIVO';
+
+  @ApiPropertyOptional({
     description: 'Campo por el cual ordenar.',
     example: 'nombre',
     default: 'nombre',
@@ -50,6 +59,6 @@ export class PaginationQueryDto {
     enum: ['ASC', 'DESC'],
   })
   @IsOptional()
-  @IsString()
+  @IsIn(['ASC', 'DESC'])
   order: 'ASC' | 'DESC' = 'ASC';
 }

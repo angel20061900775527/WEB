@@ -1,0 +1,197 @@
+<section class="parques-page">
+<div class="parques-header">
+  <div>
+    <h1>Parques</h1>
+    <p>Listado de parques registrados en SIGPAC.</p>
+  </div>
+
+  <div class="header-actions">
+    <button
+      type="button"
+      (click)="verEliminados()"
+    >
+      Ver eliminados
+    </button>
+
+    <button
+      type="button"
+      (click)="nuevoParque()"
+    >
+      Nuevo parque
+    </button>
+  </div>
+</div>
+
+<div class="parques-filtros">
+  <input
+    #searchInput
+    type="text"
+    placeholder="Buscar por nombre, ubicación, descripción, reseña, fuentes..."
+    [value]="search()"
+    (input)="onSearch(searchInput.value)"
+  />
+
+  <select
+    #estadoSelect
+    [value]="estado()"
+    (change)="
+      cambiarEstado(
+        estadoSelect.value === 'BORRADOR' ||
+        estadoSelect.value === 'PUBLICADO' ||
+        estadoSelect.value === 'INACTIVO'
+          ? estadoSelect.value
+          : ''
+      )
+    "
+  >
+    <option value="">Todos los estados</option>
+    <option value="BORRADOR">Borrador</option>
+    <option value="PUBLICADO">Publicado</option>
+    <option value="INACTIVO">Inactivo</option>
+  </select>
+
+  <select
+    #orderSelect
+    [value]="order()"
+    (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+  >
+    <option value="ASC">Nombre A-Z</option>
+    <option value="DESC">Nombre Z-A</option>
+    <select
+  #limitSelect
+  [value]="limit()"
+  (change)="cambiarLimite(+limitSelect.value)"
+>
+  <option value="10">10 por página</option>
+  <option value="20">20 por página</option>
+  <option value="50">50 por página</option>
+</select>
+  </select>
+
+</div>
+
+  @if (loading()) {
+    <p>Cargando parques...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <div>
+      <p>
+        Total de registros: <strong>{{ total() }}</strong>
+      </p>
+
+      @if (parques().length === 0) {
+        <p>No se encontraron parques.</p>
+      } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (parque of parques(); track parque.id) {
+              <tr>
+                <td>
+  @for (
+    segmento of segmentarCoincidencias(parque.nombre);
+    track $index
+  ) {
+    @if (segmento.coincide) {
+      <mark>{{ segmento.texto }}</mark>
+    } @else {
+      {{ segmento.texto }}
+    }
+  }
+
+  @if (obtenerCoincidenciaSecundaria(parque); as coincidencia) {
+    <div class="coincidencia-secundaria">
+      <strong>{{ coincidencia.etiqueta }}:</strong>
+
+      @for (
+        segmento of segmentarCoincidencias(coincidencia.texto);
+        track $index
+      ) {
+        @if (segmento.coincide) {
+          <mark>{{ segmento.texto }}</mark>
+        } @else {
+          {{ segmento.texto }}
+        }
+      }
+    </div>
+  }
+</td>
+
+                <td>
+  @for (
+    segmento of segmentarCoincidencias(parque.ubicacion);
+    track $index
+  ) {
+    @if (segmento.coincide) {
+      <mark>{{ segmento.texto }}</mark>
+    } @else {
+      {{ segmento.texto }}
+    }
+  }
+</td>
+                <td>{{ parque.estado }}</td>
+<td>
+  <button
+    type="button"
+    (click)="verDetalle(parque.id)"
+  >
+    Ver
+  </button>
+
+  <button
+    type="button"
+    (click)="editarParque(parque.id)"
+  >
+    Editar
+  </button>
+
+  <button
+    type="button"
+    (click)="eliminarParque(parque)"
+  >
+    Eliminar
+  </button>
+</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="paginacion">
+          <button
+            type="button"
+            (click)="paginaAnterior()"
+            [disabled]="page() <= 1"
+          >
+            Anterior
+          </button>
+
+          <span>
+            Página {{ page() }} de {{ totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            (click)="paginaSiguiente()"
+            [disabled]="page() >= totalPages()"
+          >
+            Siguiente
+          </button>
+        </div>
+      }
+    </div>
+  }
+</section>
