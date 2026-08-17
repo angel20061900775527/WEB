@@ -1,16 +1,17 @@
-<section class="parque-detail-page">
-  <div class="detail-actions">
-  <a routerLink="/parques" class="volver-link">
-    ← Volver a Parques
-  </a>
+<section class="patrimonial-detail-page">
+  <div class="patrimonial-detail-actions">
+    <a routerLink="/parques">
+      ← Volver a Parques
+    </a>
 
-  <button
-    type="button"
-    (click)="editar()"
-  >
-    Editar parque
-  </button>
-</div>
+    <button
+      type="button"
+      (click)="editar()"
+    >
+      Editar parque
+    </button>
+  </div>
+
   @if (loading()) {
     <p>Cargando información del parque...</p>
   }
@@ -20,46 +21,46 @@
   }
 
   @if (!loading() && !error() && parque(); as parqueActual) {
-    <div class="detail-header">
+    <div class="patrimonial-detail-header">
       <div>
         <h1>{{ parqueActual.nombre }}</h1>
         <p>{{ parqueActual.ubicacion }}</p>
       </div>
 
-<div class="estado-control">
-  <label for="estado">Estado</label>
+      <div class="patrimonial-status-control">
+        <label for="estado">Estado</label>
 
-  <select
-    #estadoSelect
-    id="estado"
-    [value]="parqueActual.estado"
-    [disabled]="cambiandoEstado()"
-    (change)="
-      cambiarEstado(
-        estadoSelect.value === 'PUBLICADO'
-          ? 'PUBLICADO'
-          : estadoSelect.value === 'INACTIVO'
-            ? 'INACTIVO'
-            : 'BORRADOR'
-      )
-    "
-  >
-    <option value="BORRADOR">Borrador</option>
-    <option value="PUBLICADO">Publicado</option>
-    <option value="INACTIVO">Inactivo</option>
-  </select>
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="parqueActual.estado"
+          [disabled]="cambiandoEstado()"
+          (change)="
+            cambiarEstado(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
 
-  @if (cambiandoEstado()) {
-    <span>Actualizando...</span>
-  }
+        @if (cambiandoEstado()) {
+          <span>Actualizando...</span>
+        }
 
-  @if (mensajeEstado()) {
-    <span>{{ mensajeEstado() }}</span>
-  }
-</div>
+        @if (mensajeEstado()) {
+          <span>{{ mensajeEstado() }}</span>
+        }
+      </div>
     </div>
 
-    <div class="detail-content">
+    <div class="patrimonial-detail-content">
       <div>
         <h2>Descripción</h2>
         <p>{{ parqueActual.descripcion }}</p>
@@ -90,7 +91,8 @@
           parqueActual.longitud !== undefined
         ) {
           <p>
-            Latitud: {{ parqueActual.latitud }} |
+            Latitud: {{ parqueActual.latitud }}
+            <br />
             Longitud: {{ parqueActual.longitud }}
           </p>
         }
@@ -112,8 +114,11 @@
 
       <div>
         <h2>Información del registro</h2>
-        <p>Registrado: {{ parqueActual.fechaRegistro }}</p>
-        <p>Última modificación: {{ parqueActual.fechaModificacion }}</p>
+        <p>
+          Registrado: {{ parqueActual.fechaRegistro }}
+          <br />
+          Última modificación: {{ parqueActual.fechaModificacion }}
+        </p>
       </div>
     </div>
   }

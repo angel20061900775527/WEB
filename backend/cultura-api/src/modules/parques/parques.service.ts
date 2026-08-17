@@ -1,15 +1,16 @@
-import {ConflictException, Injectable} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
+import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
 import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
-import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 
 @Injectable()
 export class ParquesService extends BasePatrimonialService<Parque> {
@@ -33,6 +34,7 @@ export class ParquesService extends BasePatrimonialService<Parque> {
       totalPages: result.totalPages,
     };
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (parque) =>
       ParqueResponseDto.fromEntity(parque),
@@ -55,6 +57,7 @@ export class ParquesService extends BasePatrimonialService<Parque> {
 
   async create(
     createParqueDto: CreateParqueDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
     validateHistoricalDate(
       createParqueDto.fechaCreacion,
@@ -67,16 +70,26 @@ export class ParquesService extends BasePatrimonialService<Parque> {
 
     const parque = this.parquesRepository.create({
       ...createParqueDto,
+
       nombre: nombreNormalizado,
+
       descripcion: createParqueDto.descripcion.trim(),
+
       resenaHistorica: createParqueDto.resenaHistorica?.trim() || null,
+
       fechaCreacion: createParqueDto.fechaCreacion ?? null,
+
       ubicacion: createParqueDto.ubicacion.trim(),
+
       latitud: createParqueDto.latitud ?? null,
+
       longitud: createParqueDto.longitud ?? null,
+
       fuentesInformacion: createParqueDto.fuentesInformacion?.trim() || null,
+
       observaciones: createParqueDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const parqueGuardado = await this.parquesRepository.save(parque);
@@ -90,6 +103,7 @@ export class ParquesService extends BasePatrimonialService<Parque> {
   async update(
     id: number,
     updateParqueDto: UpdateParqueDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
     const parque = await this.findEntityById(id);
 
@@ -129,6 +143,7 @@ export class ParquesService extends BasePatrimonialService<Parque> {
     if (updateParqueDto.longitud !== undefined) {
       parque.longitud = updateParqueDto.longitud ?? null;
     }
+
     if (updateParqueDto.fuentesInformacion !== undefined) {
       parque.fuentesInformacion =
         updateParqueDto.fuentesInformacion?.trim() || null;
@@ -138,7 +153,7 @@ export class ParquesService extends BasePatrimonialService<Parque> {
       parque.observaciones = updateParqueDto.observaciones?.trim() || null;
     }
 
-    parque.usuarioModificadorId = '1';
+    parque.usuarioModificadorId = String(usuarioId);
 
     const parqueActualizado = await this.parquesRepository.save(parque);
 
@@ -151,11 +166,13 @@ export class ParquesService extends BasePatrimonialService<Parque> {
   async updateEstado(
     id: number,
     updateEstadoParqueDto: UpdateEstadoParqueDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
     const parque = await this.findEntityById(id);
 
     parque.estado = updateEstadoParqueDto.estado;
-    parque.usuarioModificadorId = '1';
+
+    parque.usuarioModificadorId = String(usuarioId);
 
     const parqueActualizado = await this.parquesRepository.save(parque);
 
@@ -165,14 +182,17 @@ export class ParquesService extends BasePatrimonialService<Parque> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
     return new ApiResponseDto('Parque eliminado correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<ParqueResponseDto>> {
-    const parqueRestaurado = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<ParqueResponseDto>> {
+    const parqueRestaurado = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
       'Parque restaurado correctamente.',

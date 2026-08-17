@@ -11,20 +11,25 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { RolUsuario } from '../usuarios/enums/rol-usuario.enum';
 import { AuditoriosService } from './auditorios.service';
 import { CreateAuditorioDto } from './dto/request/create-auditorio.dto';
 import { UpdateAuditorioDto } from './dto/request/update-auditorio.dto';
@@ -32,11 +37,14 @@ import { UpdateEstadoAuditorioDto } from './dto/request/update-estado-auditorio.
 import { AuditorioResponseDto } from './dto/response/auditorio-response.dto';
 
 @ApiTags('Auditorios')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('auditorios')
 export class AuditoriosController {
   constructor(private readonly auditoriosService: AuditoriosService) {}
 
   @Post()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Registrar un auditorio',
@@ -60,35 +68,33 @@ export class AuditoriosController {
   }
 
   @Get()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Listar auditorios',
     description: 'Obtiene un listado paginado de auditorios activos.',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    example: 10,
-  })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    example: 'municipal',
-  })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    example: 'ASC',
   })
   findAll(@Query() query: PaginationQueryDto) {
     return this.auditoriosService.findAll(query);
   }
 
+  @Get('eliminados')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
+  @ApiOperation({
+    summary: 'Listar auditorios eliminados',
+    description:
+      'Obtiene un listado paginado de auditorios eliminados lógicamente.',
+  })
+  @ApiOkResponse({
+    description: 'Listado de auditorios eliminados.',
+    type: AuditorioResponseDto,
+    isArray: true,
+  })
+  findDeleted(@Query() query: PaginationQueryDto) {
+    return this.auditoriosService.findDeleted(query);
+  }
+
   @Get(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Obtener detalle de un auditorio',
     description:
@@ -109,6 +115,7 @@ export class AuditoriosController {
   }
 
   @Put(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar un auditorio',
     description: 'Actualiza la información de un auditorio activo.',
@@ -135,6 +142,7 @@ export class AuditoriosController {
   }
 
   @Patch(':id/estado')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar estado de un auditorio',
     description:
@@ -160,6 +168,7 @@ export class AuditoriosController {
   }
 
   @Delete(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Eliminar lógicamente un auditorio',
@@ -178,6 +187,7 @@ export class AuditoriosController {
   }
 
   @Patch(':id/restaurar')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Restaurar un auditorio eliminado',
     description:

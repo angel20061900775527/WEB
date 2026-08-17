@@ -1,0 +1,227 @@
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
+    <div>
+      <h1>Nuevo río</h1>
+      <p>Registra un nuevo río en SIGPAC.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  <form
+    class="patrimonial-form"
+    [formGroup]="form"
+    (ngSubmit)="guardar()"
+  >
+    <div>
+      <label for="nombre">Nombre</label>
+
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+      />
+
+      @if (
+        form.controls.nombre.touched &&
+        form.controls.nombre.invalid
+      ) {
+        <small>
+          El nombre es obligatorio y no puede superar 150 caracteres.
+        </small>
+      }
+    </div>
+
+    <div>
+      <label for="tipo">Tipo</label>
+
+      <select
+        id="tipo"
+        formControlName="tipo"
+      >
+        <option value="PRINCIPAL">Principal</option>
+        <option value="AFLUENTE">Afluente</option>
+        <option value="QUEBRADA">Quebrada</option>
+        <option value="ESTERO">Estero</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="estadoConservacion">Estado de conservación</label>
+
+      <select
+        id="estadoConservacion"
+        formControlName="estadoConservacion"
+      >
+        <option value="EXCELENTE">Excelente</option>
+        <option value="BUENO">Bueno</option>
+        <option value="REGULAR">Regular</option>
+        <option value="DETERIORADO">Deteriorado</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Estado del registro</label>
+
+      <input
+        type="text"
+        value="BORRADOR"
+        disabled
+      />
+    </div>
+
+    <div>
+      <label for="ubicacion">Ubicación</label>
+
+      <input
+        id="ubicacion"
+        type="text"
+        formControlName="ubicacion"
+      />
+
+      @if (
+        form.controls.ubicacion.touched &&
+        form.controls.ubicacion.invalid
+      ) {
+        <small>
+          La ubicación es obligatoria y no puede superar 255 caracteres.
+        </small>
+      }
+    </div>
+
+    <div>
+      <label for="longitudKm">Longitud (km)</label>
+
+      <input
+        id="longitudKm"
+        type="number"
+        step="any"
+        formControlName="longitudKm"
+      />
+    </div>
+
+    <div>
+      <label for="cuencaHidrografica">Cuenca hidrográfica</label>
+
+      <input
+        id="cuencaHidrografica"
+        type="text"
+        formControlName="cuencaHidrografica"
+      />
+    </div>
+
+    <div>
+      <label for="afluenteDe">Afluente de</label>
+
+      <input
+        id="afluenteDe"
+        type="text"
+        formControlName="afluenteDe"
+      />
+    </div>
+
+    <div>
+      <label for="latitud">Latitud</label>
+
+      <input
+        id="latitud"
+        type="number"
+        step="any"
+        formControlName="latitud"
+      />
+    </div>
+
+    <div>
+      <label for="longitud">Longitud</label>
+
+      <input
+        id="longitud"
+        type="number"
+        step="any"
+        formControlName="longitud"
+      />
+    </div>
+
+    <div>
+      <label for="aptoBalneario">
+        <input
+          id="aptoBalneario"
+          type="checkbox"
+          formControlName="aptoBalneario"
+        />
+
+        Apto para balneario
+      </label>
+    </div>
+
+    <div>
+      <label for="descripcion">Descripción</label>
+
+      <textarea
+        id="descripcion"
+        rows="4"
+        formControlName="descripcion"
+      ></textarea>
+
+      @if (
+        form.controls.descripcion.touched &&
+        form.controls.descripcion.invalid
+      ) {
+        <small>La descripción es obligatoria.</small>
+      }
+    </div>
+
+    <div>
+      <label for="resenaHistorica">Reseña histórica</label>
+
+      <textarea
+        id="resenaHistorica"
+        rows="5"
+        formControlName="resenaHistorica"
+      ></textarea>
+    </div>
+
+    <div>
+      <label for="fuentesInformacion">Fuentes de información</label>
+
+      <textarea
+        id="fuentesInformacion"
+        rows="4"
+        formControlName="fuentesInformacion"
+      ></textarea>
+    </div>
+
+    <div>
+      <label for="observaciones">Observaciones</label>
+
+      <textarea
+        id="observaciones"
+        rows="4"
+        formControlName="observaciones"
+      ></textarea>
+    </div>
+
+    <div class="patrimonial-form-actions">
+      <button
+        type="button"
+        (click)="cancelar()"
+        [disabled]="saving()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="form.invalid || saving()"
+      >
+        @if (saving()) {
+          Guardando...
+        } @else {
+          Registrar río
+        }
+      </button>
+    </div>
+  </form>
+</section>

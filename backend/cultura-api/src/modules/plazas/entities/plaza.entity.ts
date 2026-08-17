@@ -14,11 +14,12 @@ export class Plaza extends PatrimonialEntity {
     name: 'estado',
     default: EstadoPlaza.BORRADOR,
   })
+  declare estado: EstadoPlaza;
+
   @Column({
     type: 'date',
     name: 'fecha_creacion',
     nullable: true,
   })
   declare fechaCreacion: string | null;
-  declare estado: EstadoPlaza;
 }

@@ -1,0 +1,218 @@
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
+    <div>
+      <h1>Ríos</h1>
+      <p>Listado de ríos registrados en SIGPAC.</p>
+    </div>
+
+    <div class="patrimonial-header-actions">
+      <button
+        type="button"
+        (click)="verEliminados()"
+      >
+        Ver eliminados
+      </button>
+
+      <button
+        type="button"
+        (click)="nuevoRio()"
+      >
+        Nuevo río
+      </button>
+    </div>
+  </div>
+
+  <div class="patrimonial-filters">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, cuenca, afluente, descripción..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #estadoSelect
+      [value]="estado()"
+      (change)="
+        cambiarEstado(
+          estadoSelect.value === 'BORRADOR' ||
+          estadoSelect.value === 'PUBLICADO' ||
+          estadoSelect.value === 'INACTIVO'
+            ? estadoSelect.value
+            : ''
+        )
+      "
+    >
+      <option value="">Todos los estados</option>
+      <option value="BORRADOR">Borrador</option>
+      <option value="PUBLICADO">Publicado</option>
+      <option value="INACTIVO">Inactivo</option>
+    </select>
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando ríos...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total de registros: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (rios().length === 0) {
+      <p>No se encontraron ríos.</p>
+    } @else {
+      <table class="patrimonial-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Ubicación</th>
+            <th>Conservación</th>
+            <th>Balneario</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (rio of rios(); track rio.id) {
+            <tr>
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(rio.nombre);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+
+                @if (obtenerCoincidenciaSecundaria(rio); as coincidencia) {
+                  <div class="patrimonial-match">
+                    <strong>{{ coincidencia.etiqueta }}:</strong>
+
+                    @for (
+                      segmento of segmentarCoincidencias(coincidencia.texto);
+                      track $index
+                    ) {
+                      @if (segmento.coincide) {
+                        <mark class="patrimonial-highlight">
+                          {{ segmento.texto }}
+                        </mark>
+                      } @else {
+                        {{ segmento.texto }}
+                      }
+                    }
+                  </div>
+                }
+              </td>
+
+              <td>{{ rio.tipo }}</td>
+
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(rio.ubicacion);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+              </td>
+
+              <td>{{ rio.estadoConservacion }}</td>
+
+              <td>
+                @if (rio.aptoBalneario) {
+                  Sí
+                } @else {
+                  No
+                }
+              </td>
+
+              <td>{{ rio.estado }}</td>
+
+              <td class="patrimonial-table-actions">
+                <button
+                  type="button"
+                  (click)="verDetalle(rio.id)"
+                >
+                  Ver
+                </button>
+
+                <button
+                  type="button"
+                  (click)="editarRio(rio.id)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  (click)="eliminarRio(rio)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="patrimonial-pagination">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>

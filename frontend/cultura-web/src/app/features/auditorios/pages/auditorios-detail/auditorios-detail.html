@@ -1,0 +1,143 @@
+<section class="patrimonial-detail-page">
+  <div class="patrimonial-detail-actions">
+    <a routerLink="/auditorios">
+      ← Volver a Auditorios
+    </a>
+
+    <button
+      type="button"
+      (click)="editar()"
+    >
+      Editar auditorio
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando información del auditorio...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && auditorio(); as auditorioActual) {
+    <div class="patrimonial-detail-header">
+      <div>
+        <h1>{{ auditorioActual.nombre }}</h1>
+        <p>{{ auditorioActual.ubicacion }}</p>
+      </div>
+
+      <div class="patrimonial-status-control">
+        <label for="estado">Estado</label>
+
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="auditorioActual.estado"
+          [disabled]="cambiandoEstado()"
+          (change)="
+            cambiarEstado(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+
+        @if (cambiandoEstado()) {
+          <span>Actualizando...</span>
+        }
+
+        @if (mensajeEstado()) {
+          <span>{{ mensajeEstado() }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="patrimonial-detail-content">
+      <div>
+        <h2>Descripción</h2>
+        <p>{{ auditorioActual.descripcion }}</p>
+      </div>
+
+      @if (auditorioActual.resenaHistorica) {
+        <div>
+          <h2>Reseña histórica</h2>
+          <p>{{ auditorioActual.resenaHistorica }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Ubicación</h2>
+        <p>{{ auditorioActual.ubicacion }}</p>
+      </div>
+
+      @if (auditorioActual.horarioAtencion) {
+        <div>
+          <h2>Horario de atención</h2>
+          <p>{{ auditorioActual.horarioAtencion }}</p>
+        </div>
+      }
+
+      @if (auditorioActual.responsable) {
+        <div>
+          <h2>Responsable</h2>
+          <p>{{ auditorioActual.responsable }}</p>
+        </div>
+      }
+
+      @if (auditorioActual.sitioWeb) {
+        <div>
+          <h2>Sitio web</h2>
+          <p>{{ auditorioActual.sitioWeb }}</p>
+        </div>
+      }
+
+      @if (
+        auditorioActual.latitud !== null &&
+        auditorioActual.latitud !== undefined &&
+        auditorioActual.longitud !== null &&
+        auditorioActual.longitud !== undefined
+      ) {
+        <div>
+          <h2>Coordenadas</h2>
+          <p>
+            Latitud: {{ auditorioActual.latitud }}
+            <br />
+            Longitud: {{ auditorioActual.longitud }}
+          </p>
+        </div>
+      }
+
+      @if (auditorioActual.fuentesInformacion) {
+        <div>
+          <h2>Fuentes de información</h2>
+          <p>{{ auditorioActual.fuentesInformacion }}</p>
+        </div>
+      }
+
+      @if (auditorioActual.observaciones) {
+        <div>
+          <h2>Observaciones</h2>
+          <p>{{ auditorioActual.observaciones }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Información del registro</h2>
+
+        <p>
+          Registrado: {{ auditorioActual.fechaRegistro }}
+          <br />
+          Última modificación: {{ auditorioActual.fechaModificacion }}
+        </p>
+      </div>
+    </div>
+  }
+</section>

@@ -9,36 +9,36 @@ export const MENU_CONFIG: MenuItem[] = [
   {
     label: 'Parques',
     icon: 'park',
-    route: '/parks',
-  },
-  {
-    label: 'Jardines',
-    icon: 'local_florist',
-    route: '/gardens',
-  },
-  {
-    label: 'Monumentos',
-    icon: 'account_balance',
-    route: '/monuments',
-  },
-  {
-    label: 'Plazas',
-    icon: 'location_city',
-    route: '/squares',
+    route: '/parques',
   },
   {
     label: 'Calles',
     icon: 'signpost',
-    route: '/streets',
+    route: '/calles',
   },
   {
-    label: 'Avenidas',
-    icon: 'add_road',
-    route: '/avenues',
+    label: 'Monumentos',
+    icon: 'account_balance',
+    route: '/monumentos',
   },
   {
-    label: 'Personajes',
-    icon: 'groups',
-    route: '/people',
+    label: 'Ríos',
+    icon: 'water',
+    route: '/rios',
+  },
+  {
+    label: 'Plazas',
+    icon: 'location_city',
+    route: '/plazas',
+  },
+  {
+    label: 'Museos',
+    icon: 'museum',
+    route: '/museos',
+  },
+  {
+    label: 'Auditorios',
+    icon: 'theater_comedy',
+    route: '/auditorios',
   },
 ];

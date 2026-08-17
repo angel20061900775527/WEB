@@ -1,11 +1,11 @@
-<section class="calles-page">
-  <div class="calles-header">
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
     <div>
       <h1>Calles</h1>
       <p>Listado de calles registradas en SIGPAC.</p>
     </div>
 
-    <div class="header-actions">
+    <div class="patrimonial-header-actions">
       <button
         type="button"
         (click)="verEliminadas()"
@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <div class="calles-filtros">
+  <div class="patrimonial-filters">
     <input
       #searchInput
       type="text"
@@ -86,7 +86,7 @@
     @if (calles().length === 0) {
       <p>No se encontraron calles.</p>
     } @else {
-      <table>
+      <table class="patrimonial-table">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -106,14 +106,16 @@
                   track $index
                 ) {
                   @if (segmento.coincide) {
-                    <mark>{{ segmento.texto }}</mark>
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
                   } @else {
                     {{ segmento.texto }}
                   }
                 }
 
                 @if (obtenerCoincidenciaSecundaria(calle); as coincidencia) {
-                  <div class="coincidencia-secundaria">
+                  <div class="patrimonial-match">
                     <strong>{{ coincidencia.etiqueta }}:</strong>
 
                     @for (
@@ -121,7 +123,9 @@
                       track $index
                     ) {
                       @if (segmento.coincide) {
-                        <mark>{{ segmento.texto }}</mark>
+                        <mark class="patrimonial-highlight">
+                          {{ segmento.texto }}
+                        </mark>
                       } @else {
                         {{ segmento.texto }}
                       }
@@ -136,7 +140,9 @@
                   track $index
                 ) {
                   @if (segmento.coincide) {
-                    <mark>{{ segmento.texto }}</mark>
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
                   } @else {
                     {{ segmento.texto }}
                   }
@@ -150,7 +156,9 @@
                     track $index
                   ) {
                     @if (segmento.coincide) {
-                      <mark>{{ segmento.texto }}</mark>
+                      <mark class="patrimonial-highlight">
+                        {{ segmento.texto }}
+                      </mark>
                     } @else {
                       {{ segmento.texto }}
                     }
@@ -160,9 +168,11 @@
                 }
               </td>
 
-              <td>{{ calle.estado }}</td>
-
               <td>
+                {{ calle.estado }}
+              </td>
+
+              <td class="patrimonial-table-actions">
                 <button
                   type="button"
                   (click)="verDetalle(calle.id)"
@@ -189,7 +199,7 @@
         </tbody>
       </table>
 
-      <div class="paginacion">
+      <div class="patrimonial-pagination">
         <button
           type="button"
           (click)="paginaAnterior()"

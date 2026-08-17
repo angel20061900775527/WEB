@@ -1,9 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
-import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
 import { CreateMonumentoDto } from './dto/request/create-monumento.dto';
@@ -22,34 +21,29 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
   }
 
   async findAll(query: PaginationQueryDto) {
-    const page = query.page;
-    const limit = query.limit;
-
-    const where: FindOptionsWhere<Monumento> = {
-      estadoRegistro: EstadoRegistro.ACTIVO,
-    };
-
-    if (query.search) {
-      where.nombre = ILike(`%${query.search.trim()}%`);
-    }
-
-    const [monumentos, total] = await this.monumentosRepository.findAndCount({
-      where,
-      order: {
-        nombre: query.order,
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const result = await this.findAllActive(query, (monumento) =>
+      MonumentoResponseDto.fromEntity(monumento),
+    );
 
     return {
-      monumentos: monumentos.map((monumento) =>
-        MonumentoResponseDto.fromEntity(monumento),
-      ),
-      total,
-      page,
-      limit,
-      totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
+      monumentos: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+  async findDeleted(query: PaginationQueryDto) {
+    const result = await this.findAllDeleted(query, (monumento) =>
+      MonumentoResponseDto.fromEntity(monumento),
+    );
+
+    return {
+      monumentos: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
     };
   }
 
@@ -194,28 +188,13 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
   }
 
   async delete(id: number): Promise<ApiResponseDto<null>> {
-    const monumento = await this.findEntityById(id);
-
-    monumento.estadoRegistro = EstadoRegistro.ELIMINADO;
-    monumento.fechaEliminacion = new Date();
-    monumento.usuarioEliminadorId = '1';
-
-    await this.monumentosRepository.save(monumento);
+    await this.softDeleteEntity(id, '1');
 
     return new ApiResponseDto('Monumento eliminado correctamente.', null);
   }
 
   async restore(id: number): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    const monumento = await this.findDeletedEntityById(id);
-
-    await this.validateUniqueName(monumento.nombre);
-
-    monumento.estadoRegistro = EstadoRegistro.ACTIVO;
-    monumento.fechaEliminacion = null;
-    monumento.usuarioEliminadorId = null;
-    monumento.usuarioModificadorId = '1';
-
-    const monumentoRestaurado = await this.monumentosRepository.save(monumento);
+    const monumentoRestaurado = await this.restoreEntity(id, '1');
 
     return new ApiResponseDto(
       'Monumento restaurado correctamente.',

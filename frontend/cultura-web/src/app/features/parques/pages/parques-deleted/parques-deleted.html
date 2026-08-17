@@ -1,19 +1,23 @@
-<section class="parques-deleted-page">
-  <div class="deleted-header">
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
     <div>
       <h1>Parques eliminados</h1>
-      <p>Registros eliminados lógicamente disponibles para restauración.</p>
+      <p>
+        Registros eliminados lógicamente disponibles para restauración.
+      </p>
     </div>
 
-    <button
-      type="button"
-      (click)="volver()"
-    >
-      Volver a Parques
-    </button>
+    <div class="patrimonial-header-actions">
+      <button
+        type="button"
+        (click)="volver()"
+      >
+        Volver a Parques
+      </button>
+    </div>
   </div>
 
-  <div class="parques-filtros">
+  <div class="patrimonial-filters">
     <input
       #searchInput
       type="text"
@@ -58,7 +62,7 @@
     @if (parques().length === 0) {
       <p>No existen parques eliminados.</p>
     } @else {
-      <table>
+      <table class="patrimonial-table">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -76,7 +80,8 @@
               <td>{{ parque.ubicacion }}</td>
               <td>{{ parque.estado }}</td>
               <td>{{ parque.fechaModificacion }}</td>
-              <td>
+
+              <td class="patrimonial-table-actions">
                 <button
                   type="button"
                   (click)="restaurarParque(parque)"
@@ -89,7 +94,7 @@
         </tbody>
       </table>
 
-      <div class="paginacion">
+      <div class="patrimonial-pagination">
         <button
           type="button"
           (click)="paginaAnterior()"

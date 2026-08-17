@@ -11,32 +11,48 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { RolUsuario } from '../usuarios/enums/rol-usuario.enum';
 import { CreateParqueDto } from './dto/request/create-parque.dto';
+import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { ParquesService } from './parques.service';
-import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Parques')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('parques')
 export class ParquesController {
   constructor(private readonly parquesService: ParquesService) {}
 
   @Post()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Registrar un parque',
@@ -55,39 +71,23 @@ export class ParquesController {
   })
   create(
     @Body() createParqueDto: CreateParqueDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
-    return this.parquesService.create(createParqueDto);
+    return this.parquesService.create(createParqueDto, request.user.id);
   }
 
   @Get()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Listar parques',
     description: 'Obtiene un listado paginado de parques.',
   })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    example: 10,
-  })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    example: 'central',
-  })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    example: 'ASC',
-  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.parquesService.findAll(query);
   }
+
   @Get('eliminados')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Listar parques eliminados',
     description:
@@ -103,16 +103,26 @@ export class ParquesController {
   }
 
   @Get(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Obtener detalle de un parque',
     description:
       'Obtiene la información completa de un parque por su identificador.',
+  })
+  @ApiOkResponse({
+    description: 'Parque encontrado correctamente.',
+    type: ParqueResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description:
+      'No se encontró un parque activo con el identificador indicado.',
   })
   findById(@Param('id', ParseIntPipe) id: number): Promise<ParqueResponseDto> {
     return this.parquesService.findById(id);
   }
 
   @Put(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar un parque',
     description: 'Actualiza la información de un parque existente.',
@@ -127,13 +137,20 @@ export class ParquesController {
   @ApiConflictResponse({
     description: 'Ya existe un parque registrado con ese nombre.',
   })
+  @ApiNotFoundResponse({
+    description:
+      'No se encontró un parque activo con el identificador indicado.',
+  })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateParqueDto: UpdateParqueDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
-    return this.parquesService.update(id, updateParqueDto);
+    return this.parquesService.update(id, updateParqueDto, request.user.id);
   }
+
   @Patch(':id/estado')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar estado de un parque',
     description:
@@ -146,13 +163,25 @@ export class ParquesController {
   @ApiBadRequestResponse({
     description: 'Los datos enviados no cumplen las reglas de validación.',
   })
+  @ApiNotFoundResponse({
+    description:
+      'No se encontró un parque activo con el identificador indicado.',
+  })
   updateEstado(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateEstadoParqueDto: UpdateEstadoParqueDto,
+    @Body()
+    updateEstadoParqueDto: UpdateEstadoParqueDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
-    return this.parquesService.updateEstado(id, updateEstadoParqueDto);
+    return this.parquesService.updateEstado(
+      id,
+      updateEstadoParqueDto,
+      request.user.id,
+    );
   }
+
   @Delete(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Eliminar lógicamente un parque',
@@ -166,10 +195,15 @@ export class ParquesController {
     description:
       'No se encontró un parque activo con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.parquesService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.parquesService.delete(id, request.user.id);
   }
+
   @Patch(':id/restaurar')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Restaurar un parque eliminado',
     description:
@@ -188,7 +222,8 @@ export class ParquesController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<ParqueResponseDto>> {
-    return this.parquesService.restore(id);
+    return this.parquesService.restore(id, request.user.id);
   }
 }

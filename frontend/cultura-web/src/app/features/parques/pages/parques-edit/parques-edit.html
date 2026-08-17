@@ -1,5 +1,5 @@
-<section class="parque-edit-page">
-  <div class="edit-header">
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
     <div>
       <h1>Editar parque</h1>
       <p>Actualiza la información registrada en SIGPAC.</p>
@@ -20,6 +20,7 @@
 
   @if (!loading()) {
     <form
+      class="patrimonial-form"
       [formGroup]="form"
       (ngSubmit)="guardar()"
     >
@@ -78,29 +79,30 @@
           formControlName="fechaCreacion"
         />
       </div>
-      <div>
-  <label for="estado">Estado</label>
 
-  <select
-    #estadoSelect
-    id="estado"
-    [value]="estado()"
-    (change)="
-      estado.set(
-        estadoSelect.value === 'PUBLICADO'
-          ? 'PUBLICADO'
-          : estadoSelect.value === 'INACTIVO'
-            ? 'INACTIVO'
-            : 'BORRADOR'
-      )
-    "
-    [disabled]="saving()"
-  >
-    <option value="BORRADOR">Borrador</option>
-    <option value="PUBLICADO">Publicado</option>
-    <option value="INACTIVO">Inactivo</option>
-  </select>
-</div>
+      <div>
+        <label for="estado">Estado</label>
+
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="estado()"
+          (change)="
+            estado.set(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+          [disabled]="saving()"
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+      </div>
 
       <div>
         <label for="ubicacion">Ubicación</label>
@@ -163,7 +165,7 @@
         ></textarea>
       </div>
 
-      <div class="form-actions">
+      <div class="patrimonial-form-actions">
         <button
           type="button"
           (click)="cancelar()"

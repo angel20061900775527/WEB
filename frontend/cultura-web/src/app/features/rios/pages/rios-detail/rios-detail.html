@@ -1,0 +1,167 @@
+<section class="patrimonial-detail-page">
+  <div class="patrimonial-detail-actions">
+    <a routerLink="/rios">
+      ← Volver a Ríos
+    </a>
+
+    <button
+      type="button"
+      (click)="editar()"
+    >
+      Editar río
+    </button>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando información del río...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error() && rio(); as rioActual) {
+    <div class="patrimonial-detail-header">
+      <div>
+        <h1>{{ rioActual.nombre }}</h1>
+        <p>{{ rioActual.ubicacion }}</p>
+      </div>
+
+      <div class="patrimonial-status-control">
+        <label for="estado">Estado</label>
+
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="rioActual.estado"
+          [disabled]="cambiandoEstado()"
+          (change)="
+            cambiarEstado(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+
+        @if (cambiandoEstado()) {
+          <span>Actualizando...</span>
+        }
+
+        @if (mensajeEstado()) {
+          <span>{{ mensajeEstado() }}</span>
+        }
+      </div>
+    </div>
+
+    <div class="patrimonial-detail-content">
+      <div>
+        <h2>Descripción</h2>
+        <p>{{ rioActual.descripcion }}</p>
+      </div>
+
+      <div>
+        <h2>Tipo</h2>
+        <p>{{ rioActual.tipo }}</p>
+      </div>
+
+      <div>
+        <h2>Estado de conservación</h2>
+        <p>{{ rioActual.estadoConservacion }}</p>
+      </div>
+
+      <div>
+        <h2>Apto para balneario</h2>
+        <p>
+          @if (rioActual.aptoBalneario) {
+            Sí
+          } @else {
+            No
+          }
+        </p>
+      </div>
+
+      @if (rioActual.resenaHistorica) {
+        <div>
+          <h2>Reseña histórica</h2>
+          <p>{{ rioActual.resenaHistorica }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Ubicación</h2>
+        <p>{{ rioActual.ubicacion }}</p>
+      </div>
+
+      @if (
+        rioActual.longitudKm !== null &&
+        rioActual.longitudKm !== undefined
+      ) {
+        <div>
+          <h2>Longitud</h2>
+          <p>{{ rioActual.longitudKm }} km</p>
+        </div>
+      }
+
+      @if (rioActual.cuencaHidrografica) {
+        <div>
+          <h2>Cuenca hidrográfica</h2>
+          <p>{{ rioActual.cuencaHidrografica }}</p>
+        </div>
+      }
+
+      @if (rioActual.afluenteDe) {
+        <div>
+          <h2>Afluente de</h2>
+          <p>{{ rioActual.afluenteDe }}</p>
+        </div>
+      }
+
+      @if (
+        rioActual.latitud !== null &&
+        rioActual.latitud !== undefined &&
+        rioActual.longitud !== null &&
+        rioActual.longitud !== undefined
+      ) {
+        <div>
+          <h2>Coordenadas</h2>
+          <p>
+            Latitud: {{ rioActual.latitud }}
+            <br />
+            Longitud: {{ rioActual.longitud }}
+          </p>
+        </div>
+      }
+
+      @if (rioActual.fuentesInformacion) {
+        <div>
+          <h2>Fuentes de información</h2>
+          <p>{{ rioActual.fuentesInformacion }}</p>
+        </div>
+      }
+
+      @if (rioActual.observaciones) {
+        <div>
+          <h2>Observaciones</h2>
+          <p>{{ rioActual.observaciones }}</p>
+        </div>
+      }
+
+      <div>
+        <h2>Información del registro</h2>
+
+        <p>
+          Registrado: {{ rioActual.fechaRegistro }}
+          <br />
+          Última modificación: {{ rioActual.fechaModificacion }}
+        </p>
+      </div>
+    </div>
+  }
+</section>

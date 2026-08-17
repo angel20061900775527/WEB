@@ -33,6 +33,19 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       totalPages: result.totalPages,
     };
   }
+  async findDeleted(query: PaginationQueryDto) {
+    const result = await this.findAllDeleted(query, (museo) =>
+      MuseoResponseDto.fromEntity(museo),
+    );
+
+    return {
+      museos: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
 
   async findById(id: number): Promise<MuseoResponseDto> {
     const museo = await this.findEntityById(id);

@@ -1,6 +1,6 @@
-<section class="calle-detail-page">
-  <div class="detail-actions">
-    <a routerLink="/calles" class="volver-link">
+<section class="patrimonial-detail-page">
+  <div class="patrimonial-detail-actions">
+    <a routerLink="/calles">
       ← Volver a Calles
     </a>
 
@@ -21,13 +21,13 @@
   }
 
   @if (!loading() && !error() && calle(); as calleActual) {
-    <div class="detail-header">
+    <div class="patrimonial-detail-header">
       <div>
         <h1>{{ calleActual.nombre }}</h1>
         <p>{{ calleActual.ubicacion }}</p>
       </div>
 
-      <div class="estado-control">
+      <div class="patrimonial-status-control">
         <label for="estado">Estado</label>
 
         <select
@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <div class="detail-content">
+    <div class="patrimonial-detail-content">
       <div>
         <h2>Descripción</h2>
         <p>{{ calleActual.descripcion }}</p>

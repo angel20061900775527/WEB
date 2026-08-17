@@ -1,0 +1,196 @@
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
+    <div>
+      <h1>Nuevo monumento</h1>
+      <p>Registra un nuevo monumento en SIGPAC.</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  <form
+    class="patrimonial-form"
+    [formGroup]="form"
+    (ngSubmit)="guardar()"
+  >
+    <div>
+      <label for="nombre">Nombre</label>
+
+      <input
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+      />
+
+      @if (
+        form.controls.nombre.touched &&
+        form.controls.nombre.invalid
+      ) {
+        <small>
+          El nombre es obligatorio y no puede superar 150 caracteres.
+        </small>
+      }
+    </div>
+
+    <div>
+      <label for="tipo">Tipo</label>
+
+      <input
+        id="tipo"
+        type="text"
+        formControlName="tipo"
+      />
+    </div>
+
+    <div>
+      <label for="autor">Autor</label>
+
+      <input
+        id="autor"
+        type="text"
+        formControlName="autor"
+      />
+    </div>
+
+    <div>
+      <label for="personajeHomenajeado">Personaje homenajeado</label>
+
+      <input
+        id="personajeHomenajeado"
+        type="text"
+        formControlName="personajeHomenajeado"
+      />
+    </div>
+
+    <div>
+      <label for="descripcion">Descripción</label>
+
+      <textarea
+        id="descripcion"
+        rows="4"
+        formControlName="descripcion"
+      ></textarea>
+
+      @if (
+        form.controls.descripcion.touched &&
+        form.controls.descripcion.invalid
+      ) {
+        <small>La descripción es obligatoria.</small>
+      }
+    </div>
+
+    <div>
+      <label for="resenaHistorica">Reseña histórica</label>
+
+      <textarea
+        id="resenaHistorica"
+        rows="5"
+        formControlName="resenaHistorica"
+      ></textarea>
+    </div>
+
+    <div>
+      <label for="fechaConstruccion">Fecha de construcción</label>
+
+      <input
+        id="fechaConstruccion"
+        type="date"
+        formControlName="fechaConstruccion"
+      />
+    </div>
+
+    <div>
+      <label>Estado</label>
+
+      <input
+        type="text"
+        value="BORRADOR"
+        disabled
+      />
+    </div>
+
+    <div>
+      <label for="ubicacion">Ubicación</label>
+
+      <input
+        id="ubicacion"
+        type="text"
+        formControlName="ubicacion"
+      />
+
+      @if (
+        form.controls.ubicacion.touched &&
+        form.controls.ubicacion.invalid
+      ) {
+        <small>
+          La ubicación es obligatoria y no puede superar 255 caracteres.
+        </small>
+      }
+    </div>
+
+    <div>
+      <label for="latitud">Latitud</label>
+
+      <input
+        id="latitud"
+        type="number"
+        step="any"
+        formControlName="latitud"
+      />
+    </div>
+
+    <div>
+      <label for="longitud">Longitud</label>
+
+      <input
+        id="longitud"
+        type="number"
+        step="any"
+        formControlName="longitud"
+      />
+    </div>
+
+    <div>
+      <label for="fuentesInformacion">Fuentes de información</label>
+
+      <textarea
+        id="fuentesInformacion"
+        rows="4"
+        formControlName="fuentesInformacion"
+      ></textarea>
+    </div>
+
+    <div>
+      <label for="observaciones">Observaciones</label>
+
+      <textarea
+        id="observaciones"
+        rows="4"
+        formControlName="observaciones"
+      ></textarea>
+    </div>
+
+    <div class="patrimonial-form-actions">
+      <button
+        type="button"
+        (click)="cancelar()"
+        [disabled]="saving()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="form.invalid || saving()"
+      >
+        @if (saving()) {
+          Guardando...
+        } @else {
+          Registrar monumento
+        }
+      </button>
+    </div>
+  </form>
+</section>

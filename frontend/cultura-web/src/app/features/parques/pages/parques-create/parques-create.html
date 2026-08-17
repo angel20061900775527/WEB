@@ -1,5 +1,5 @@
-<section class="parque-create-page">
-  <div class="create-header">
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
     <div>
       <h1>Nuevo parque</h1>
       <p>Registra un nuevo parque en SIGPAC.</p>
@@ -11,6 +11,7 @@
   }
 
   <form
+    class="patrimonial-form"
     [formGroup]="form"
     (ngSubmit)="guardar()"
   >
@@ -72,6 +73,7 @@
 
     <div>
       <label>Estado</label>
+
       <input
         type="text"
         value="BORRADOR"
@@ -140,7 +142,7 @@
       ></textarea>
     </div>
 
-    <div class="form-actions">
+    <div class="patrimonial-form-actions">
       <button
         type="button"
         (click)="cancelar()"

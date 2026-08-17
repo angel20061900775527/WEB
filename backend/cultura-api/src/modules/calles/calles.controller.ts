@@ -11,32 +11,48 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { RolUsuario } from '../usuarios/enums/rol-usuario.enum';
 import { CallesService } from './calles.service';
 import { CreateCalleDto } from './dto/request/create-calle.dto';
 import { UpdateCalleDto } from './dto/request/update-calle.dto';
 import { UpdateEstadoCalleDto } from './dto/request/update-estado-calle.dto';
 import { CalleResponseDto } from './dto/response/calle-response.dto';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Calles')
+@ApiBearerAuth('JWT')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('calles')
 export class CallesController {
   constructor(private readonly callesService: CallesService) {}
 
   @Post()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Registrar una calle',
@@ -55,45 +71,23 @@ export class CallesController {
   })
   create(
     @Body() createCalleDto: CreateCalleDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<CalleResponseDto>> {
-    return this.callesService.create(createCalleDto);
+    return this.callesService.create(createCalleDto, request.user.id);
   }
 
   @Get()
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Listar calles',
     description: 'Obtiene un listado paginado de calles activas.',
   })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    example: 1,
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    example: 10,
-  })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    example: 'Sevilla',
-  })
-  @ApiQuery({
-    name: 'estado',
-    required: false,
-    enum: ['BORRADOR', 'PUBLICADO', 'INACTIVO'],
-    example: 'PUBLICADO',
-  })
-  @ApiQuery({
-    name: 'order',
-    required: false,
-    example: 'ASC',
-  })
   findAll(@Query() query: PaginationQueryDto) {
     return this.callesService.findAll(query);
   }
+
   @Get('eliminados')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Listar calles eliminadas',
     description:
@@ -107,7 +101,9 @@ export class CallesController {
   findDeleted(@Query() query: PaginationQueryDto) {
     return this.callesService.findDeleted(query);
   }
+
   @Get(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA, RolUsuario.CONSULTA)
   @ApiOperation({
     summary: 'Obtener detalle de una calle',
     description:
@@ -126,6 +122,7 @@ export class CallesController {
   }
 
   @Put(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar una calle',
     description: 'Actualiza la información de una calle activa.',
@@ -147,11 +144,13 @@ export class CallesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateCalleDto: UpdateCalleDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<CalleResponseDto>> {
-    return this.callesService.update(id, updateCalleDto);
+    return this.callesService.update(id, updateCalleDto, request.user.id);
   }
 
   @Patch(':id/estado')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Actualizar estado de una calle',
     description:
@@ -170,12 +169,19 @@ export class CallesController {
   })
   updateEstado(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateEstadoCalleDto: UpdateEstadoCalleDto,
+    @Body()
+    updateEstadoCalleDto: UpdateEstadoCalleDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<CalleResponseDto>> {
-    return this.callesService.updateEstado(id, updateEstadoCalleDto);
+    return this.callesService.updateEstado(
+      id,
+      updateEstadoCalleDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Eliminar lógicamente una calle',
@@ -189,11 +195,15 @@ export class CallesController {
     description:
       'No se encontró una calle activa con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.callesService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.callesService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
+  @Roles(RolUsuario.ADMINISTRADOR, RolUsuario.CULTURA)
   @ApiOperation({
     summary: 'Restaurar una calle eliminada',
     description:
@@ -212,7 +222,8 @@ export class CallesController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<CalleResponseDto>> {
-    return this.callesService.restore(id);
+    return this.callesService.restore(id, request.user.id);
   }
 }

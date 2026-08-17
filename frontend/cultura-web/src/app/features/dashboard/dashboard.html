@@ -1,94 +1,88 @@
-<section class="welcome">
-  <div>
-    <span class="welcome__eyebrow">PANEL GENERAL</span>
-    <h1>Bienvenido a SIGPAC</h1>
-    <p>
-      Administra y publica la información del patrimonio cultural del cantón
-      Zamora.
-    </p>
-  </div>
+<section class="dashboard-page">
+  <header class="dashboard-header">
+    <div>
+      <span class="dashboard-eyebrow">
+        PANEL GENERAL
+      </span>
 
-  <button mat-flat-button type="button">
-    <mat-icon>add</mat-icon>
-    Nuevo registro
-  </button>
-</section>
+      <h1>SIGPAC</h1>
 
-<section class="statistics">
-  @for (statistic of statistics; track statistic.title) {
-    <article class="statistic-card">
-      <div class="statistic-card__icon">
-        <mat-icon>{{ statistic.icon }}</mat-icon>
-      </div>
+      <p>
+        Sistema de Gestión del Patrimonio Cultural del cantón Zamora.
+      </p>
+    </div>
+  </header>
 
-      <div class="statistic-card__content">
-        <span>{{ statistic.title }}</span>
-        <strong>{{ statistic.total }}</strong>
-        <small>{{ statistic.description }}</small>
-      </div>
-
-      <button
-        mat-icon-button
-        type="button"
-        aria-label="Abrir categoría"
-      >
-        <mat-icon>arrow_forward</mat-icon>
-      </button>
-    </article>
+  @if (loading()) {
+    <p>Cargando estadísticas...</p>
   }
-</section>
 
-<section class="dashboard-grid">
-  <article class="panel">
-    <div class="panel__header">
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  <section class="modules-section">
+    <div class="section-header">
       <div>
-        <h2>Actividad reciente</h2>
-        <p>Últimos cambios realizados en el sistema</p>
-      </div>
-
-      <button mat-button type="button">Ver todo</button>
-    </div>
-
-    <div class="empty-state">
-      <mat-icon>history</mat-icon>
-      <strong>Todavía no hay actividad</strong>
-      <span>Los registros creados o modificados aparecerán aquí.</span>
-    </div>
-  </article>
-
-  <article class="panel">
-    <div class="panel__header">
-      <div>
-        <h2>Accesos rápidos</h2>
-        <p>Operaciones frecuentes</p>
+        <h2>Módulos del sistema</h2>
+        <p>
+          Selecciona una categoría para administrar sus registros.
+        </p>
       </div>
     </div>
 
-    <div class="quick-actions">
-      <button type="button">
-        <mat-icon>park</mat-icon>
-        <span>Nuevo parque</span>
-      </button>
+    <div class="modules-grid">
+      @for (module of modules(); track module.route) {
+        <article
+          class="module-card"
+          tabindex="0"
+          role="button"
+          (click)="abrirModulo(module.route)"
+          (keydown.enter)="abrirModulo(module.route)"
+        >
+          <div class="module-card__icon">
+            <mat-icon>
+              {{ module.icon }}
+            </mat-icon>
+          </div>
 
-      <button type="button">
-        <mat-icon>account_balance</mat-icon>
-        <span>Nuevo monumento</span>
-      </button>
+          <div class="module-card__content">
+            <h3>
+              {{ module.title }}
+            </h3>
 
-      <button type="button">
-        <mat-icon>person_add</mat-icon>
-        <span>Nuevo personaje</span>
-      </button>
+            <strong class="module-card__total">
+              {{ module.total }} registros
+            </strong>
+
+            <div class="module-card__stats">
+              <div>
+                <span>Publicados</span>
+                <strong>{{ module.publicados }}</strong>
+              </div>
+
+              <div>
+                <span>Borradores</span>
+                <strong>{{ module.borradores }}</strong>
+              </div>
+
+              <div>
+                <span>Inactivos</span>
+                <strong>{{ module.inactivos }}</strong>
+              </div>
+            </div>
+
+            <p>
+              {{ module.description }}
+            </p>
+          </div>
+
+          <div class="module-card__action">
+            <span>Ingresar</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </div>
+        </article>
+      }
     </div>
-  </article>
+  </section>
 </section>
-<app-card>
-  <div style="padding: 24px;">
-    <h2>Tarjeta de prueba</h2>
-    <p>Componente reutilizable funcionando correctamente.</p>
-  </div>
-</app-card>
-
-<div class="dashboard">
-  ...
-</div>

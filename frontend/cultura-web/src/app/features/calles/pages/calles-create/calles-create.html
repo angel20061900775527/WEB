@@ -1,5 +1,5 @@
-<section class="calle-create-page">
-  <div class="create-header">
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
     <div>
       <h1>Nueva calle</h1>
       <p>Registra una nueva calle en SIGPAC.</p>
@@ -11,6 +11,7 @@
   }
 
   <form
+    class="patrimonial-form"
     [formGroup]="form"
     (ngSubmit)="guardar()"
   >
@@ -151,7 +152,7 @@
       ></textarea>
     </div>
 
-    <div class="form-actions">
+    <div class="patrimonial-form-actions">
       <button
         type="button"
         (click)="cancelar()"

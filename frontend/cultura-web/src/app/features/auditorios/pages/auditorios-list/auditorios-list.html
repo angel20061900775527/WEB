@@ -1,0 +1,215 @@
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
+    <div>
+      <h1>Auditorios</h1>
+      <p>Listado de auditorios registrados en SIGPAC.</p>
+    </div>
+
+    <div class="patrimonial-header-actions">
+      <button
+        type="button"
+        (click)="verEliminados()"
+      >
+        Ver eliminados
+      </button>
+
+      <button
+        type="button"
+        (click)="nuevoAuditorio()"
+      >
+        Nuevo auditorio
+      </button>
+    </div>
+  </div>
+
+  <div class="patrimonial-filters">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, responsable, horario..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #estadoSelect
+      [value]="estado()"
+      (change)="
+        cambiarEstado(
+          estadoSelect.value === 'BORRADOR' ||
+          estadoSelect.value === 'PUBLICADO' ||
+          estadoSelect.value === 'INACTIVO'
+            ? estadoSelect.value
+            : ''
+        )
+      "
+    >
+      <option value="">Todos los estados</option>
+      <option value="BORRADOR">Borrador</option>
+      <option value="PUBLICADO">Publicado</option>
+      <option value="INACTIVO">Inactivo</option>
+    </select>
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando auditorios...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total de registros: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (auditorios().length === 0) {
+      <p>No se encontraron auditorios.</p>
+    } @else {
+      <table class="patrimonial-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Ubicación</th>
+            <th>Responsable</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (auditorio of auditorios(); track auditorio.id) {
+            <tr>
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(auditorio.nombre);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+
+                @if (
+                  obtenerCoincidenciaSecundaria(auditorio);
+                  as coincidencia
+                ) {
+                  <div class="patrimonial-match">
+                    <strong>{{ coincidencia.etiqueta }}:</strong>
+
+                    @for (
+                      segmento of segmentarCoincidencias(
+                        coincidencia.texto
+                      );
+                      track $index
+                    ) {
+                      @if (segmento.coincide) {
+                        <mark class="patrimonial-highlight">
+                          {{ segmento.texto }}
+                        </mark>
+                      } @else {
+                        {{ segmento.texto }}
+                      }
+                    }
+                  </div>
+                }
+              </td>
+
+              <td>
+                @for (
+                  segmento of segmentarCoincidencias(auditorio.ubicacion);
+                  track $index
+                ) {
+                  @if (segmento.coincide) {
+                    <mark class="patrimonial-highlight">
+                      {{ segmento.texto }}
+                    </mark>
+                  } @else {
+                    {{ segmento.texto }}
+                  }
+                }
+              </td>
+
+              <td>
+                {{ auditorio.responsable || '-' }}
+              </td>
+
+              <td>
+                {{ auditorio.estado }}
+              </td>
+
+              <td class="patrimonial-table-actions">
+                <button
+                  type="button"
+                  (click)="verDetalle(auditorio.id)"
+                >
+                  Ver
+                </button>
+
+                <button
+                  type="button"
+                  (click)="editarAuditorio(auditorio.id)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  (click)="eliminarAuditorio(auditorio)"
+                >
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="patrimonial-pagination">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>

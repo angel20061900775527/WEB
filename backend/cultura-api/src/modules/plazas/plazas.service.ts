@@ -21,8 +21,34 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
     super(plazasRepository, 'plaza');
   }
 
-  async findAll(query: PaginationQueryDto) {
+  async findAll(query: PaginationQueryDto): Promise<{
+    plazas: PlazaResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const result = await this.findAllActive(query, (plaza) =>
+      PlazaResponseDto.fromEntity(plaza),
+    );
+
+    return {
+      plazas: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async findDeleted(query: PaginationQueryDto): Promise<{
+    plazas: PlazaResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const result = await this.findAllDeleted(query, (plaza) =>
       PlazaResponseDto.fromEntity(plaza),
     );
 

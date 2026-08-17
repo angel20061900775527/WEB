@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { UsuariosModule } from './modules/usuarios/usuarios.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ParquesModule } from './modules/parques/parques.module';
@@ -11,6 +11,7 @@ import { RiosModule } from './modules/rios/rios.module';
 import { PlazasModule } from './modules/plazas/plazas.module';
 import { MuseosModule } from './modules/museos/museos.module';
 import { AuditoriosModule } from './modules/auditorios/auditorios.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -47,6 +48,8 @@ import { AuditoriosModule } from './modules/auditorios/auditorios.module';
     PlazasModule,
     MuseosModule,
     AuditoriosModule,
+    UsuariosModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

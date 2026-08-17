@@ -1,0 +1,210 @@
+<section class="patrimonial-form-page">
+  <div class="patrimonial-form-header">
+    <div>
+      <h1>Editar auditorio</h1>
+      <p>Actualiza la información registrada en SIGPAC.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando información del auditorio...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (success()) {
+    <p>{{ success() }}</p>
+  }
+
+  @if (!loading()) {
+    <form
+      class="patrimonial-form"
+      [formGroup]="form"
+      (ngSubmit)="guardar()"
+    >
+      <div>
+        <label for="nombre">Nombre</label>
+
+        <input
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+        />
+
+        @if (
+          form.controls.nombre.touched &&
+          form.controls.nombre.invalid
+        ) {
+          <small>
+            El nombre es obligatorio y no puede superar 150 caracteres.
+          </small>
+        }
+      </div>
+
+      <div>
+        <label for="estado">Estado</label>
+
+        <select
+          #estadoSelect
+          id="estado"
+          [value]="estado()"
+          (change)="
+            estado.set(
+              estadoSelect.value === 'PUBLICADO'
+                ? 'PUBLICADO'
+                : estadoSelect.value === 'INACTIVO'
+                  ? 'INACTIVO'
+                  : 'BORRADOR'
+            )
+          "
+          [disabled]="saving()"
+        >
+          <option value="BORRADOR">Borrador</option>
+          <option value="PUBLICADO">Publicado</option>
+          <option value="INACTIVO">Inactivo</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="ubicacion">Ubicación</label>
+
+        <input
+          id="ubicacion"
+          type="text"
+          formControlName="ubicacion"
+        />
+
+        @if (
+          form.controls.ubicacion.touched &&
+          form.controls.ubicacion.invalid
+        ) {
+          <small>
+            La ubicación es obligatoria y no puede superar 255 caracteres.
+          </small>
+        }
+      </div>
+
+      <div>
+        <label for="horarioAtencion">Horario de atención</label>
+
+        <input
+          id="horarioAtencion"
+          type="text"
+          formControlName="horarioAtencion"
+        />
+      </div>
+
+      <div>
+        <label for="responsable">Responsable</label>
+
+        <input
+          id="responsable"
+          type="text"
+          formControlName="responsable"
+        />
+      </div>
+
+      <div>
+        <label for="sitioWeb">Sitio web</label>
+
+        <input
+          id="sitioWeb"
+          type="url"
+          formControlName="sitioWeb"
+        />
+      </div>
+
+      <div>
+        <label for="latitud">Latitud</label>
+
+        <input
+          id="latitud"
+          type="number"
+          step="any"
+          formControlName="latitud"
+        />
+      </div>
+
+      <div>
+        <label for="longitud">Longitud</label>
+
+        <input
+          id="longitud"
+          type="number"
+          step="any"
+          formControlName="longitud"
+        />
+      </div>
+
+      <div>
+        <label for="descripcion">Descripción</label>
+
+        <textarea
+          id="descripcion"
+          rows="4"
+          formControlName="descripcion"
+        ></textarea>
+
+        @if (
+          form.controls.descripcion.touched &&
+          form.controls.descripcion.invalid
+        ) {
+          <small>La descripción es obligatoria.</small>
+        }
+      </div>
+
+      <div>
+        <label for="resenaHistorica">Reseña histórica</label>
+
+        <textarea
+          id="resenaHistorica"
+          rows="5"
+          formControlName="resenaHistorica"
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="fuentesInformacion">Fuentes de información</label>
+
+        <textarea
+          id="fuentesInformacion"
+          rows="4"
+          formControlName="fuentesInformacion"
+        ></textarea>
+      </div>
+
+      <div>
+        <label for="observaciones">Observaciones</label>
+
+        <textarea
+          id="observaciones"
+          rows="4"
+          formControlName="observaciones"
+        ></textarea>
+      </div>
+
+      <div class="patrimonial-form-actions">
+        <button
+          type="button"
+          (click)="cancelar()"
+          [disabled]="saving()"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="submit"
+          [disabled]="form.invalid || saving()"
+        >
+          @if (saving()) {
+            Guardando...
+          } @else {
+            Guardar cambios
+          }
+        </button>
+      </div>
+    </form>
+  }
+</section>

@@ -33,6 +33,19 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
       totalPages: result.totalPages,
     };
   }
+  async findDeleted(query: PaginationQueryDto) {
+    const result = await this.findAllDeleted(query, (auditorio) =>
+      AuditorioResponseDto.fromEntity(auditorio),
+    );
+
+    return {
+      auditorios: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
 
   async findById(id: number): Promise<AuditorioResponseDto> {
     const auditorio = await this.findEntityById(id);
@@ -90,7 +103,8 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
     }
 
     if (updateAuditorioDto.resenaHistorica !== undefined) {
-      auditorio.resenaHistorica = updateAuditorioDto.resenaHistorica?.trim() || null;
+      auditorio.resenaHistorica =
+        updateAuditorioDto.resenaHistorica?.trim() || null;
     }
 
     if (updateAuditorioDto.ubicacion !== undefined) {
@@ -98,7 +112,8 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
     }
 
     if (updateAuditorioDto.horarioAtencion !== undefined) {
-      auditorio.horarioAtencion = updateAuditorioDto.horarioAtencion?.trim() || null;
+      auditorio.horarioAtencion =
+        updateAuditorioDto.horarioAtencion?.trim() || null;
     }
 
     if (updateAuditorioDto.responsable !== undefined) {
@@ -123,12 +138,14 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
     }
 
     if (updateAuditorioDto.observaciones !== undefined) {
-      auditorio.observaciones = updateAuditorioDto.observaciones?.trim() || null;
+      auditorio.observaciones =
+        updateAuditorioDto.observaciones?.trim() || null;
     }
 
     auditorio.usuarioModificadorId = '1';
 
-    const auditorioActualizado = await this.auditoriosRepository.save(auditorio);
+    const auditorioActualizado =
+      await this.auditoriosRepository.save(auditorio);
 
     return new ApiResponseDto(
       'auditorio actualizado correctamente.',
@@ -145,7 +162,8 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
     auditorio.estado = updateEstadoauditorioDto.estado;
     auditorio.usuarioModificadorId = '1';
 
-    const auditorioActualizado = await this.auditoriosRepository.save(auditorio);
+    const auditorioActualizado =
+      await this.auditoriosRepository.save(auditorio);
 
     return new ApiResponseDto(
       'Estado del auditorio actualizado correctamente.',

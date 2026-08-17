@@ -30,6 +30,35 @@ export const routes: Routes = [
           import('./features/calles/calles.routes').then((routes) => routes.CALLES_ROUTES),
       },
       {
+        path: 'monumentos',
+        loadChildren: () =>
+          import('./features/monumentos/monumentos.routes').then(
+            (routes) => routes.MONUMENTOS_ROUTES,
+          ),
+      },
+      {
+        path: 'rios',
+        loadChildren: () =>
+          import('./features/rios/rios.routes').then((routes) => routes.RIOS_ROUTES),
+      },
+      {
+        path: 'plazas',
+        loadChildren: () =>
+          import('./features/plazas/plazas.routes').then((routes) => routes.PLAZAS_ROUTES),
+      },
+      {
+        path: 'museos',
+        loadChildren: () =>
+          import('./features/museos/museos.routes').then((routes) => routes.MUSEOS_ROUTES),
+      },
+      {
+        path: 'auditorios',
+        loadChildren: () =>
+          import('./features/auditorios/auditorios.routes').then(
+            (routes) => routes.AUDITORIOS_ROUTES,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',

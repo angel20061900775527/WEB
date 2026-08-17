@@ -1,0 +1,122 @@
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
+    <div>
+      <h1>Monumentos eliminados</h1>
+      <p>
+        Registros eliminados lógicamente disponibles para restauración.
+      </p>
+    </div>
+
+    <div class="patrimonial-header-actions">
+      <button
+        type="button"
+        (click)="volver()"
+      >
+        Volver a Monumentos
+      </button>
+    </div>
+  </div>
+
+  <div class="patrimonial-filters">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por nombre, ubicación, descripción..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+
+    <select
+      #orderSelect
+      [value]="order()"
+      (change)="cambiarOrden(orderSelect.value === 'DESC' ? 'DESC' : 'ASC')"
+    >
+      <option value="ASC">Nombre A-Z</option>
+      <option value="DESC">Nombre Z-A</option>
+    </select>
+
+    <select
+      #limitSelect
+      [value]="limit()"
+      (change)="cambiarLimite(+limitSelect.value)"
+    >
+      <option value="10">10 por página</option>
+      <option value="20">20 por página</option>
+      <option value="50">50 por página</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <p>Cargando monumentos eliminados...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total eliminados: <strong>{{ total() }}</strong>
+    </p>
+
+    @if (monumentos().length === 0) {
+      <p>No existen monumentos eliminados.</p>
+    } @else {
+      <table class="patrimonial-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Ubicación</th>
+            <th>Estado</th>
+            <th>Fecha de modificación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (monumento of monumentos(); track monumento.id) {
+            <tr>
+              <td>{{ monumento.nombre }}</td>
+              <td>{{ monumento.tipo || '-' }}</td>
+              <td>{{ monumento.ubicacion }}</td>
+              <td>{{ monumento.estado }}</td>
+              <td>{{ monumento.fechaModificacion }}</td>
+
+              <td class="patrimonial-table-actions">
+                <button
+                  type="button"
+                  (click)="restaurarMonumento(monumento)"
+                >
+                  Restaurar
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="patrimonial-pagination">
+        <button
+          type="button"
+          (click)="paginaAnterior()"
+          [disabled]="page() <= 1"
+        >
+          Anterior
+        </button>
+
+        <span>
+          Página {{ page() }} de {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="paginaSiguiente()"
+          [disabled]="page() >= totalPages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    }
+  }
+</section>
