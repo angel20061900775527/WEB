@@ -41,4 +41,9 @@ export const MENU_CONFIG: MenuItem[] = [
     icon: 'theater_comedy',
     route: '/auditorios',
   },
+  {
+    label: 'Usuarios',
+    icon: 'manage_accounts',
+    route: '/usuarios',
+  },
 ];

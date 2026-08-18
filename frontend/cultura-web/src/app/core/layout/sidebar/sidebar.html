@@ -12,7 +12,7 @@
 <div class="navigation-title">MENÚ PRINCIPAL</div>
 
 <mat-nav-list class="navigation">
-  @for (item of navigationItems; track item.route) {
+  @for (item of navigationItems(); track item.route) {
     <a
       mat-list-item
       [routerLink]="item.route"

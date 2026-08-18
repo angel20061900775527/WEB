@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -35,6 +36,13 @@ import { UsuarioResponseDto } from './dto/response/usuario-response.dto';
 import { RolUsuario } from './enums/rol-usuario.enum';
 import { UsuariosService } from './usuarios.service';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number | string;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Usuarios')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -121,8 +129,9 @@ export class UsuariosController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUsuarioDto: UpdateUsuarioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<UsuarioResponseDto> {
-    return this.usuariosService.update(id, updateUsuarioDto);
+    return this.usuariosService.update(id, updateUsuarioDto, request.user.id);
   }
 
   @Patch(':id/estado')
@@ -140,8 +149,13 @@ export class UsuariosController {
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateEstadoUsuarioDto: UpdateEstadoUsuarioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<UsuarioResponseDto> {
-    return this.usuariosService.updateEstado(id, updateEstadoUsuarioDto);
+    return this.usuariosService.updateEstado(
+      id,
+      updateEstadoUsuarioDto,
+      request.user.id,
+    );
   }
 
   @Patch(':id/password')

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -13,6 +14,7 @@ import { UpdateEstadoUsuarioDto } from './dto/request/update-estado-usuario.dto'
 import { UpdateUsuarioDto } from './dto/request/update-usuario.dto';
 import { UsuarioResponseDto } from './dto/response/usuario-response.dto';
 import { Usuario } from './entities/usuario.entity';
+import { RolUsuario } from './enums/rol-usuario.enum';
 
 @Injectable()
 export class UsuariosService {
@@ -124,8 +126,21 @@ export class UsuariosService {
   async update(
     id: number,
     updateUsuarioDto: UpdateUsuarioDto,
+    usuarioAutenticadoId: number | string,
   ): Promise<UsuarioResponseDto> {
     const usuario = await this.findEntityById(id);
+
+    const esMismoUsuario = Number(id) === Number(usuarioAutenticadoId);
+
+    if (
+      esMismoUsuario &&
+      updateUsuarioDto.rol !== undefined &&
+      updateUsuarioDto.rol !== RolUsuario.ADMINISTRADOR
+    ) {
+      throw new BadRequestException(
+        'No puede quitarse su propio rol de administrador.',
+      );
+    }
 
     const username =
       updateUsuarioDto.username !== undefined
@@ -159,13 +174,6 @@ export class UsuariosService {
       usuario.rol = updateUsuarioDto.rol;
     }
 
-    /*
-     * La contraseña NO se modifica desde
-     * la edición general.
-     *
-     * Para eso usamos changePassword().
-     */
-
     const usuarioActualizado = await this.usuariosRepository.save(usuario);
 
     return UsuarioResponseDto.fromEntity(usuarioActualizado);
@@ -174,8 +182,17 @@ export class UsuariosService {
   async updateEstado(
     id: number,
     updateEstadoUsuarioDto: UpdateEstadoUsuarioDto,
+    usuarioAutenticadoId: number | string,
   ): Promise<UsuarioResponseDto> {
     const usuario = await this.findEntityById(id);
+
+    const esMismoUsuario = Number(id) === Number(usuarioAutenticadoId);
+
+    if (esMismoUsuario && updateEstadoUsuarioDto.activo !== usuario.activo) {
+      throw new BadRequestException(
+        'No puede modificar el estado de su propio usuario.',
+      );
+    }
 
     usuario.activo = updateEstadoUsuarioDto.activo;
 
@@ -218,16 +235,19 @@ export class UsuariosService {
     email: string,
     idExcluir?: number,
   ): Promise<void> {
-    const usernameExistente = await this.usuariosRepository
+    const usernameQuery = this.usuariosRepository
       .createQueryBuilder('usuario')
       .where('LOWER(usuario.username) = LOWER(:username)', {
         username,
-      })
-      .andWhere(
-        idExcluir !== undefined ? 'usuario.id != :idExcluir' : '1 = 1',
-        idExcluir !== undefined ? { idExcluir } : {},
-      )
-      .getOne();
+      });
+
+    if (idExcluir !== undefined) {
+      usernameQuery.andWhere('usuario.id != :idExcluir', {
+        idExcluir,
+      });
+    }
+
+    const usernameExistente = await usernameQuery.getOne();
 
     if (usernameExistente) {
       throw new ConflictException(
@@ -235,16 +255,19 @@ export class UsuariosService {
       );
     }
 
-    const emailExistente = await this.usuariosRepository
+    const emailQuery = this.usuariosRepository
       .createQueryBuilder('usuario')
       .where('LOWER(usuario.email) = LOWER(:email)', {
         email,
-      })
-      .andWhere(
-        idExcluir !== undefined ? 'usuario.id != :idExcluir' : '1 = 1',
-        idExcluir !== undefined ? { idExcluir } : {},
-      )
-      .getOne();
+      });
+
+    if (idExcluir !== undefined) {
+      emailQuery.andWhere('usuario.id != :idExcluir', {
+        idExcluir,
+      });
+    }
+
+    const emailExistente = await emailQuery.getOne();
 
     if (emailExistente) {
       throw new ConflictException(
