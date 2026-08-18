@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -36,6 +37,13 @@ import { UpdatePlazaDto } from './dto/request/update-plaza.dto';
 import { PlazaResponseDto } from './dto/response/plaza-response.dto';
 import { PlazasService } from './plazas.service';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Plazas')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,8 +71,9 @@ export class PlazasController {
   })
   create(
     @Body() createPlazaDto: CreatePlazaDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
-    return this.plazasService.create(createPlazaDto);
+    return this.plazasService.create(createPlazaDto, request.user.id);
   }
 
   @Get()
@@ -135,8 +144,9 @@ export class PlazasController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updatePlazaDto: UpdatePlazaDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
-    return this.plazasService.update(id, updatePlazaDto);
+    return this.plazasService.update(id, updatePlazaDto, request.user.id);
   }
 
   @Patch(':id/estado')
@@ -161,8 +171,13 @@ export class PlazasController {
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateEstadoPlazaDto: UpdateEstadoPlazaDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
-    return this.plazasService.updateEstado(id, updateEstadoPlazaDto);
+    return this.plazasService.updateEstado(
+      id,
+      updateEstadoPlazaDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
@@ -180,8 +195,11 @@ export class PlazasController {
     description:
       'No se encontró una plaza activa con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.plazasService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.plazasService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
@@ -204,7 +222,8 @@ export class PlazasController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
-    return this.plazasService.restore(id);
+    return this.plazasService.restore(id, request.user.id);
   }
 }

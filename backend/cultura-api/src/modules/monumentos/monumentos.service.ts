@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
@@ -33,6 +34,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
       totalPages: result.totalPages,
     };
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (monumento) =>
       MonumentoResponseDto.fromEntity(monumento),
@@ -55,6 +57,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
 
   async create(
     createMonumentoDto: CreateMonumentoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
     validateHistoricalDate(
       createMonumentoDto.fechaConstruccion,
@@ -67,19 +70,31 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
 
     const monumento = this.monumentosRepository.create({
       ...createMonumentoDto,
+
       nombre: nombreNormalizado,
+
       descripcion: createMonumentoDto.descripcion.trim(),
+
       autor: createMonumentoDto.autor?.trim() || null,
+
       personajeHomenajeado:
         createMonumentoDto.personajeHomenajeado?.trim() || null,
+
       resenaHistorica: createMonumentoDto.resenaHistorica?.trim() || null,
+
       fechaConstruccion: createMonumentoDto.fechaConstruccion ?? null,
+
       ubicacion: createMonumentoDto.ubicacion.trim(),
+
       latitud: createMonumentoDto.latitud ?? null,
+
       longitud: createMonumentoDto.longitud ?? null,
+
       fuentesInformacion: createMonumentoDto.fuentesInformacion?.trim() || null,
+
       observaciones: createMonumentoDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const monumentoGuardado = await this.monumentosRepository.save(monumento);
@@ -93,6 +108,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
   async update(
     id: number,
     updateMonumentoDto: UpdateMonumentoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
     const monumento = await this.findEntityById(id);
 
@@ -158,7 +174,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
         updateMonumentoDto.observaciones?.trim() || null;
     }
 
-    monumento.usuarioModificadorId = '1';
+    monumento.usuarioModificadorId = String(usuarioId);
 
     const monumentoActualizado =
       await this.monumentosRepository.save(monumento);
@@ -172,11 +188,13 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
   async updateEstado(
     id: number,
     updateEstadoMonumentoDto: UpdateEstadoMonumentoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
     const monumento = await this.findEntityById(id);
 
     monumento.estado = updateEstadoMonumentoDto.estado;
-    monumento.usuarioModificadorId = '1';
+
+    monumento.usuarioModificadorId = String(usuarioId);
 
     const monumentoActualizado =
       await this.monumentosRepository.save(monumento);
@@ -187,14 +205,17 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
     return new ApiResponseDto('Monumento eliminado correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    const monumentoRestaurado = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<MonumentoResponseDto>> {
+    const monumentoRestaurado = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
       'Monumento restaurado correctamente.',

@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -36,6 +37,13 @@ import { UpdateRioDto } from './dto/request/update-rio.dto';
 import { RioResponseDto } from './dto/response/rio-response.dto';
 import { RiosService } from './rios.service';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Ríos')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,8 +71,9 @@ export class RiosController {
   })
   create(
     @Body() createRioDto: CreateRioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<RioResponseDto>> {
-    return this.riosService.create(createRioDto);
+    return this.riosService.create(createRioDto, request.user.id);
   }
 
   @Get()
@@ -132,8 +141,9 @@ export class RiosController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRioDto: UpdateRioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<RioResponseDto>> {
-    return this.riosService.update(id, updateRioDto);
+    return this.riosService.update(id, updateRioDto, request.user.id);
   }
 
   @Patch(':id/estado')
@@ -155,10 +165,14 @@ export class RiosController {
   })
   updateEstado(
     @Param('id', ParseIntPipe) id: number,
-    @Body()
-    updateEstadoRioDto: UpdateEstadoRioDto,
+    @Body() updateEstadoRioDto: UpdateEstadoRioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<RioResponseDto>> {
-    return this.riosService.updateEstado(id, updateEstadoRioDto);
+    return this.riosService.updateEstado(
+      id,
+      updateEstadoRioDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
@@ -175,8 +189,11 @@ export class RiosController {
   @ApiNotFoundResponse({
     description: 'No se encontró un río activo con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.riosService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.riosService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
@@ -199,7 +216,8 @@ export class RiosController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<RioResponseDto>> {
-    return this.riosService.restore(id);
+    return this.riosService.restore(id, request.user.id);
   }
 }

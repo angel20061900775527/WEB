@@ -33,6 +33,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       totalPages: result.totalPages,
     };
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (museo) =>
       MuseoResponseDto.fromEntity(museo),
@@ -55,6 +56,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
 
   async create(
     createMuseoDto: CreateMuseoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
     const nombreNormalizado = createMuseoDto.nombre.trim();
 
@@ -62,18 +64,30 @@ export class MuseosService extends BasePatrimonialService<Museo> {
 
     const museo = this.museosRepository.create({
       ...createMuseoDto,
+
       nombre: nombreNormalizado,
+
       descripcion: createMuseoDto.descripcion.trim(),
+
       resenaHistorica: createMuseoDto.resenaHistorica?.trim() || null,
+
       ubicacion: createMuseoDto.ubicacion.trim(),
+
       horarioAtencion: createMuseoDto.horarioAtencion?.trim() || null,
+
       responsable: createMuseoDto.responsable?.trim() || null,
+
       sitioWeb: createMuseoDto.sitioWeb?.trim() || null,
+
       latitud: createMuseoDto.latitud ?? null,
+
       longitud: createMuseoDto.longitud ?? null,
+
       fuentesInformacion: createMuseoDto.fuentesInformacion?.trim() || null,
+
       observaciones: createMuseoDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const museoGuardado = await this.museosRepository.save(museo);
@@ -87,6 +101,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
   async update(
     id: number,
     updateMuseoDto: UpdateMuseoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
     const museo = await this.findEntityById(id);
 
@@ -139,7 +154,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       museo.observaciones = updateMuseoDto.observaciones?.trim() || null;
     }
 
-    museo.usuarioModificadorId = '1';
+    museo.usuarioModificadorId = String(usuarioId);
 
     const museoActualizado = await this.museosRepository.save(museo);
 
@@ -152,11 +167,13 @@ export class MuseosService extends BasePatrimonialService<Museo> {
   async updateEstado(
     id: number,
     updateEstadoMuseoDto: UpdateEstadoMuseoDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
     const museo = await this.findEntityById(id);
 
     museo.estado = updateEstadoMuseoDto.estado;
-    museo.usuarioModificadorId = '1';
+
+    museo.usuarioModificadorId = String(usuarioId);
 
     const museoActualizado = await this.museosRepository.save(museo);
 
@@ -166,14 +183,17 @@ export class MuseosService extends BasePatrimonialService<Museo> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
     return new ApiResponseDto('Museo eliminado correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<MuseoResponseDto>> {
-    const museoRestaurado = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<MuseoResponseDto>> {
+    const museoRestaurado = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
       'Museo restaurado correctamente.',

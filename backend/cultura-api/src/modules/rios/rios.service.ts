@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
+import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { CreateRioDto } from './dto/request/create-rio.dto';
 import { UpdateEstadoRioDto } from './dto/request/update-estado-rio.dto';
 import { UpdateRioDto } from './dto/request/update-rio.dto';
 import { RioResponseDto } from './dto/response/rio-response.dto';
-import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { Rio } from './entities/rio.entity';
 
 @Injectable()
@@ -32,6 +33,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
       totalPages: result.totalPages,
     };
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (rio) =>
       RioResponseDto.fromEntity(rio),
@@ -54,6 +56,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
 
   async create(
     createRioDto: CreateRioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<RioResponseDto>> {
     const nombreNormalizado = createRioDto.nombre.trim();
 
@@ -61,18 +64,30 @@ export class RiosService extends BasePatrimonialService<Rio> {
 
     const rio = this.riosRepository.create({
       ...createRioDto,
+
       nombre: nombreNormalizado,
+
       descripcion: createRioDto.descripcion.trim(),
+
       resenaHistorica: createRioDto.resenaHistorica?.trim() || null,
+
       ubicacion: createRioDto.ubicacion.trim(),
+
       longitudKm: createRioDto.longitudKm ?? null,
+
       cuencaHidrografica: createRioDto.cuencaHidrografica?.trim() || null,
+
       afluenteDe: createRioDto.afluenteDe?.trim() || null,
+
       latitud: createRioDto.latitud ?? null,
+
       longitud: createRioDto.longitud ?? null,
+
       fuentesInformacion: createRioDto.fuentesInformacion?.trim() || null,
+
       observaciones: createRioDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const rioGuardado = await this.riosRepository.save(rio);
@@ -86,6 +101,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
   async update(
     id: number,
     updateRioDto: UpdateRioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<RioResponseDto>> {
     const rio = await this.findEntityById(id);
 
@@ -149,7 +165,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
       rio.observaciones = updateRioDto.observaciones?.trim() || null;
     }
 
-    rio.usuarioModificadorId = '1';
+    rio.usuarioModificadorId = String(usuarioId);
 
     const rioActualizado = await this.riosRepository.save(rio);
 
@@ -162,11 +178,13 @@ export class RiosService extends BasePatrimonialService<Rio> {
   async updateEstado(
     id: number,
     updateEstadoRioDto: UpdateEstadoRioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<RioResponseDto>> {
     const rio = await this.findEntityById(id);
 
     rio.estado = updateEstadoRioDto.estado;
-    rio.usuarioModificadorId = '1';
+
+    rio.usuarioModificadorId = String(usuarioId);
 
     const rioActualizado = await this.riosRepository.save(rio);
 
@@ -176,14 +194,17 @@ export class RiosService extends BasePatrimonialService<Rio> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
     return new ApiResponseDto('Río eliminado correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<RioResponseDto>> {
-    const rioRestaurado = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<RioResponseDto>> {
+    const rioRestaurado = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
       'Río restaurado correctamente.',

@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -36,6 +37,13 @@ import { UpdateMuseoDto } from './dto/request/update-museo.dto';
 import { MuseoResponseDto } from './dto/response/museo-response.dto';
 import { MuseosService } from './museos.service';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Museos')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,8 +71,9 @@ export class MuseosController {
   })
   create(
     @Body() createMuseoDto: CreateMuseoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
-    return this.museosService.create(createMuseoDto);
+    return this.museosService.create(createMuseoDto, request.user.id);
   }
 
   @Get()
@@ -135,8 +144,9 @@ export class MuseosController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMuseoDto: UpdateMuseoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
-    return this.museosService.update(id, updateMuseoDto);
+    return this.museosService.update(id, updateMuseoDto, request.user.id);
   }
 
   @Patch(':id/estado')
@@ -161,8 +171,13 @@ export class MuseosController {
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateEstadoMuseoDto: UpdateEstadoMuseoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
-    return this.museosService.updateEstado(id, updateEstadoMuseoDto);
+    return this.museosService.updateEstado(
+      id,
+      updateEstadoMuseoDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
@@ -180,8 +195,11 @@ export class MuseosController {
     description:
       'No se encontró un museo activo con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.museosService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.museosService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
@@ -204,7 +222,8 @@ export class MuseosController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MuseoResponseDto>> {
-    return this.museosService.restore(id);
+    return this.museosService.restore(id, request.user.id);
   }
 }

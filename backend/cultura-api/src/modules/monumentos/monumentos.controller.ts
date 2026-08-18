@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -36,6 +37,13 @@ import { UpdateMonumentoDto } from './dto/request/update-monumento.dto';
 import { MonumentoResponseDto } from './dto/response/monumento-response.dto';
 import { MonumentosService } from './monumentos.service';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Monumentos')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,8 +71,9 @@ export class MonumentosController {
   })
   create(
     @Body() createMonumentoDto: CreateMonumentoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    return this.monumentosService.create(createMonumentoDto);
+    return this.monumentosService.create(createMonumentoDto, request.user.id);
   }
 
   @Get()
@@ -137,8 +146,13 @@ export class MonumentosController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMonumentoDto: UpdateMonumentoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    return this.monumentosService.update(id, updateMonumentoDto);
+    return this.monumentosService.update(
+      id,
+      updateMonumentoDto,
+      request.user.id,
+    );
   }
 
   @Patch(':id/estado')
@@ -163,8 +177,13 @@ export class MonumentosController {
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateEstadoMonumentoDto: UpdateEstadoMonumentoDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    return this.monumentosService.updateEstado(id, updateEstadoMonumentoDto);
+    return this.monumentosService.updateEstado(
+      id,
+      updateEstadoMonumentoDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
@@ -182,8 +201,11 @@ export class MonumentosController {
     description:
       'No se encontró un monumento activo con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.monumentosService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.monumentosService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
@@ -207,7 +229,8 @@ export class MonumentosController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<MonumentoResponseDto>> {
-    return this.monumentosService.restore(id);
+    return this.monumentosService.restore(id, request.user.id);
   }
 }

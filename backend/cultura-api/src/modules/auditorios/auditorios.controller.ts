@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -36,6 +37,13 @@ import { UpdateAuditorioDto } from './dto/request/update-auditorio.dto';
 import { UpdateEstadoAuditorioDto } from './dto/request/update-estado-auditorio.dto';
 import { AuditorioResponseDto } from './dto/response/auditorio-response.dto';
 
+interface AuthenticatedRequest {
+  user: {
+    id: number;
+    username: string;
+    rol: RolUsuario;
+  };
+}
 @ApiTags('Auditorios')
 @ApiBearerAuth('JWT')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -63,8 +71,9 @@ export class AuditoriosController {
   })
   create(
     @Body() createAuditorioDto: CreateAuditorioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    return this.auditoriosService.create(createAuditorioDto);
+    return this.auditoriosService.create(createAuditorioDto, request.user.id);
   }
 
   @Get()
@@ -137,8 +146,13 @@ export class AuditoriosController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateAuditorioDto: UpdateAuditorioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    return this.auditoriosService.update(id, updateAuditorioDto);
+    return this.auditoriosService.update(
+      id,
+      updateAuditorioDto,
+      request.user.id,
+    );
   }
 
   @Patch(':id/estado')
@@ -163,8 +177,13 @@ export class AuditoriosController {
     @Param('id', ParseIntPipe) id: number,
     @Body()
     updateEstadoAuditorioDto: UpdateEstadoAuditorioDto,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    return this.auditoriosService.updateEstado(id, updateEstadoAuditorioDto);
+    return this.auditoriosService.updateEstado(
+      id,
+      updateEstadoAuditorioDto,
+      request.user.id,
+    );
   }
 
   @Delete(':id')
@@ -182,8 +201,11 @@ export class AuditoriosController {
     description:
       'No se encontró un auditorio activo con el identificador indicado.',
   })
-  delete(@Param('id', ParseIntPipe) id: number): Promise<ApiResponseDto<null>> {
-    return this.auditoriosService.delete(id);
+  delete(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ): Promise<ApiResponseDto<null>> {
+    return this.auditoriosService.delete(id, request.user.id);
   }
 
   @Patch(':id/restaurar')
@@ -207,7 +229,8 @@ export class AuditoriosController {
   })
   restore(
     @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    return this.auditoriosService.restore(id);
+    return this.auditoriosService.restore(id, request.user.id);
   }
 }

@@ -33,6 +33,7 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
       totalPages: result.totalPages,
     };
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (auditorio) =>
       AuditorioResponseDto.fromEntity(auditorio),
@@ -54,32 +55,45 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
   }
 
   async create(
-    createauditorioDto: CreateAuditorioDto,
+    createAuditorioDto: CreateAuditorioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    const nombreNormalizado = createauditorioDto.nombre.trim();
+    const nombreNormalizado = createAuditorioDto.nombre.trim();
 
     await this.validateUniqueName(nombreNormalizado);
 
     const auditorio = this.auditoriosRepository.create({
-      ...createauditorioDto,
+      ...createAuditorioDto,
+
       nombre: nombreNormalizado,
-      descripcion: createauditorioDto.descripcion.trim(),
-      resenaHistorica: createauditorioDto.resenaHistorica?.trim() || null,
-      ubicacion: createauditorioDto.ubicacion.trim(),
-      horarioAtencion: createauditorioDto.horarioAtencion?.trim() || null,
-      responsable: createauditorioDto.responsable?.trim() || null,
-      sitioWeb: createauditorioDto.sitioWeb?.trim() || null,
-      latitud: createauditorioDto.latitud ?? null,
-      longitud: createauditorioDto.longitud ?? null,
-      fuentesInformacion: createauditorioDto.fuentesInformacion?.trim() || null,
-      observaciones: createauditorioDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      descripcion: createAuditorioDto.descripcion.trim(),
+
+      resenaHistorica: createAuditorioDto.resenaHistorica?.trim() || null,
+
+      ubicacion: createAuditorioDto.ubicacion.trim(),
+
+      horarioAtencion: createAuditorioDto.horarioAtencion?.trim() || null,
+
+      responsable: createAuditorioDto.responsable?.trim() || null,
+
+      sitioWeb: createAuditorioDto.sitioWeb?.trim() || null,
+
+      latitud: createAuditorioDto.latitud ?? null,
+
+      longitud: createAuditorioDto.longitud ?? null,
+
+      fuentesInformacion: createAuditorioDto.fuentesInformacion?.trim() || null,
+
+      observaciones: createAuditorioDto.observaciones?.trim() || null,
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const auditorioGuardado = await this.auditoriosRepository.save(auditorio);
 
     return new ApiResponseDto(
-      'auditorio registrado correctamente.',
+      'Auditorio registrado correctamente.',
       AuditorioResponseDto.fromEntity(auditorioGuardado),
     );
   }
@@ -87,6 +101,7 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
   async update(
     id: number,
     updateAuditorioDto: UpdateAuditorioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
     const auditorio = await this.findEntityById(id);
 
@@ -142,25 +157,27 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
         updateAuditorioDto.observaciones?.trim() || null;
     }
 
-    auditorio.usuarioModificadorId = '1';
+    auditorio.usuarioModificadorId = String(usuarioId);
 
     const auditorioActualizado =
       await this.auditoriosRepository.save(auditorio);
 
     return new ApiResponseDto(
-      'auditorio actualizado correctamente.',
+      'Auditorio actualizado correctamente.',
       AuditorioResponseDto.fromEntity(auditorioActualizado),
     );
   }
 
   async updateEstado(
     id: number,
-    updateEstadoauditorioDto: UpdateEstadoAuditorioDto,
+    updateEstadoAuditorioDto: UpdateEstadoAuditorioDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<AuditorioResponseDto>> {
     const auditorio = await this.findEntityById(id);
 
-    auditorio.estado = updateEstadoauditorioDto.estado;
-    auditorio.usuarioModificadorId = '1';
+    auditorio.estado = updateEstadoAuditorioDto.estado;
+
+    auditorio.usuarioModificadorId = String(usuarioId);
 
     const auditorioActualizado =
       await this.auditoriosRepository.save(auditorio);
@@ -171,17 +188,20 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
-    return new ApiResponseDto('auditorio eliminado correctamente.', null);
+    return new ApiResponseDto('Auditorio eliminado correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<AuditorioResponseDto>> {
-    const auditorioRestaurado = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<AuditorioResponseDto>> {
+    const auditorioRestaurado = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
-      'auditorio restaurado correctamente.',
+      'Auditorio restaurado correctamente.',
       AuditorioResponseDto.fromEntity(auditorioRestaurado),
     );
   }

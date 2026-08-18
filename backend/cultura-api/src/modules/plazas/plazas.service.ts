@@ -69,6 +69,7 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
 
   async create(
     createPlazaDto: CreatePlazaDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
     validateHistoricalDate(
       createPlazaDto.fechaCreacion,
@@ -81,16 +82,26 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
 
     const plaza = this.plazasRepository.create({
       ...createPlazaDto,
+
       nombre: nombreNormalizado,
+
       descripcion: createPlazaDto.descripcion.trim(),
+
       resenaHistorica: createPlazaDto.resenaHistorica?.trim() || null,
+
       fechaCreacion: createPlazaDto.fechaCreacion ?? null,
+
       ubicacion: createPlazaDto.ubicacion.trim(),
+
       latitud: createPlazaDto.latitud ?? null,
+
       longitud: createPlazaDto.longitud ?? null,
+
       fuentesInformacion: createPlazaDto.fuentesInformacion?.trim() || null,
+
       observaciones: createPlazaDto.observaciones?.trim() || null,
-      usuarioCreadorId: '1',
+
+      usuarioCreadorId: String(usuarioId),
     });
 
     const plazaGuardada = await this.plazasRepository.save(plaza);
@@ -104,6 +115,7 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
   async update(
     id: number,
     updatePlazaDto: UpdatePlazaDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
     const plaza = await this.findEntityById(id);
 
@@ -153,7 +165,7 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
       plaza.observaciones = updatePlazaDto.observaciones?.trim() || null;
     }
 
-    plaza.usuarioModificadorId = '1';
+    plaza.usuarioModificadorId = String(usuarioId);
 
     const plazaActualizada = await this.plazasRepository.save(plaza);
 
@@ -166,11 +178,13 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
   async updateEstado(
     id: number,
     updateEstadoPlazaDto: UpdateEstadoPlazaDto,
+    usuarioId: number,
   ): Promise<ApiResponseDto<PlazaResponseDto>> {
     const plaza = await this.findEntityById(id);
 
     plaza.estado = updateEstadoPlazaDto.estado;
-    plaza.usuarioModificadorId = '1';
+
+    plaza.usuarioModificadorId = String(usuarioId);
 
     const plazaActualizada = await this.plazasRepository.save(plaza);
 
@@ -180,14 +194,17 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
     );
   }
 
-  async delete(id: number): Promise<ApiResponseDto<null>> {
-    await this.softDeleteEntity(id, '1');
+  async delete(id: number, usuarioId: number): Promise<ApiResponseDto<null>> {
+    await this.softDeleteEntity(id, String(usuarioId));
 
     return new ApiResponseDto('Plaza eliminada correctamente.', null);
   }
 
-  async restore(id: number): Promise<ApiResponseDto<PlazaResponseDto>> {
-    const plazaRestaurada = await this.restoreEntity(id, '1');
+  async restore(
+    id: number,
+    usuarioId: number,
+  ): Promise<ApiResponseDto<PlazaResponseDto>> {
+    const plazaRestaurada = await this.restoreEntity(id, String(usuarioId));
 
     return new ApiResponseDto(
       'Plaza restaurada correctamente.',
