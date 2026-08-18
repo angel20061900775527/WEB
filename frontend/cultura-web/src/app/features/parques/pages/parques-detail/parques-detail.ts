@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { EstadoParque, Parque, ParquesService } from '../../../../core/services/parques.service';
 
 @Component({
@@ -14,10 +15,19 @@ export class ParquesDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly parquesService = inject(ParquesService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
+
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
 
   parque = signal<Parque | null>(null);
+
   loading = signal(false);
   error = signal('');
+
   cambiandoEstado = signal(false);
   mensajeEstado = signal('');
 
@@ -45,10 +55,12 @@ export class ParquesDetail implements OnInit {
         console.error('Error al cargar parque:', error);
 
         this.error.set('No se pudo cargar la información del parque.');
+
         this.loading.set(false);
       },
     });
   }
+
   editar(): void {
     const parqueActual = this.parque();
 
@@ -58,6 +70,7 @@ export class ParquesDetail implements OnInit {
 
     this.router.navigate(['/parques', parqueActual.id, 'editar']);
   }
+
   cambiarEstado(estado: EstadoParque): void {
     const parqueActual = this.parque();
 
@@ -81,6 +94,7 @@ export class ParquesDetail implements OnInit {
         );
 
         this.mensajeEstado.set('Estado actualizado correctamente.');
+
         this.cambiandoEstado.set(false);
       },
       error: (error) => {

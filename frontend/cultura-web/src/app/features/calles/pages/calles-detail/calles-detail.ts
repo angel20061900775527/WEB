@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { Calle, CallesService, EstadoCalle } from '../../../../core/services/calles.service';
 
 @Component({
@@ -14,8 +15,16 @@ export class CallesDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly callesService = inject(CallesService);
+  private readonly authService = inject(AuthService);
+
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
+
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
 
   calle = signal<Calle | null>(null);
+
   loading = signal(false);
   error = signal('');
 

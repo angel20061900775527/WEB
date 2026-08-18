@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { EstadoMuseo, Museo, MuseosService } from '../../../../core/services/museos.service';
 
 @Component({
@@ -14,6 +15,13 @@ export class MuseosDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly museosService = inject(MuseosService);
+  private readonly authService = inject(AuthService);
+
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
+
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
 
   museo = signal<Museo | null>(null);
 

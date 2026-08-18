@@ -4,12 +4,14 @@
       ← Volver a Auditorios
     </a>
 
-    <button
-      type="button"
-      (click)="editar()"
-    >
-      Editar auditorio
-    </button>
+    @if (puedeAdministrar()) {
+      <button
+        type="button"
+        (click)="editar()"
+      >
+        Editar auditorio
+      </button>
+    }
   </div>
 
   @if (loading()) {
@@ -20,7 +22,12 @@
     <p>{{ error() }}</p>
   }
 
-  @if (!loading() && !error() && auditorio(); as auditorioActual) {
+  @if (
+    !loading() &&
+    !error() &&
+    auditorio();
+    as auditorioActual
+  ) {
     <div class="patrimonial-detail-header">
       <div>
         <h1>{{ auditorioActual.nombre }}</h1>
@@ -30,32 +37,36 @@
       <div class="patrimonial-status-control">
         <label for="estado">Estado</label>
 
-        <select
-          #estadoSelect
-          id="estado"
-          [value]="auditorioActual.estado"
-          [disabled]="cambiandoEstado()"
-          (change)="
-            cambiarEstado(
-              estadoSelect.value === 'PUBLICADO'
-                ? 'PUBLICADO'
-                : estadoSelect.value === 'INACTIVO'
-                  ? 'INACTIVO'
-                  : 'BORRADOR'
-            )
-          "
-        >
-          <option value="BORRADOR">Borrador</option>
-          <option value="PUBLICADO">Publicado</option>
-          <option value="INACTIVO">Inactivo</option>
-        </select>
+        @if (puedeAdministrar()) {
+          <select
+            #estadoSelect
+            id="estado"
+            [value]="auditorioActual.estado"
+            [disabled]="cambiandoEstado()"
+            (change)="
+              cambiarEstado(
+                estadoSelect.value === 'PUBLICADO'
+                  ? 'PUBLICADO'
+                  : estadoSelect.value === 'INACTIVO'
+                    ? 'INACTIVO'
+                    : 'BORRADOR'
+              )
+            "
+          >
+            <option value="BORRADOR">Borrador</option>
+            <option value="PUBLICADO">Publicado</option>
+            <option value="INACTIVO">Inactivo</option>
+          </select>
 
-        @if (cambiandoEstado()) {
-          <span>Actualizando...</span>
-        }
+          @if (cambiandoEstado()) {
+            <span>Actualizando...</span>
+          }
 
-        @if (mensajeEstado()) {
-          <span>{{ mensajeEstado() }}</span>
+          @if (mensajeEstado()) {
+            <span>{{ mensajeEstado() }}</span>
+          }
+        } @else {
+          <span>{{ auditorioActual.estado }}</span>
         }
       </div>
     </div>

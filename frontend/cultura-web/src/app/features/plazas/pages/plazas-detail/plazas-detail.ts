@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { EstadoPlaza, Plaza, PlazasService } from '../../../../core/services/plazas.service';
 
 @Component({
@@ -14,6 +15,13 @@ export class PlazasDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly plazasService = inject(PlazasService);
+  private readonly authService = inject(AuthService);
+
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
+
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
 
   plaza = signal<Plaza | null>(null);
 
