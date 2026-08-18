@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-
+import { AuthService } from '../../../../core/auth/auth.service';
 import {
   Auditorio,
   AuditoriosService,
@@ -18,7 +18,13 @@ import {
 export class AuditoriosList implements OnInit, OnDestroy {
   private readonly auditoriosService = inject(AuditoriosService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
+
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
   private readonly searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
 

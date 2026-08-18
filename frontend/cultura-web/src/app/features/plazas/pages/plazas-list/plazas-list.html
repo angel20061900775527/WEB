@@ -5,21 +5,23 @@
       <p>Listado de plazas registradas en SIGPAC.</p>
     </div>
 
-    <div class="patrimonial-header-actions">
-      <button
-        type="button"
-        (click)="verEliminadas()"
-      >
-        Ver eliminadas
-      </button>
+<div class="patrimonial-header-actions">
+  @if (puedeAdministrar()) {
+    <button
+      type="button"
+      (click)="verEliminadas()"
+    >
+      Ver eliminadas
+    </button>
 
-      <button
-        type="button"
-        (click)="nuevaPlaza()"
-      >
-        Nueva plaza
-      </button>
-    </div>
+    <button
+      type="button"
+      (click)="nuevaPlaza()"
+    >
+      Nueva plaza
+    </button>
+  }
+</div>
   </div>
 
   <div class="patrimonial-filters">
@@ -157,7 +159,7 @@
                 >
                   Ver
                 </button>
-
+                 @if (puedeAdministrar()) {
                 <button
                   type="button"
                   (click)="editarPlaza(plaza.id)"
@@ -171,6 +173,7 @@
                 >
                   Eliminar
                 </button>
+              }
               </td>
             </tr>
           }

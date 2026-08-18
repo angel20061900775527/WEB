@@ -6,6 +6,7 @@
     </div>
 
     <div class="patrimonial-header-actions">
+      @if (puedeAdministrar()) {
       <button
         type="button"
         (click)="verEliminados()"
@@ -19,6 +20,7 @@
       >
         Nuevo auditorio
       </button>
+    }
     </div>
   </div>
 
@@ -169,7 +171,7 @@
                 >
                   Ver
                 </button>
-
+                @if (puedeAdministrar()) {
                 <button
                   type="button"
                   (click)="editarAuditorio(auditorio.id)"
@@ -183,6 +185,7 @@
                 >
                   Eliminar
                 </button>
+              }
               </td>
             </tr>
           }

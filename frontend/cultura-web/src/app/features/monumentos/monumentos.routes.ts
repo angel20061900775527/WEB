@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { roleGuard } from '../../core/auth/role.guard';
+
 export const MONUMENTOS_ROUTES: Routes = [
   {
     path: '',
@@ -11,6 +13,10 @@ export const MONUMENTOS_ROUTES: Routes = [
   },
   {
     path: 'nuevo',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () =>
       import('./pages/monumentos-create/monumentos-create').then(
         (component) => component.MonumentosCreate,
@@ -19,6 +25,10 @@ export const MONUMENTOS_ROUTES: Routes = [
   },
   {
     path: 'eliminados',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () =>
       import('./pages/monumentos-deleted/monumentos-deleted').then(
         (component) => component.MonumentosDeleted,
@@ -27,6 +37,10 @@ export const MONUMENTOS_ROUTES: Routes = [
   },
   {
     path: ':id/editar',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () =>
       import('./pages/monumentos-edit/monumentos-edit').then(
         (component) => component.MonumentosEdit,

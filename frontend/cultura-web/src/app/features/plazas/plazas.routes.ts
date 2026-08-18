@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 
+import { roleGuard } from '../../core/auth/role.guard';
+
 export const PLAZAS_ROUTES: Routes = [
   {
     path: '',
@@ -7,15 +9,27 @@ export const PLAZAS_ROUTES: Routes = [
   },
   {
     path: 'nuevo',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () => import('./pages/plazas-create/plazas-create').then((m) => m.PlazasCreate),
   },
   {
     path: 'eliminados',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () =>
       import('./pages/plazas-deleted/plazas-deleted').then((m) => m.PlazasDeleted),
   },
   {
     path: ':id/editar',
+    canActivate: [roleGuard],
+    data: {
+      roles: ['ADMINISTRADOR', 'CULTURA'],
+    },
     loadComponent: () => import('./pages/plazas-edit/plazas-edit').then((m) => m.PlazasEdit),
   },
   {

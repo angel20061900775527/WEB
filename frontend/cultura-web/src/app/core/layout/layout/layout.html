@@ -35,20 +35,35 @@
         <mat-icon>notifications_none</mat-icon>
       </button>
 
-      <button
-        class="user-button"
-        mat-button
-        type="button"
-      >
-        <span class="user-avatar">AO</span>
+@if (usuario(); as usuarioActual) {
+  <div class="user-session">
+    <div class="user-button">
+      <span class="user-avatar">
+        {{ obtenerIniciales() }}
+      </span>
 
-        <span class="user-information">
-          <strong>Angel Ortiz</strong>
-          <small>Administrador</small>
-        </span>
+      <span class="user-information">
+        <strong>
+          {{ obtenerNombreCompleto() }}
+        </strong>
 
-        <mat-icon>expand_more</mat-icon>
-      </button>
+        <small>
+          {{ obtenerNombreRol() }}
+        </small>
+      </span>
+    </div>
+
+    <button
+      mat-icon-button
+      type="button"
+      matTooltip="Cerrar sesión"
+      aria-label="Cerrar sesión"
+      (click)="cerrarSesion()"
+    >
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+}
     </mat-toolbar>
 
     <main class="page-content">

@@ -5,21 +5,23 @@
       <p>Listado de parques registrados en SIGPAC.</p>
     </div>
 
-    <div class="patrimonial-header-actions">
-      <button
-        type="button"
-        (click)="verEliminados()"
-      >
-        Ver eliminados
-      </button>
+<div class="patrimonial-header-actions">
+  @if (puedeAdministrar()) {
+    <button
+      type="button"
+      (click)="verEliminados()"
+    >
+      Ver eliminados
+    </button>
 
-      <button
-        type="button"
-        (click)="nuevoParque()"
-      >
-        Nuevo parque
-      </button>
-    </div>
+    <button
+      type="button"
+      (click)="nuevoParque()"
+    >
+      Nuevo parque
+    </button>
+  }
+</div>
   </div>
 
   <div class="patrimonial-filters">
@@ -165,7 +167,7 @@
                   >
                     Ver
                   </button>
-
+                    @if (puedeAdministrar()) {
                   <button
                     type="button"
                     (click)="editarParque(parque.id)"
@@ -179,6 +181,7 @@
                   >
                     Eliminar
                   </button>
+                }
                 </td>
               </tr>
             }

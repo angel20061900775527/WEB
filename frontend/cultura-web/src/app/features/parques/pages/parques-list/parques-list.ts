@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../../../../core/auth/auth.service';
 import { EstadoParque, Parque, ParquesService } from '../../../../core/services/parques.service';
 
 @Component({
@@ -13,7 +13,13 @@ import { EstadoParque, Parque, ParquesService } from '../../../../core/services/
 })
 export class ParquesList implements OnInit, OnDestroy {
   private readonly parquesService = inject(ParquesService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  readonly puedeAdministrar = computed(() => {
+    const rol = this.authService.rol();
 
+    return rol === 'ADMINISTRADOR' || rol === 'CULTURA';
+  });
   private readonly searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
 
@@ -172,7 +178,7 @@ export class ParquesList implements OnInit, OnDestroy {
 
     return null;
   }
-  private readonly router = inject(Router);
+
   cambiarLimite(limit: number): void {
     this.limit.set(limit);
     this.page.set(1);

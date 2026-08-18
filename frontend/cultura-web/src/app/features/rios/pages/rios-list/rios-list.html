@@ -5,21 +5,23 @@
       <p>Listado de ríos registrados en SIGPAC.</p>
     </div>
 
-    <div class="patrimonial-header-actions">
-      <button
-        type="button"
-        (click)="verEliminados()"
-      >
-        Ver eliminados
-      </button>
+<div class="patrimonial-header-actions">
+  @if (puedeAdministrar()) {
+    <button
+      type="button"
+      (click)="verEliminados()"
+    >
+      Ver eliminados
+    </button>
 
-      <button
-        type="button"
-        (click)="nuevoRio()"
-      >
-        Nuevo río
-      </button>
-    </div>
+    <button
+      type="button"
+      (click)="nuevoRio()"
+    >
+      Nuevo río
+    </button>
+  }
+</div>
   </div>
 
   <div class="patrimonial-filters">
@@ -172,7 +174,7 @@
                 >
                   Ver
                 </button>
-
+                @if (puedeAdministrar()) {
                 <button
                   type="button"
                   (click)="editarRio(rio.id)"
@@ -186,6 +188,7 @@
                 >
                   Eliminar
                 </button>
+              }
               </td>
             </tr>
           }
