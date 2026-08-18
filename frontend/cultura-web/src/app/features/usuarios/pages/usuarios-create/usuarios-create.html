@@ -1,0 +1,153 @@
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
+    <div>
+      <h1>Nuevo usuario</h1>
+      <p>
+        Registra un nuevo usuario para acceder a SIGPAC.
+      </p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="guardar()"
+    class="patrimonial-form"
+  >
+    <div class="patrimonial-form-grid">
+      <label>
+        <span>Usuario</span>
+
+        <input
+          type="text"
+          formControlName="username"
+          autocomplete="off"
+        />
+
+        @if (
+          form.controls.username.touched &&
+          form.controls.username.invalid
+        ) {
+          <small>
+            El usuario es obligatorio.
+          </small>
+        }
+      </label>
+
+      <label>
+        <span>Nombres</span>
+
+        <input
+          type="text"
+          formControlName="nombres"
+        />
+
+        @if (
+          form.controls.nombres.touched &&
+          form.controls.nombres.invalid
+        ) {
+          <small>
+            Los nombres son obligatorios.
+          </small>
+        }
+      </label>
+
+      <label>
+        <span>Apellidos</span>
+
+        <input
+          type="text"
+          formControlName="apellidos"
+        />
+
+        @if (
+          form.controls.apellidos.touched &&
+          form.controls.apellidos.invalid
+        ) {
+          <small>
+            Los apellidos son obligatorios.
+          </small>
+        }
+      </label>
+
+      <label>
+        <span>Correo electrónico</span>
+
+        <input
+          type="email"
+          formControlName="email"
+        />
+
+        @if (
+          form.controls.email.touched &&
+          form.controls.email.invalid
+        ) {
+          <small>
+            Ingresa un correo electrónico válido.
+          </small>
+        }
+      </label>
+
+      <label>
+        <span>Rol</span>
+
+        <select formControlName="rol">
+          <option value="ADMINISTRADOR">
+            Administrador
+          </option>
+
+          <option value="CULTURA">
+            Cultura
+          </option>
+
+          <option value="CONSULTA">
+            Consulta
+          </option>
+        </select>
+      </label>
+
+      <label>
+        <span>Contraseña temporal</span>
+
+        <input
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+        />
+
+        @if (
+          form.controls.password.touched &&
+          form.controls.password.invalid
+        ) {
+          <small>
+            La contraseña debe tener al menos 8 caracteres.
+          </small>
+        }
+      </label>
+    </div>
+
+    <div class="patrimonial-form-actions">
+      <button
+        type="button"
+        (click)="cancelar()"
+        [disabled]="loading()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        type="submit"
+        [disabled]="form.invalid || loading()"
+      >
+        @if (loading()) {
+          Guardando...
+        } @else {
+          Crear usuario
+        }
+      </button>
+    </div>
+  </form>
+</section>

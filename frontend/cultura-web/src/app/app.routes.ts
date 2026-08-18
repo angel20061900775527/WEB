@@ -64,6 +64,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'usuarios',
+        loadChildren: () =>
+          import('./features/usuarios/usuarios.routes').then((routes) => routes.USUARIOS_ROUTES),
+      },
+      {
         path: '',
         pathMatch: 'full',
         redirectTo: 'dashboard',

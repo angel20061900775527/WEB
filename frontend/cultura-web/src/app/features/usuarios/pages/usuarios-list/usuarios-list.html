@@ -1,0 +1,129 @@
+<section class="patrimonial-page">
+  <div class="patrimonial-header">
+    <div>
+      <h1>Usuarios</h1>
+      <p>Administración de usuarios de SIGPAC.</p>
+    </div>
+
+    <div class="patrimonial-header-actions">
+      <button
+        type="button"
+        (click)="nuevoUsuario()"
+      >
+        Nuevo usuario
+      </button>
+    </div>
+  </div>
+
+  <div class="patrimonial-filters">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Buscar por usuario, nombres, apellidos o correo..."
+      [value]="search()"
+      (input)="onSearch(searchInput.value)"
+    />
+  </div>
+
+  @if (loading()) {
+    <p>Cargando usuarios...</p>
+  }
+
+  @if (error()) {
+    <p>{{ error() }}</p>
+  }
+
+  @if (!loading() && !error()) {
+    <p>
+      Total de usuarios:
+      <strong>{{ usuarios().length }}</strong>
+    </p>
+
+    @if (usuarios().length === 0) {
+      <p>No se encontraron usuarios.</p>
+    } @else {
+      <table class="patrimonial-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Nombres</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Último acceso</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (usuario of usuarios(); track usuario.id) {
+            <tr>
+              <td>
+                {{ usuario.username }}
+              </td>
+
+              <td>
+                {{ usuario.nombres }}
+                {{ usuario.apellidos }}
+              </td>
+
+              <td>
+                {{ usuario.email }}
+              </td>
+
+              <td>
+                {{ usuario.rol }}
+              </td>
+
+              <td>
+                @if (usuario.activo) {
+                  Activo
+                } @else {
+                  Inactivo
+                }
+              </td>
+
+              <td>
+                @if (usuario.ultimoAcceso) {
+                  {{
+                    usuario.ultimoAcceso
+                      | date: 'dd/MM/yyyy HH:mm'
+                  }}
+                } @else {
+                  Nunca
+                }
+              </td>
+
+              <td class="patrimonial-table-actions">
+                <button
+                  type="button"
+                  (click)="editarUsuario(usuario.id)"
+                >
+                  Editar
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cambiarPassword(usuario.id)"
+                >
+                  Contraseña
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cambiarEstado(usuario)"
+                >
+                  @if (usuario.activo) {
+                    Desactivar
+                  } @else {
+                    Activar
+                  }
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</section>
