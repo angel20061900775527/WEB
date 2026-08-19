@@ -7,12 +7,15 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest<TUser = any>(
-    err: any,
+  handleRequest<TUser = unknown>(
+    err: unknown,
     user: TUser,
-    info: any,
+    info: unknown,
     context: ExecutionContext,
   ): TUser {
+    void info;
+    void context;
+
     if (err || !user) {
       throw new UnauthorizedException('La sesión no es válida o ha expirado.');
     }

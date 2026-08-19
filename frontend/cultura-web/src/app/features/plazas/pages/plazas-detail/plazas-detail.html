@@ -66,6 +66,155 @@
       </div>
     </div>
 
+    <section class="patrimonial-photos">
+      <div class="patrimonial-photos-header">
+        <div>
+          <h2>Fotografías</h2>
+          <p>Galería fotográfica de la plaza.</p>
+        </div>
+      </div>
+
+      @if (errorFotografias()) {
+        <p>{{ errorFotografias() }}</p>
+      }
+
+      @if (mensajeFotografias()) {
+        <p>{{ mensajeFotografias() }}</p>
+      }
+
+      @if (loadingFotografias()) {
+        <p>Cargando fotografías...</p>
+      } @else {
+        @if (fotografiaPrincipal(); as principal) {
+          <div class="patrimonial-main-photo">
+            <img
+              [src]="principal.url"
+              [alt]="principal.descripcion || plazaActual.nombre"
+            />
+
+            <div>
+              <strong>Fotografía principal</strong>
+
+              @if (principal.descripcion) {
+                <p>{{ principal.descripcion }}</p>
+              }
+            </div>
+          </div>
+        } @else {
+          <p>
+            Esta plaza aún no tiene fotografía principal.
+          </p>
+        }
+
+        @if (fotografiasSecundarias().length > 0) {
+          <div class="patrimonial-photo-gallery">
+            @for (
+              fotografia of fotografiasSecundarias();
+              track fotografia.id
+            ) {
+              <article class="patrimonial-photo-card">
+                <img
+                  [src]="fotografia.url"
+                  [alt]="
+                    fotografia.descripcion ||
+                    fotografia.nombreOriginal
+                  "
+                />
+
+                <div>
+                  @if (fotografia.descripcion) {
+                    <p>
+                      {{ fotografia.descripcion }}
+                    </p>
+                  }
+
+                  @if (puedeAdministrar()) {
+                    <div class="patrimonial-photo-actions">
+                      <button
+                        type="button"
+                        [disabled]="
+                          cambiandoPrincipal() ||
+                          eliminandoFotografia()
+                        "
+                        (click)="establecerPrincipal(fotografia)"
+                      >
+                        Hacer principal
+                      </button>
+
+                      <button
+                        type="button"
+                        [disabled]="
+                          cambiandoPrincipal() ||
+                          eliminandoFotografia()
+                        "
+                        (click)="eliminarFotografia(fotografia)"
+                      >
+                        Eliminar
+                      </button>
+                    </div>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+
+        @if (
+          !fotografiaPrincipal() &&
+          fotografias().length === 0
+        ) {
+          <p>No hay fotografías registradas.</p>
+        }
+      }
+
+      @if (puedeAdministrar()) {
+        <div class="patrimonial-photo-upload">
+          <h3>Agregar fotografía</h3>
+
+          <label>
+            <span>Imagen</span>
+
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              (change)="seleccionarArchivo($event)"
+            />
+          </label>
+
+          <label>
+            <span>Descripción</span>
+
+            <textarea
+              #descripcionInput
+              rows="3"
+              [value]="descripcionFotografia()"
+              (input)="
+                actualizarDescripcion(
+                  descripcionInput.value
+                )
+              "
+              placeholder="Descripción opcional de la fotografía"
+            ></textarea>
+          </label>
+
+          <button
+            type="button"
+            [disabled]="
+              !archivoSeleccionado() ||
+              subiendoFotografia()
+            "
+            (click)="subirFotografia()"
+          >
+            @if (subiendoFotografia()) {
+              Subiendo...
+            } @else {
+              Subir fotografía
+            }
+          </button>
+        </div>
+      }
+    </section>
+
     <div class="patrimonial-detail-content">
       <div>
         <h2>Descripción</h2>
