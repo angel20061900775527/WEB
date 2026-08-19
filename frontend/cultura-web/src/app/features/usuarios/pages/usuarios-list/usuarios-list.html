@@ -60,6 +60,12 @@
             <tr>
               <td>
                 {{ usuario.username }}
+
+                @if (esUsuarioActual(usuario)) {
+                  <strong>
+                    (Tu cuenta)
+                  </strong>
+                }
               </td>
 
               <td>
@@ -109,16 +115,18 @@
                   Contraseña
                 </button>
 
-                <button
-                  type="button"
-                  (click)="cambiarEstado(usuario)"
-                >
-                  @if (usuario.activo) {
-                    Desactivar
-                  } @else {
-                    Activar
-                  }
-                </button>
+                @if (!esUsuarioActual(usuario)) {
+                  <button
+                    type="button"
+                    (click)="cambiarEstado(usuario)"
+                  >
+                    @if (usuario.activo) {
+                      Desactivar
+                    } @else {
+                      Activar
+                    }
+                  </button>
+                }
               </td>
             </tr>
           }

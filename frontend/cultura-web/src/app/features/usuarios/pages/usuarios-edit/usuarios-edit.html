@@ -2,6 +2,7 @@
   <div class="patrimonial-header">
     <div>
       <h1>Editar usuario</h1>
+
       <p>
         Actualiza la información y el rol del usuario seleccionado.
       </p>
@@ -107,6 +108,12 @@
             Consulta
           </option>
         </select>
+
+        @if (esUsuarioActual()) {
+          <small>
+            No puede modificar el rol de su propia cuenta.
+          </small>
+        }
       </label>
     </div>
 

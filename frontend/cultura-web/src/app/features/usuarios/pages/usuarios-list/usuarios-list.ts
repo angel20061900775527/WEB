@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
+import { AuthService } from '../../../../core/auth/auth.service';
 import { Usuario, UsuariosService } from '../../../../core/services/usuarios.service';
 
 @Component({
@@ -13,10 +14,13 @@ import { Usuario, UsuariosService } from '../../../../core/services/usuarios.ser
 })
 export class UsuariosList implements OnInit, OnDestroy {
   private readonly usuariosService = inject(UsuariosService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   private readonly searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
+
+  readonly usuarioAutenticado = computed(() => this.authService.usuario());
 
   usuarios = signal<Usuario[]>([]);
   search = signal('');
@@ -66,6 +70,16 @@ export class UsuariosList implements OnInit, OnDestroy {
     });
   }
 
+  esUsuarioActual(usuario: Usuario): boolean {
+    const autenticado = this.usuarioAutenticado();
+
+    if (!autenticado) {
+      return false;
+    }
+
+    return Number(usuario.id) === Number(autenticado.id);
+  }
+
   nuevoUsuario(): void {
     this.router.navigate(['/usuarios', 'nuevo']);
   }
@@ -75,6 +89,11 @@ export class UsuariosList implements OnInit, OnDestroy {
   }
 
   cambiarEstado(usuario: Usuario): void {
+    if (this.esUsuarioActual(usuario)) {
+      this.error.set('No puede modificar el estado de su propio usuario.');
+      return;
+    }
+
     const nuevoEstado = !usuario.activo;
 
     const accion = nuevoEstado ? 'activar' : 'desactivar';
