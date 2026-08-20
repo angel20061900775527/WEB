@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { EstadoAuditorio } from './enums/estado-auditorio.enum';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
@@ -33,7 +33,34 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
       totalPages: result.totalPages,
     };
   }
+  async findAllPublic(query: PaginationQueryDto) {
+    const publicQuery: PaginationQueryDto = {
+      ...query,
+      estado: 'PUBLICADO',
+    };
 
+    const result = await this.findAllActive(publicQuery, (auditorio) =>
+      AuditorioResponseDto.fromEntity(auditorio),
+    );
+
+    return {
+      auditorios: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async findOnePublic(id: number): Promise<AuditorioResponseDto> {
+    const auditorio = await this.findEntityById(id);
+
+    if (auditorio.estado !== EstadoAuditorio.PUBLICADO) {
+      throw new NotFoundException('Auditorio no encontrado.');
+    }
+
+    return AuditorioResponseDto.fromEntity(auditorio);
+  }
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (auditorio) =>
       AuditorioResponseDto.fromEntity(auditorio),

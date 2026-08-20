@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { EstadoMuseo } from './enums/estado-museo.enum';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
@@ -33,7 +33,34 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       totalPages: result.totalPages,
     };
   }
+  async findAllPublic(query: PaginationQueryDto) {
+    const publicQuery: PaginationQueryDto = {
+      ...query,
+      estado: 'PUBLICADO',
+    };
 
+    const result = await this.findAllActive(publicQuery, (museo) =>
+      MuseoResponseDto.fromEntity(museo),
+    );
+
+    return {
+      museos: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async findOnePublic(id: number): Promise<MuseoResponseDto> {
+    const museo = await this.findEntityById(id);
+
+    if (museo.estado !== EstadoMuseo.PUBLICADO) {
+      throw new NotFoundException('Museo no encontrado.');
+    }
+
+    return MuseoResponseDto.fromEntity(museo);
+  }
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (museo) =>
       MuseoResponseDto.fromEntity(museo),

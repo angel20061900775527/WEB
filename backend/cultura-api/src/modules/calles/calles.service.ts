@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { EstadoCalle } from './enums/estado-calle.enum';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
@@ -34,7 +34,34 @@ export class CallesService extends BasePatrimonialService<Calle> {
       totalPages: result.totalPages,
     };
   }
+  async findAllPublic(query: PaginationQueryDto) {
+    const publicQuery: PaginationQueryDto = {
+      ...query,
+      estado: 'PUBLICADO',
+    };
 
+    const result = await this.findAllActive(publicQuery, (calle) =>
+      CalleResponseDto.fromEntity(calle),
+    );
+
+    return {
+      calles: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async findOnePublic(id: number): Promise<CalleResponseDto> {
+    const calle = await this.findEntityById(id);
+
+    if (calle.estado !== EstadoCalle.PUBLICADO) {
+      throw new NotFoundException('Calle no encontrada.');
+    }
+
+    return CalleResponseDto.fromEntity(calle);
+  }
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (calle) =>
       CalleResponseDto.fromEntity(calle),

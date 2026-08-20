@@ -106,6 +106,28 @@ export class FotografiasService {
     );
   }
 
+  async listarPublicasPorRegistro(
+    tipoPatrimonio: TipoPatrimonio,
+    registroId: number,
+  ): Promise<FotografiaResponseDto[]> {
+    await this.validarRegistroPatrimonialPublicado(tipoPatrimonio, registroId);
+
+    const fotografias = await this.fotografiasRepository.find({
+      where: {
+        tipoPatrimonio,
+        registroId: String(registroId),
+        estadoRegistro: EstadoRegistro.ACTIVO,
+        fechaEliminacion: IsNull(),
+      },
+      order: {
+        fechaRegistro: 'DESC',
+      },
+    });
+
+    return fotografias.map((fotografia) =>
+      FotografiaResponseDto.fromEntity(fotografia),
+    );
+  }
   async obtenerPorId(id: number): Promise<FotografiaResponseDto> {
     const fotografia = await this.findEntityById(id);
 
@@ -236,6 +258,74 @@ export class FotografiasService {
     }
   }
 
+  private async validarRegistroPatrimonialPublicado(
+    tipoPatrimonio: TipoPatrimonio,
+    registroId: number,
+  ): Promise<void> {
+    let existe = false;
+
+    switch (tipoPatrimonio) {
+      case TipoPatrimonio.PARQUE:
+        existe = await this.existeRegistroPublicado(
+          this.parquesRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.CALLE:
+        existe = await this.existeRegistroPublicado(
+          this.callesRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.MONUMENTO:
+        existe = await this.existeRegistroPublicado(
+          this.monumentosRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.RIO:
+        existe = await this.existeRegistroPublicado(
+          this.riosRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.PLAZA:
+        existe = await this.existeRegistroPublicado(
+          this.plazasRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.MUSEO:
+        existe = await this.existeRegistroPublicado(
+          this.museosRepository,
+          registroId,
+        );
+        break;
+
+      case TipoPatrimonio.AUDITORIO:
+        existe = await this.existeRegistroPublicado(
+          this.auditoriosRepository,
+          registroId,
+        );
+        break;
+
+      default:
+        throw new BadRequestException(
+          'El tipo de patrimonio indicado no es válido.',
+        );
+    }
+
+    if (!existe) {
+      throw new NotFoundException(
+        'No se encontró el registro patrimonial indicado.',
+      );
+    }
+  }
   private async existeRegistroActivo<T extends object>(
     repository: Repository<T>,
     registroId: number,
@@ -247,6 +337,23 @@ export class FotografiasService {
       })
       .andWhere('registro.estadoRegistro = :estadoRegistro', {
         estadoRegistro: EstadoRegistro.ACTIVO,
+      })
+      .getExists();
+  }
+  private async existeRegistroPublicado<T extends object>(
+    repository: Repository<T>,
+    registroId: number,
+  ): Promise<boolean> {
+    return repository
+      .createQueryBuilder('registro')
+      .where('registro.id = :registroId', {
+        registroId,
+      })
+      .andWhere('registro.estadoRegistro = :estadoRegistro', {
+        estadoRegistro: EstadoRegistro.ACTIVO,
+      })
+      .andWhere('registro.estado = :estado', {
+        estado: 'PUBLICADO',
       })
       .getExists();
   }

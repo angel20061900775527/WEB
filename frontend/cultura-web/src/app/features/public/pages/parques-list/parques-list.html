@@ -1,0 +1,59 @@
+<section class="public-page">
+  <header class="public-page__header">
+    <div>
+      <span class="public-page__eyebrow">Patrimonio cultural</span>
+      <h1>Parques</h1>
+      <p>
+        Conoce los parques registrados y publicados dentro del patrimonio
+        cultural del cantón.
+      </p>
+    </div>
+
+    <div class="public-page__count" *ngIf="!cargando() && !error()">
+      {{ total() }} registrados
+    </div>
+  </header>
+
+  <div class="public-page__state" *ngIf="cargando()">
+    Cargando parques...
+  </div>
+
+  <div class="public-page__state public-page__state--error" *ngIf="error()">
+    {{ error() }}
+  </div>
+
+  <div
+    class="public-page__state"
+    *ngIf="!cargando() && !error() && parques().length === 0"
+  >
+    No existen parques publicados por el momento.
+  </div>
+
+  <div
+    class="public-grid"
+    *ngIf="!cargando() && !error() && parques().length > 0"
+  >
+    <article class="public-card" *ngFor="let parque of parques()">
+      <div class="public-card__content">
+        <span class="public-card__type">Parque</span>
+
+        <h2>{{ parque.nombre }}</h2>
+
+        <p class="public-card__location">
+          {{ parque.ubicacion }}
+        </p>
+
+        <p class="public-card__description">
+          {{ parque.descripcion }}
+        </p>
+
+        <a
+          class="public-card__link"
+          [routerLink]="['/public/parques', parque.id]"
+        >
+          Ver información
+        </a>
+      </div>
+    </article>
+  </div>
+</section>

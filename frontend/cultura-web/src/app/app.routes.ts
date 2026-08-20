@@ -8,6 +8,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'public',
+    loadChildren: () =>
+      import('./features/public/public.routes').then((routes) => routes.PUBLIC_ROUTES),
+  },
+  {
     path: '',
     component: LayoutComponent,
     canActivate: [authGuard],

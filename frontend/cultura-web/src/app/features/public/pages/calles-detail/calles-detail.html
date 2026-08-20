@@ -1,0 +1,92 @@
+<section>
+  <a [routerLink]="['/public/calles']">
+    ← Volver a Calles
+  </a>
+
+  <div *ngIf="cargando()">
+    Cargando calle...
+  </div>
+
+  <div *ngIf="error()">
+    {{ error() }}
+  </div>
+
+  <article *ngIf="calle() as calle">
+    <h1>{{ calle.nombre }}</h1>
+
+    <p>
+      <strong>Ubicación:</strong>
+      {{ calle.ubicacion }}
+    </p>
+
+    <p *ngIf="calle.sector">
+      <strong>Sector:</strong>
+      {{ calle.sector }}
+    </p>
+
+    <p *ngIf="calle.fechaDenominacion">
+      <strong>Fecha de denominación:</strong>
+      {{ calle.fechaDenominacion }}
+    </p>
+
+    <section *ngIf="cargandoFotografias()">
+      Cargando fotografías...
+    </section>
+
+    <section *ngIf="errorFotografias()">
+      {{ errorFotografias() }}
+    </section>
+
+    <section
+      *ngIf="!cargandoFotografias() && fotografiaPrincipal() as principal"
+    >
+      <h2>Fotografía principal</h2>
+
+      <img
+        [src]="principal.url"
+        [alt]="principal.descripcion || calle.nombre"
+        style="max-width: 600px; width: 100%;"
+      />
+
+      <p *ngIf="principal.descripcion">
+        {{ principal.descripcion }}
+      </p>
+    </section>
+
+    <section *ngIf="fotografiasSecundarias().length > 0">
+      <h2>Galería</h2>
+
+      <div *ngFor="let fotografia of fotografiasSecundarias()">
+        <img
+          [src]="fotografia.url"
+          [alt]="fotografia.descripcion || calle.nombre"
+          style="max-width: 300px; width: 100%;"
+        />
+
+        <p *ngIf="fotografia.descripcion">
+          {{ fotografia.descripcion }}
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Descripción</h2>
+      <p>{{ calle.descripcion }}</p>
+    </section>
+
+    <section *ngIf="calle.resenaHistorica">
+      <h2>Reseña histórica</h2>
+      <p>{{ calle.resenaHistorica }}</p>
+    </section>
+
+    <section *ngIf="calle.fuentesInformacion">
+      <h2>Fuentes de información</h2>
+      <p>{{ calle.fuentesInformacion }}</p>
+    </section>
+
+    <section *ngIf="calle.latitud != null && calle.longitud != null">
+      <h2>Coordenadas</h2>
+      <p>{{ calle.latitud }}, {{ calle.longitud }}</p>
+    </section>
+  </article>
+</section>

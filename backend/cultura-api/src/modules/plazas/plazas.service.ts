@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+import { EstadoPlaza } from './enums/estado-plaza.enum';
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
@@ -40,7 +40,40 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
       totalPages: result.totalPages,
     };
   }
+  async findAllPublic(query: PaginationQueryDto): Promise<{
+    plazas: PlazaResponseDto[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const publicQuery: PaginationQueryDto = {
+      ...query,
+      estado: 'PUBLICADO',
+    };
 
+    const result = await this.findAllActive(publicQuery, (plaza) =>
+      PlazaResponseDto.fromEntity(plaza),
+    );
+
+    return {
+      plazas: result.items,
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+      totalPages: result.totalPages,
+    };
+  }
+
+  async findOnePublic(id: number): Promise<PlazaResponseDto> {
+    const plaza = await this.findEntityById(id);
+
+    if (plaza.estado !== EstadoPlaza.PUBLICADO) {
+      throw new NotFoundException('Plaza no encontrada.');
+    }
+
+    return PlazaResponseDto.fromEntity(plaza);
+  }
   async findDeleted(query: PaginationQueryDto): Promise<{
     plazas: PlazaResponseDto[];
     total: number;

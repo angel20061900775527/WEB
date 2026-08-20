@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { FotografiasPublicController } from './fotografias-public.controller';
 import { Auditorio } from '../auditorios/entities/auditorio.entity';
 import { Calle } from '../calles/entities/calle.entity';
 import { Monumento } from '../monumentos/entities/monumento.entity';
@@ -26,7 +26,7 @@ import { FotografiasService } from './fotografias.service';
       Auditorio,
     ]),
   ],
-  controllers: [FotografiasController],
+  controllers: [FotografiasController, FotografiasPublicController],
   providers: [FotografiasService],
   exports: [TypeOrmModule, FotografiasService],
 })
