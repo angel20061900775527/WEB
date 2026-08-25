@@ -1,0 +1,21 @@
+<section>
+  <h1>Auditorios</h1>
+
+  <div *ngIf="cargando()">
+    Cargando auditorios...
+  </div>
+
+  <div *ngIf="error()">
+    {{ error() }}
+  </div>
+
+  <div *ngFor="let auditorio of auditorios()">
+    <h2>{{ auditorio.nombre }}</h2>
+
+    <p>{{ auditorio.ubicacion }}</p>
+
+    <a [routerLink]="['/public/auditorios', auditorio.id]">
+      Ver información
+    </a>
+  </div>
+</section>

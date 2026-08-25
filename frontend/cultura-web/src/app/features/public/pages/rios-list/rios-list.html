@@ -1,0 +1,21 @@
+<section>
+  <h1>Ríos</h1>
+
+  <div *ngIf="cargando()">
+    Cargando ríos...
+  </div>
+
+  <div *ngIf="error()">
+    {{ error() }}
+  </div>
+
+  <div *ngFor="let rio of rios()">
+    <h2>{{ rio.nombre }}</h2>
+
+    <p>{{ rio.ubicacion }}</p>
+
+    <a [routerLink]="['/public/rios', rio.id]">
+      Ver información
+    </a>
+  </div>
+</section>
