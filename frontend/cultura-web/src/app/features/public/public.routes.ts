@@ -2,6 +2,12 @@ import { Routes } from '@angular/router';
 
 export const PUBLIC_ROUTES: Routes = [
   {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/public-dashboard/public-dashboard').then((m) => m.PublicDashboard),
+  },
+  {
     path: 'parques',
     loadComponent: () => import('./pages/parques-list/parques-list').then((m) => m.ParquesList),
   },

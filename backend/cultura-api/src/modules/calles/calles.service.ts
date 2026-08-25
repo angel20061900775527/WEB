@@ -1,22 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoCalle } from './enums/estado-calle.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreateCalleDto } from './dto/request/create-calle.dto';
 import { UpdateCalleDto } from './dto/request/update-calle.dto';
 import { UpdateEstadoCalleDto } from './dto/request/update-estado-calle.dto';
 import { CalleResponseDto } from './dto/response/calle-response.dto';
 import { Calle } from './entities/calle.entity';
+import { EstadoCalle } from './enums/estado-calle.enum';
 
 @Injectable()
 export class CallesService extends BasePatrimonialService<Calle> {
   constructor(
     @InjectRepository(Calle)
     private readonly callesRepository: Repository<Calle>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(callesRepository, 'calle');
   }
@@ -34,6 +40,7 @@ export class CallesService extends BasePatrimonialService<Calle> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto) {
     const publicQuery: PaginationQueryDto = {
       ...query,
@@ -44,8 +51,20 @@ export class CallesService extends BasePatrimonialService<Calle> {
       CalleResponseDto.fromEntity(calle),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((calle) => calle.fotografiaPrincipalId),
+    );
+
+    const calles = result.items.map((calle) => ({
+      ...calle,
+
+      fotografiaPrincipalUrl: calle.fotografiaPrincipalId
+        ? (urlsFotografias[String(calle.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      calles: result.items,
+      calles,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -62,6 +81,7 @@ export class CallesService extends BasePatrimonialService<Calle> {
 
     return CalleResponseDto.fromEntity(calle);
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (calle) =>
       CalleResponseDto.fromEntity(calle),
@@ -204,7 +224,6 @@ export class CallesService extends BasePatrimonialService<Calle> {
     const calle = await this.findEntityById(id);
 
     calle.estado = updateEstadoCalleDto.estado;
-
     calle.usuarioModificadorId = String(usuarioId);
 
     const calleActualizada = await this.callesRepository.save(calle);

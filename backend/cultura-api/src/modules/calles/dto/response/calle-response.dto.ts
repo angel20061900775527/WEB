@@ -78,6 +78,13 @@ export class CalleResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/calles/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-05T14:30:00.000Z',
   })
@@ -88,7 +95,10 @@ export class CalleResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(calle: Calle): CalleResponseDto {
+  static fromEntity(
+    calle: Calle,
+    fotografiaPrincipalUrl: string | null = null,
+  ): CalleResponseDto {
     return {
       id: calle.id,
       nombre: calle.nombre,
@@ -103,6 +113,7 @@ export class CalleResponseDto {
       fuentesInformacion: calle.fuentesInformacion,
       observaciones: calle.observaciones,
       fotografiaPrincipalId: calle.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: calle.fechaRegistro,
       fechaModificacion: calle.fechaModificacion,
     };

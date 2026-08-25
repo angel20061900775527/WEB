@@ -17,6 +17,7 @@ export interface Parque {
   fuentesInformacion?: string | null;
   observaciones?: string | null;
   fotografiaPrincipalId?: string | null;
+  fotografiaPrincipalUrl?: string | null;
   fechaRegistro: string;
   fechaModificacion: string;
 }

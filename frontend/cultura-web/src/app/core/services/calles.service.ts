@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-
 export type EstadoCalle = 'BORRADOR' | 'PUBLICADO' | 'INACTIVO';
 
 export interface Calle {
@@ -17,7 +16,8 @@ export interface Calle {
   longitud?: number | null;
   fuentesInformacion?: string | null;
   observaciones?: string | null;
-  fotografiaPrincipalId?: string | null;
+  fotografiaPrincipalId: string | null;
+  fotografiaPrincipalUrl?: string | null;
   fechaRegistro: string;
   fechaModificacion: string;
 }

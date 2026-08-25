@@ -1,0 +1,338 @@
+<div class="portal">
+  <main>
+    <section class="hero">
+      <div class="hero__inner">
+        <div class="hero__content">
+          <span class="hero__eyebrow">
+            Patrimonio · Cultura · Identidad
+          </span>
+
+          <h1>
+            Descubre Zamora
+          </h1>
+
+          <p>
+            Un espacio para conocer los lugares, historias y elementos
+            que forman parte de nuestra identidad.
+          </p>
+
+          <div
+            class="hero__stats"
+            *ngIf="!cargando() && !error()"
+          >
+            <div class="hero__stat">
+              <strong>{{ totalPatrimonio() }}</strong>
+              <span>elementos publicados</span>
+            </div>
+
+            <div class="hero__stat">
+              <strong>7</strong>
+              <span>categorías disponibles</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          id="buscar"
+          class="hero-search"
+        >
+          <div class="hero-search__heading">
+            <span class="hero-search__icon">⌕</span>
+
+            <div>
+              <strong>¿Qué deseas conocer?</strong>
+              <span>Busca en todo el patrimonio</span>
+            </div>
+          </div>
+
+          <div class="hero-search__control">
+            <input
+              #searchInput
+              type="search"
+              autocomplete="off"
+              placeholder="Ej. parque central, monumento, río..."
+              [value]="search()"
+              (input)="actualizarBusqueda(searchInput.value)"
+            />
+
+            <button
+              type="button"
+              *ngIf="search()"
+              (click)="
+                limpiarBusqueda();
+                searchInput.value = ''
+              "
+            >
+              Limpiar
+            </button>
+          </div>
+
+          <p class="hero-search__hint">
+            Puedes buscar por nombre, ubicación, historia o información
+            relacionada.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="search-results"
+      *ngIf="search()"
+    >
+      <div class="content">
+        <div
+          class="search-status"
+          *ngIf="buscando()"
+        >
+          <span class="search-status__spinner"></span>
+          Buscando en el patrimonio...
+        </div>
+
+        <div
+          class="search-status search-status--error"
+          *ngIf="errorBusqueda()"
+        >
+          {{ errorBusqueda() }}
+        </div>
+
+        <div
+          class="search-empty"
+          *ngIf="
+            !buscando() &&
+            !errorBusqueda() &&
+            resultados().length === 0
+          "
+        >
+          <strong>No encontramos resultados</strong>
+
+          <span>
+            Prueba con otra palabra o una ubicación diferente.
+          </span>
+        </div>
+
+        <div
+          *ngIf="
+            !buscando() &&
+            !errorBusqueda() &&
+            resultados().length > 0
+          "
+        >
+          <div class="results-heading">
+            <div>
+              <span class="section-kicker">
+                Resultados
+              </span>
+
+              <h2>
+                Coincidencias encontradas
+              </h2>
+            </div>
+
+            <span class="results-heading__count">
+              {{ resultados().length }}
+              {{ resultados().length === 1 ? 'resultado' : 'resultados' }}
+            </span>
+          </div>
+
+          <div class="results-grid">
+            <a
+              class="result-card"
+              *ngFor="let resultado of resultados()"
+              [routerLink]="resultado.ruta"
+            >
+              <span class="result-card__category">
+                {{ resultado.categoria }}
+              </span>
+
+              <h3>
+                <ng-container
+                  *ngFor="
+                    let segmento of segmentarCoincidencias(
+                      resultado.nombre
+                    )
+                  "
+                >
+                  <mark *ngIf="segmento.coincide">
+                    {{ segmento.texto }}
+                  </mark>
+
+                  <ng-container *ngIf="!segmento.coincide">
+                    {{ segmento.texto }}
+                  </ng-container>
+                </ng-container>
+              </h3>
+
+              <p class="result-card__location">
+                <span class="result-card__pin">●</span>
+
+                <span>
+                  <ng-container
+                    *ngFor="
+                      let segmento of segmentarCoincidencias(
+                        resultado.ubicacion
+                      )
+                    "
+                  >
+                    <mark *ngIf="segmento.coincide">
+                      {{ segmento.texto }}
+                    </mark>
+
+                    <ng-container *ngIf="!segmento.coincide">
+                      {{ segmento.texto }}
+                    </ng-container>
+                  </ng-container>
+                </span>
+              </p>
+
+              <ng-container
+                *ngIf="
+                  obtenerCoincidenciaSecundaria(resultado)
+                    as coincidencia
+                "
+              >
+                <div class="result-card__match">
+                  <span class="result-card__match-label">
+                    {{ coincidencia.etiqueta }}
+                  </span>
+
+                  <p>
+                    <ng-container
+                      *ngFor="
+                        let segmento of segmentarCoincidencias(
+                          coincidencia.texto
+                        )
+                      "
+                    >
+                      <mark *ngIf="segmento.coincide">
+                        {{ segmento.texto }}
+                      </mark>
+
+                      <ng-container *ngIf="!segmento.coincide">
+                        {{ segmento.texto }}
+                      </ng-container>
+                    </ng-container>
+                  </p>
+                </div>
+              </ng-container>
+
+              <span class="result-card__action">
+                Conocer más
+                <span>→</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="patrimonio"
+      class="categories"
+    >
+      <div class="content">
+        <div class="section-heading">
+          <div>
+            <span class="section-kicker">
+              Explora Zamora
+            </span>
+
+            <h2>
+              Nuestro patrimonio
+            </h2>
+
+            <p>
+              Selecciona una categoría y descubre la información
+              disponible para la ciudadanía.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="portal-state"
+          *ngIf="cargando()"
+        >
+          Cargando categorías...
+        </div>
+
+        <div
+          class="portal-state portal-state--error"
+          *ngIf="error()"
+        >
+          {{ error() }}
+        </div>
+
+        <div
+          class="category-grid"
+          *ngIf="!cargando() && !error()"
+        >
+          <a
+            *ngFor="let categoria of categorias()"
+            class="category-card"
+            [class]="'category-card category-card--' + categoria.clave"
+            [routerLink]="categoria.ruta"
+          >
+            <div class="category-card__top">
+              <span class="category-card__visual">
+                @switch (categoria.clave) {
+                  @case ('parques') {
+                    P
+                  }
+                  @case ('calles') {
+                    C
+                  }
+                  @case ('monumentos') {
+                    M
+                  }
+                  @case ('rios') {
+                    R
+                  }
+                  @case ('plazas') {
+                    PZ
+                  }
+                  @case ('museos') {
+                    MU
+                  }
+                  @case ('auditorios') {
+                    A
+                  }
+                }
+              </span>
+
+              <span class="category-card__count">
+                {{ categoria.total }}
+              </span>
+            </div>
+
+            <div class="category-card__body">
+              <h3>
+                {{ categoria.titulo }}
+              </h3>
+
+              <p>
+                {{ categoria.descripcion }}
+              </p>
+            </div>
+
+            <span class="category-card__action">
+              Explorar categoría
+              <span>→</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-footer">
+    <div class="portal-footer__inner">
+      <div>
+        <strong>SIGPAC</strong>
+        <span>Patrimonio cultural de Zamora</span>
+      </div>
+
+      <span>
+        GAD Municipal de Zamora
+      </span>
+    </div>
+  </footer>
+</div>

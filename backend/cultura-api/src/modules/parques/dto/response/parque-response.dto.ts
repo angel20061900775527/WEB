@@ -60,13 +60,23 @@ export class ParqueResponseDto {
   @ApiPropertyOptional({ example: null, nullable: true })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/parques/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({ example: '2026-07-31T17:03:23.989Z' })
   declare fechaRegistro: Date;
 
   @ApiProperty({ example: '2026-07-31T17:03:23.989Z' })
   declare fechaModificacion: Date;
 
-  static fromEntity(parque: Parque): ParqueResponseDto {
+  static fromEntity(
+    parque: Parque,
+    fotografiaPrincipalUrl: string | null = null,
+  ): ParqueResponseDto {
     return {
       id: parque.id,
       nombre: parque.nombre,
@@ -80,6 +90,7 @@ export class ParqueResponseDto {
       fuentesInformacion: parque.fuentesInformacion,
       observaciones: parque.observaciones,
       fotografiaPrincipalId: parque.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: parque.fechaRegistro,
       fechaModificacion: parque.fechaModificacion,
     };

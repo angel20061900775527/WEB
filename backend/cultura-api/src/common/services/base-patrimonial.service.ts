@@ -1,9 +1,10 @@
+import { ConflictException } from '@nestjs/common';
 import { FindOptionsWhere, ILike, Not, Repository } from 'typeorm';
+
 import { PaginationQueryDto } from '../dto/request/pagination-query.dto';
 import { PatrimonialEntity } from '../entities/patrimonial.entity';
 import { EstadoRegistro } from '../enums/estado-registro.enum';
 import { BaseCatalogService } from './base-catalog.service';
-import { ConflictException } from '@nestjs/common';
 
 export interface PatrimonialListResult<T> {
   items: T[];
@@ -19,6 +20,14 @@ export abstract class BasePatrimonialService<
   constructor(repository: Repository<TEntity>, entityName: string) {
     super(repository, entityName);
   }
+
+  private normalizeSearchText(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
+  }
+
   protected async findAllActive<TResponse>(
     query: PaginationQueryDto,
     mapper: (entity: TEntity) => TResponse,
@@ -43,17 +52,48 @@ export abstract class BasePatrimonialService<
     const search = query.search?.trim();
 
     if (search) {
+      const normalizedSearch = this.normalizeSearchText(search);
+
       queryBuilder.andWhere(
         `(
-        ${alias}.nombre ILIKE :search
-        OR ${alias}.descripcion ILIKE :search
-        OR ${alias}.resenaHistorica ILIKE :search
-        OR ${alias}.ubicacion ILIKE :search
-        OR ${alias}.fuentesInformacion ILIKE :search
-        OR ${alias}.observaciones ILIKE :search
-      )`,
+          translate(
+            lower(COALESCE(${alias}.nombre, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.descripcion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.resenaHistorica, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.ubicacion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.fuentesInformacion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.observaciones, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+        )`,
         {
-          search: `%${search}%`,
+          search: `%${normalizedSearch}%`,
         },
       );
     }
@@ -73,6 +113,7 @@ export abstract class BasePatrimonialService<
       totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
     };
   }
+
   protected async findAllDeleted<TResponse>(
     query: PaginationQueryDto,
     mapper: (entity: TEntity) => TResponse,
@@ -91,17 +132,48 @@ export abstract class BasePatrimonialService<
     const search = query.search?.trim();
 
     if (search) {
+      const normalizedSearch = this.normalizeSearchText(search);
+
       queryBuilder.andWhere(
         `(
-        ${alias}.nombre ILIKE :search
-        OR ${alias}.descripcion ILIKE :search
-        OR ${alias}.resenaHistorica ILIKE :search
-        OR ${alias}.ubicacion ILIKE :search
-        OR ${alias}.fuentesInformacion ILIKE :search
-        OR ${alias}.observaciones ILIKE :search
-      )`,
+          translate(
+            lower(COALESCE(${alias}.nombre, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.descripcion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.resenaHistorica, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.ubicacion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.fuentesInformacion, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+
+          OR translate(
+            lower(COALESCE(${alias}.observaciones, '')),
+            'áéíóúüñ',
+            'aeiouun'
+          ) LIKE :search
+        )`,
         {
-          search: `%${search}%`,
+          search: `%${normalizedSearch}%`,
         },
       );
     }
@@ -121,6 +193,7 @@ export abstract class BasePatrimonialService<
       totalPages: limit > 0 ? Math.ceil(total / limit) : 0,
     };
   }
+
   protected async validateUniqueName(
     nombre: string,
     idExcluir?: number,
@@ -146,6 +219,7 @@ export abstract class BasePatrimonialService<
       );
     }
   }
+
   protected async softDeleteEntity(
     id: number,
     usuarioEliminadorId: string,

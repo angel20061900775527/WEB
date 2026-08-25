@@ -1,6 +1,29 @@
 <section>
   <h1>Plazas</h1>
 
+  <div>
+    <label for="searchPlazas">
+      Buscar plazas
+    </label>
+
+    <input
+      #searchInput
+      id="searchPlazas"
+      type="search"
+      placeholder="Buscar por nombre, ubicación, descripción, reseña, fuentes..."
+      [value]="search()"
+      (input)="actualizarBusqueda(searchInput.value)"
+    />
+
+    <button
+      type="button"
+      *ngIf="search()"
+      (click)="limpiarBusqueda(); searchInput.value = ''"
+    >
+      Limpiar
+    </button>
+  </div>
+
   <div *ngIf="cargando()">
     Cargando plazas...
   </div>
@@ -9,13 +32,91 @@
     {{ error() }}
   </div>
 
-  <div *ngFor="let plaza of plazas()">
-    <h2>{{ plaza.nombre }}</h2>
+  <div
+    *ngIf="!cargando() && !error() && plazas().length === 0"
+  >
+    No se encontraron plazas publicadas.
+  </div>
 
-    <p>{{ plaza.ubicacion }}</p>
+  <div *ngFor="let plaza of plazas()">
+    <h2>
+      <ng-container
+        *ngFor="let segmento of segmentarCoincidencias(plaza.nombre)"
+      >
+        <mark *ngIf="segmento.coincide">
+          {{ segmento.texto }}
+        </mark>
+
+        <ng-container *ngIf="!segmento.coincide">
+          {{ segmento.texto }}
+        </ng-container>
+      </ng-container>
+    </h2>
+
+    <p>
+      <ng-container
+        *ngFor="let segmento of segmentarCoincidencias(plaza.ubicacion)"
+      >
+        <mark *ngIf="segmento.coincide">
+          {{ segmento.texto }}
+        </mark>
+
+        <ng-container *ngIf="!segmento.coincide">
+          {{ segmento.texto }}
+        </ng-container>
+      </ng-container>
+    </p>
+
+    <ng-container
+      *ngIf="obtenerCoincidenciaSecundaria(plaza) as coincidencia"
+    >
+      <div>
+        <strong>{{ coincidencia.etiqueta }}:</strong>
+
+        <ng-container
+          *ngFor="
+            let segmento of segmentarCoincidencias(
+              coincidencia.texto
+            )
+          "
+        >
+          <mark *ngIf="segmento.coincide">
+            {{ segmento.texto }}
+          </mark>
+
+          <ng-container *ngIf="!segmento.coincide">
+            {{ segmento.texto }}
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
 
     <a [routerLink]="['/public/plazas', plaza.id]">
       Ver información
     </a>
+  </div>
+
+  <div
+    *ngIf="!cargando() && !error() && totalPages() > 1"
+  >
+    <button
+      type="button"
+      (click)="paginaAnterior()"
+      [disabled]="page() <= 1"
+    >
+      Anterior
+    </button>
+
+    <span>
+      Página {{ page() }} de {{ totalPages() }}
+    </span>
+
+    <button
+      type="button"
+      (click)="paginaSiguiente()"
+      [disabled]="page() >= totalPages()"
+    >
+      Siguiente
+    </button>
   </div>
 </section>

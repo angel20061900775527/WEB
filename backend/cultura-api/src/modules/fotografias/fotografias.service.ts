@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { relative } from 'path';
-import { IsNull, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 
 import { EstadoRegistro } from '../../common/enums/estado-registro.enum';
 
@@ -103,6 +103,41 @@ export class FotografiasService {
 
     return fotografias.map((fotografia) =>
       FotografiaResponseDto.fromEntity(fotografia),
+    );
+  }
+
+  async obtenerUrlsPorIds(
+    fotografiaIds: Array<string | number | null | undefined>,
+  ): Promise<Record<string, string>> {
+    const ids = fotografiaIds
+      .filter(
+        (id): id is string | number =>
+          id !== null && id !== undefined && String(id).trim() !== '',
+      )
+      .map((id) => Number(id))
+      .filter((id) => Number.isFinite(id));
+
+    if (ids.length === 0) {
+      return {};
+    }
+
+    const fotografias = await this.fotografiasRepository.find({
+      where: {
+        id: In(ids),
+        estadoRegistro: EstadoRegistro.ACTIVO,
+        fechaEliminacion: IsNull(),
+      },
+    });
+
+    return fotografias.reduce<Record<string, string>>(
+      (resultado, fotografia) => {
+        const dto = FotografiaResponseDto.fromEntity(fotografia);
+
+        resultado[String(fotografia.id)] = dto.url;
+
+        return resultado;
+      },
+      {},
     );
   }
 

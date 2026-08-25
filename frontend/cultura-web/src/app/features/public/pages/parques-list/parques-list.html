@@ -1,59 +1,250 @@
-<section class="public-page">
-  <header class="public-page__header">
-    <div>
-      <span class="public-page__eyebrow">Patrimonio cultural</span>
-      <h1>Parques</h1>
-      <p>
-        Conoce los parques registrados y publicados dentro del patrimonio
-        cultural del cantón.
-      </p>
-    </div>
-
-    <div class="public-page__count" *ngIf="!cargando() && !error()">
-      {{ total() }} registrados
-    </div>
-  </header>
-
-  <div class="public-page__state" *ngIf="cargando()">
-    Cargando parques...
-  </div>
-
-  <div class="public-page__state public-page__state--error" *ngIf="error()">
-    {{ error() }}
-  </div>
-
-  <div
-    class="public-page__state"
-    *ngIf="!cargando() && !error() && parques().length === 0"
-  >
-    No existen parques publicados por el momento.
-  </div>
-
-  <div
-    class="public-grid"
-    *ngIf="!cargando() && !error() && parques().length > 0"
-  >
-    <article class="public-card" *ngFor="let parque of parques()">
-      <div class="public-card__content">
-        <span class="public-card__type">Parque</span>
-
-        <h2>{{ parque.nombre }}</h2>
-
-        <p class="public-card__location">
-          {{ parque.ubicacion }}
-        </p>
-
-        <p class="public-card__description">
-          {{ parque.descripcion }}
-        </p>
+<main class="public-list">
+  <div class="public-list__container">
+    <header class="public-list__header">
+      <div class="public-list__context">
+        <span class="public-list__eyebrow">
+          Patrimonio de Zamora
+        </span>
 
         <a
-          class="public-card__link"
-          [routerLink]="['/public/parques', parque.id]"
+          class="public-list__back"
+          [routerLink]="['/public']"
         >
-          Ver información
+          Ver todas las categorías
+          <span>→</span>
         </a>
       </div>
-    </article>
+
+      <div class="public-list__title-row">
+        <h1>Parques</h1>
+
+        <span
+          class="public-list__count"
+          *ngIf="!cargando() && !error()"
+        >
+          <strong>{{ total() }}</strong>
+          {{ total() === 1 ? 'publicado' : 'publicados' }}
+        </span>
+      </div>
+
+      <p>
+        Conoce los parques y espacios verdes publicados
+        para consulta ciudadana.
+      </p>
+    </header>
+
+    <section class="public-search">
+      <div class="public-search__heading">
+        <strong>Buscar parques</strong>
+
+        <span>
+          Nombre, ubicación, historia o información relacionada
+        </span>
+      </div>
+
+      <div class="public-search__control">
+        <input
+          #searchInput
+          type="search"
+          autocomplete="off"
+          aria-label="Buscar parques"
+          placeholder="Ej. central, recreación, dirección..."
+          [value]="search()"
+          (input)="actualizarBusqueda(searchInput.value)"
+        />
+
+        <button
+          type="button"
+          *ngIf="search()"
+          (click)="
+            limpiarBusqueda();
+            searchInput.value = ''
+          "
+        >
+          Limpiar
+        </button>
+      </div>
+    </section>
+
+    <div
+      class="public-state"
+      *ngIf="cargando()"
+    >
+      Cargando parques...
+    </div>
+
+    <div
+      class="public-state public-state--error"
+      *ngIf="error()"
+    >
+      {{ error() }}
+    </div>
+
+    <div
+      class="public-state"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        parques().length === 0
+      "
+    >
+      <strong>No se encontraron parques.</strong>
+
+      <span *ngIf="search()">
+        Prueba con otra palabra o término de búsqueda.
+      </span>
+    </div>
+
+    <section
+      class="public-grid"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        parques().length > 0
+      "
+    >
+      <a
+        class="public-card"
+        *ngFor="let parque of parques()"
+        [routerLink]="['/public/parques', parque.id]"
+      >
+        <div class="public-card__media">
+          <img
+            *ngIf="parque.fotografiaPrincipalUrl"
+            [src]="parque.fotografiaPrincipalUrl"
+            [alt]="parque.nombre"
+            loading="lazy"
+          />
+
+          <div
+            class="public-card__placeholder"
+            *ngIf="!parque.fotografiaPrincipalUrl"
+          >
+            <span class="public-card__placeholder-icon">
+              P
+            </span>
+
+            <span class="public-card__placeholder-title">
+              Parque
+            </span>
+
+            <small>
+              Sin fotografía disponible
+            </small>
+          </div>
+        </div>
+
+        <div class="public-card__content">
+          <h2>
+            <ng-container
+              *ngFor="
+                let segmento of segmentarCoincidencias(
+                  parque.nombre
+                )
+              "
+            >
+              <mark *ngIf="segmento.coincide">
+                {{ segmento.texto }}
+              </mark>
+
+              <ng-container *ngIf="!segmento.coincide">
+                {{ segmento.texto }}
+              </ng-container>
+            </ng-container>
+          </h2>
+
+          <p class="public-card__location">
+            <span class="public-card__dot"></span>
+
+            <span>
+              <ng-container
+                *ngFor="
+                  let segmento of segmentarCoincidencias(
+                    parque.ubicacion
+                  )
+                "
+              >
+                <mark *ngIf="segmento.coincide">
+                  {{ segmento.texto }}
+                </mark>
+
+                <ng-container *ngIf="!segmento.coincide">
+                  {{ segmento.texto }}
+                </ng-container>
+              </ng-container>
+            </span>
+          </p>
+
+          <ng-container
+            *ngIf="
+              obtenerCoincidenciaSecundaria(parque)
+                as coincidencia
+            "
+          >
+            <div class="public-card__match">
+              <span class="public-card__match-label">
+                Coincidencia en {{ coincidencia.etiqueta }}
+              </span>
+
+              <p>
+                <ng-container
+                  *ngFor="
+                    let segmento of segmentarCoincidencias(
+                      coincidencia.texto
+                    )
+                  "
+                >
+                  <mark *ngIf="segmento.coincide">
+                    {{ segmento.texto }}
+                  </mark>
+
+                  <ng-container *ngIf="!segmento.coincide">
+                    {{ segmento.texto }}
+                  </ng-container>
+                </ng-container>
+              </p>
+            </div>
+          </ng-container>
+
+          <span class="public-card__action">
+            <span>Ver información</span>
+            <span aria-hidden="true">→</span>
+          </span>
+        </div>
+      </a>
+    </section>
+
+    <nav
+      class="public-pagination"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        totalPages() > 1
+      "
+      aria-label="Paginación de parques"
+    >
+      <button
+        type="button"
+        (click)="paginaAnterior()"
+        [disabled]="page() <= 1"
+      >
+        ← Anterior
+      </button>
+
+      <span>
+        Página
+        <strong>{{ page() }}</strong>
+        de
+        <strong>{{ totalPages() }}</strong>
+      </span>
+
+      <button
+        type="button"
+        (click)="paginaSiguiente()"
+        [disabled]="page() >= totalPages()"
+      >
+        Siguiente →
+      </button>
+    </nav>
   </div>
-</section>
+</main>

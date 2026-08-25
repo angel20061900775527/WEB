@@ -11,12 +11,14 @@ import { UpdateEstadoParqueDto } from './dto/request/update-estado-parque.dto';
 import { UpdateParqueDto } from './dto/request/update-parque.dto';
 import { ParqueResponseDto } from './dto/response/parque-response.dto';
 import { Parque } from './entities/parque.entity';
-
+import { FotografiasService } from '../fotografias/fotografias.service';
 @Injectable()
 export class ParquesService extends BasePatrimonialService<Parque> {
   constructor(
     @InjectRepository(Parque)
     private readonly parquesRepository: Repository<Parque>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(parquesRepository, 'parque');
   }
@@ -44,8 +46,20 @@ export class ParquesService extends BasePatrimonialService<Parque> {
       ParqueResponseDto.fromEntity(parque),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((parque) => parque.fotografiaPrincipalId),
+    );
+
+    const parques = result.items.map((parque) => ({
+      ...parque,
+
+      fotografiaPrincipalUrl: parque.fotografiaPrincipalId
+        ? (urlsFotografias[String(parque.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      parques: result.items,
+      parques,
       total: result.total,
       page: result.page,
       limit: result.limit,
