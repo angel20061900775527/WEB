@@ -84,6 +84,13 @@ export class MuseoResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/museos/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-07T16:00:00.000Z',
   })
@@ -94,7 +101,10 @@ export class MuseoResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(museo: Museo): MuseoResponseDto {
+  static fromEntity(
+    museo: Museo,
+    fotografiaPrincipalUrl: string | null = null,
+  ): MuseoResponseDto {
     return {
       id: museo.id,
       nombre: museo.nombre,
@@ -110,6 +120,7 @@ export class MuseoResponseDto {
       fuentesInformacion: museo.fuentesInformacion,
       observaciones: museo.observaciones,
       fotografiaPrincipalId: museo.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: museo.fechaRegistro,
       fechaModificacion: museo.fechaModificacion,
     };

@@ -1,21 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoMuseo } from './enums/estado-museo.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreateMuseoDto } from './dto/request/create-museo.dto';
 import { UpdateEstadoMuseoDto } from './dto/request/update-estado-museo.dto';
 import { UpdateMuseoDto } from './dto/request/update-museo.dto';
 import { MuseoResponseDto } from './dto/response/museo-response.dto';
 import { Museo } from './entities/museo.entity';
+import { EstadoMuseo } from './enums/estado-museo.enum';
 
 @Injectable()
 export class MuseosService extends BasePatrimonialService<Museo> {
   constructor(
     @InjectRepository(Museo)
     private readonly museosRepository: Repository<Museo>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(museosRepository, 'museo');
   }
@@ -33,6 +39,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto) {
     const publicQuery: PaginationQueryDto = {
       ...query,
@@ -43,8 +50,20 @@ export class MuseosService extends BasePatrimonialService<Museo> {
       MuseoResponseDto.fromEntity(museo),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((museo) => museo.fotografiaPrincipalId),
+    );
+
+    const museos = result.items.map((museo) => ({
+      ...museo,
+
+      fotografiaPrincipalUrl: museo.fotografiaPrincipalId
+        ? (urlsFotografias[String(museo.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      museos: result.items,
+      museos,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -61,6 +80,7 @@ export class MuseosService extends BasePatrimonialService<Museo> {
 
     return MuseoResponseDto.fromEntity(museo);
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (museo) =>
       MuseoResponseDto.fromEntity(museo),

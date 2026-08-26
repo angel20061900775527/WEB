@@ -1,22 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoMonumento } from './enums/estado-monumento.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreateMonumentoDto } from './dto/request/create-monumento.dto';
 import { UpdateEstadoMonumentoDto } from './dto/request/update-estado-monumento.dto';
 import { UpdateMonumentoDto } from './dto/request/update-monumento.dto';
 import { MonumentoResponseDto } from './dto/response/monumento-response.dto';
 import { Monumento } from './entities/monumento.entity';
+import { EstadoMonumento } from './enums/estado-monumento.enum';
 
 @Injectable()
 export class MonumentosService extends BasePatrimonialService<Monumento> {
   constructor(
     @InjectRepository(Monumento)
     private readonly monumentosRepository: Repository<Monumento>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(monumentosRepository, 'monumento');
   }
@@ -34,6 +40,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto) {
     const publicQuery: PaginationQueryDto = {
       ...query,
@@ -44,8 +51,20 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
       MonumentoResponseDto.fromEntity(monumento),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((monumento) => monumento.fotografiaPrincipalId),
+    );
+
+    const monumentos = result.items.map((monumento) => ({
+      ...monumento,
+
+      fotografiaPrincipalUrl: monumento.fotografiaPrincipalId
+        ? (urlsFotografias[String(monumento.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      monumentos: result.items,
+      monumentos,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -62,6 +81,7 @@ export class MonumentosService extends BasePatrimonialService<Monumento> {
 
     return MonumentoResponseDto.fromEntity(monumento);
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (monumento) =>
       MonumentoResponseDto.fromEntity(monumento),

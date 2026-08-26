@@ -1,122 +1,258 @@
-<section>
-  <h1>Museos</h1>
+<main class="public-list">
+  <div class="public-list__container">
 
-  <div>
-    <label for="searchMuseos">
-      Buscar museos
-    </label>
+    <header class="public-list__header">
+      <div class="public-list__context">
+        <span class="public-list__eyebrow">
+          Patrimonio de Zamora
+        </span>
 
-    <input
-      #searchInput
-      id="searchMuseos"
-      type="search"
-      placeholder="Buscar por nombre, ubicación, descripción, reseña, horario, responsable..."
-      [value]="search()"
-      (input)="actualizarBusqueda(searchInput.value)"
-    />
+        <a
+          class="public-list__back"
+          [routerLink]="['/public']"
+        >
+          Ver todas las categorías
+          <span>→</span>
+        </a>
+      </div>
 
-    <button
-      type="button"
-      *ngIf="search()"
-      (click)="limpiarBusqueda(); searchInput.value = ''"
-    >
-      Limpiar
-    </button>
-  </div>
+      <div class="public-list__title-row">
+        <h1>Museos</h1>
 
-  <div *ngIf="cargando()">
-    Cargando museos...
-  </div>
+        <span
+          class="public-list__count"
+          *ngIf="!cargando() && !error()"
+        >
+          <strong>{{ total() }}</strong>
+          {{ total() === 1 ? 'publicado' : 'publicados' }}
+        </span>
+      </div>
 
-  <div *ngIf="error()">
-    {{ error() }}
-  </div>
+      <p>
+        Conoce los museos y espacios destinados a la
+        conservación, memoria y difusión cultural de Zamora.
+      </p>
+    </header>
 
-  <div
-    *ngIf="!cargando() && !error() && museos().length === 0"
-  >
-    No se encontraron museos publicados.
-  </div>
+    <section class="public-search">
+      <div class="public-search__heading">
+        <strong>Buscar museos</strong>
 
-  <div *ngFor="let museo of museos()">
-    <h2>
-      <ng-container
-        *ngFor="let segmento of segmentarCoincidencias(museo.nombre)"
-      >
-        <mark *ngIf="segmento.coincide">
-          {{ segmento.texto }}
-        </mark>
+        <span>
+          Nombre, ubicación, horario, responsable o información relacionada
+        </span>
+      </div>
 
-        <ng-container *ngIf="!segmento.coincide">
-          {{ segmento.texto }}
-        </ng-container>
-      </ng-container>
-    </h2>
+      <div class="public-search__control">
+        <input
+          #searchInput
+          type="search"
+          autocomplete="off"
+          aria-label="Buscar museos"
+          placeholder="Ej. municipal, cultura, horario, responsable..."
+          [value]="search()"
+          (input)="actualizarBusqueda(searchInput.value)"
+        />
 
-    <p>
-      <ng-container
-        *ngFor="let segmento of segmentarCoincidencias(museo.ubicacion)"
-      >
-        <mark *ngIf="segmento.coincide">
-          {{ segmento.texto }}
-        </mark>
-
-        <ng-container *ngIf="!segmento.coincide">
-          {{ segmento.texto }}
-        </ng-container>
-      </ng-container>
-    </p>
-
-    <ng-container
-      *ngIf="obtenerCoincidenciaSecundaria(museo) as coincidencia"
-    >
-      <div>
-        <strong>{{ coincidencia.etiqueta }}:</strong>
-
-        <ng-container
-          *ngFor="
-            let segmento of segmentarCoincidencias(
-              coincidencia.texto
-            )
+        <button
+          type="button"
+          *ngIf="search()"
+          (click)="
+            limpiarBusqueda();
+            searchInput.value = ''
           "
         >
-          <mark *ngIf="segmento.coincide">
-            {{ segmento.texto }}
-          </mark>
-
-          <ng-container *ngIf="!segmento.coincide">
-            {{ segmento.texto }}
-          </ng-container>
-        </ng-container>
+          Limpiar
+        </button>
       </div>
-    </ng-container>
+    </section>
 
-    <a [routerLink]="['/public/museos', museo.id]">
-      Ver información
-    </a>
-  </div>
-
-  <div
-    *ngIf="!cargando() && !error() && totalPages() > 1"
-  >
-    <button
-      type="button"
-      (click)="paginaAnterior()"
-      [disabled]="page() <= 1"
+    <div
+      class="public-state"
+      *ngIf="cargando()"
     >
-      Anterior
-    </button>
+      Cargando museos...
+    </div>
 
-    <span>
-      Página {{ page() }} de {{ totalPages() }}
-    </span>
-
-    <button
-      type="button"
-      (click)="paginaSiguiente()"
-      [disabled]="page() >= totalPages()"
+    <div
+      class="public-state public-state--error"
+      *ngIf="error()"
     >
-      Siguiente
-    </button>
+      {{ error() }}
+    </div>
+
+    <div
+      class="public-state"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        museos().length === 0
+      "
+    >
+      <strong>No se encontraron museos.</strong>
+
+      <span *ngIf="search()">
+        Prueba con otra palabra o término de búsqueda.
+      </span>
+    </div>
+
+    <section
+      class="public-grid"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        museos().length > 0
+      "
+    >
+      <a
+        class="public-card"
+        *ngFor="let museo of museos()"
+        [routerLink]="['/public/museos', museo.id]"
+      >
+        <div class="public-card__media">
+
+          <img
+            *ngIf="museo.fotografiaPrincipalUrl"
+            [src]="museo.fotografiaPrincipalUrl"
+            [alt]="museo.nombre"
+            loading="lazy"
+          />
+
+          <div
+            class="public-card__placeholder"
+            *ngIf="!museo.fotografiaPrincipalUrl"
+          >
+            <span class="public-card__placeholder-icon">
+              M
+            </span>
+
+            <span class="public-card__placeholder-title">
+              Museo
+            </span>
+
+            <small>
+              Sin fotografía disponible
+            </small>
+          </div>
+
+        </div>
+
+        <div class="public-card__content">
+
+          <h2>
+            <ng-container
+              *ngFor="
+                let segmento of segmentarCoincidencias(
+                  museo.nombre
+                )
+              "
+            >
+              <mark *ngIf="segmento.coincide">
+                {{ segmento.texto }}
+              </mark>
+
+              <ng-container *ngIf="!segmento.coincide">
+                {{ segmento.texto }}
+              </ng-container>
+            </ng-container>
+          </h2>
+
+          <p class="public-card__location">
+            <span class="public-card__dot"></span>
+
+            <span>
+              <ng-container
+                *ngFor="
+                  let segmento of segmentarCoincidencias(
+                    museo.ubicacion
+                  )
+                "
+              >
+                <mark *ngIf="segmento.coincide">
+                  {{ segmento.texto }}
+                </mark>
+
+                <ng-container *ngIf="!segmento.coincide">
+                  {{ segmento.texto }}
+                </ng-container>
+              </ng-container>
+            </span>
+          </p>
+
+          <ng-container
+            *ngIf="
+              obtenerCoincidenciaSecundaria(museo)
+                as coincidencia
+            "
+          >
+            <div class="public-card__match">
+
+              <span class="public-card__match-label">
+                Coincidencia en {{ coincidencia.etiqueta }}
+              </span>
+
+              <p>
+                <ng-container
+                  *ngFor="
+                    let segmento of segmentarCoincidencias(
+                      coincidencia.texto
+                    )
+                  "
+                >
+                  <mark *ngIf="segmento.coincide">
+                    {{ segmento.texto }}
+                  </mark>
+
+                  <ng-container *ngIf="!segmento.coincide">
+                    {{ segmento.texto }}
+                  </ng-container>
+                </ng-container>
+              </p>
+
+            </div>
+          </ng-container>
+
+          <span class="public-card__action">
+            <span>Ver información</span>
+            <span aria-hidden="true">→</span>
+          </span>
+
+        </div>
+      </a>
+    </section>
+
+    <nav
+      class="public-pagination"
+      *ngIf="
+        !cargando() &&
+        !error() &&
+        totalPages() > 1
+      "
+      aria-label="Paginación de museos"
+    >
+      <button
+        type="button"
+        (click)="paginaAnterior()"
+        [disabled]="page() <= 1"
+      >
+        ← Anterior
+      </button>
+
+      <span>
+        Página
+        <strong>{{ page() }}</strong>
+        de
+        <strong>{{ totalPages() }}</strong>
+      </span>
+
+      <button
+        type="button"
+        (click)="paginaSiguiente()"
+        [disabled]="page() >= totalPages()"
+      >
+        Siguiente →
+      </button>
+    </nav>
+
   </div>
-</section>
+</main>

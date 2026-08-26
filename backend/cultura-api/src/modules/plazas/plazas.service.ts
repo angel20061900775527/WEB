@@ -1,22 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoPlaza } from './enums/estado-plaza.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
 import { validateHistoricalDate } from '../../common/utils/date-validation.util';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreatePlazaDto } from './dto/request/create-plaza.dto';
 import { UpdateEstadoPlazaDto } from './dto/request/update-estado-plaza.dto';
 import { UpdatePlazaDto } from './dto/request/update-plaza.dto';
 import { PlazaResponseDto } from './dto/response/plaza-response.dto';
 import { Plaza } from './entities/plaza.entity';
+import { EstadoPlaza } from './enums/estado-plaza.enum';
 
 @Injectable()
 export class PlazasService extends BasePatrimonialService<Plaza> {
   constructor(
     @InjectRepository(Plaza)
     private readonly plazasRepository: Repository<Plaza>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(plazasRepository, 'plaza');
   }
@@ -40,6 +46,7 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto): Promise<{
     plazas: PlazaResponseDto[];
     total: number;
@@ -56,8 +63,20 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
       PlazaResponseDto.fromEntity(plaza),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((plaza) => plaza.fotografiaPrincipalId),
+    );
+
+    const plazas = result.items.map((plaza) => ({
+      ...plaza,
+
+      fotografiaPrincipalUrl: plaza.fotografiaPrincipalId
+        ? (urlsFotografias[String(plaza.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      plazas: result.items,
+      plazas,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -74,6 +93,7 @@ export class PlazasService extends BasePatrimonialService<Plaza> {
 
     return PlazaResponseDto.fromEntity(plaza);
   }
+
   async findDeleted(query: PaginationQueryDto): Promise<{
     plazas: PlazaResponseDto[];
     total: number;

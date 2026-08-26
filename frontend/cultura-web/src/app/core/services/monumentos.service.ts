@@ -12,11 +12,15 @@ export interface Monumento {
   fechaConstruccion?: string | null;
   estado: EstadoMonumento;
   ubicacion: string;
+
   latitud?: number | null;
   longitud?: number | null;
+
   fuentesInformacion?: string | null;
   observaciones?: string | null;
+
   fotografiaPrincipalId?: string | null;
+  fotografiaPrincipalUrl?: string | null;
 
   tipo?: string | null;
   autor?: string | null;
@@ -40,8 +44,10 @@ export interface CreateMonumentoPayload {
   resenaHistorica?: string | null;
   fechaConstruccion?: string | null;
   ubicacion: string;
+
   latitud?: number | null;
   longitud?: number | null;
+
   fuentesInformacion?: string | null;
   observaciones?: string | null;
 
@@ -56,8 +62,10 @@ export interface UpdateMonumentoPayload {
   resenaHistorica?: string | null;
   fechaConstruccion?: string | null;
   ubicacion?: string;
+
   latitud?: number | null;
   longitud?: number | null;
+
   fuentesInformacion?: string | null;
   observaciones?: string | null;
 

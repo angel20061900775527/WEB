@@ -1,21 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoRio } from './enums/estado-rio.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreateRioDto } from './dto/request/create-rio.dto';
 import { UpdateEstadoRioDto } from './dto/request/update-estado-rio.dto';
 import { UpdateRioDto } from './dto/request/update-rio.dto';
 import { RioResponseDto } from './dto/response/rio-response.dto';
 import { Rio } from './entities/rio.entity';
+import { EstadoRio } from './enums/estado-rio.enum';
 
 @Injectable()
 export class RiosService extends BasePatrimonialService<Rio> {
   constructor(
     @InjectRepository(Rio)
     private readonly riosRepository: Repository<Rio>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(riosRepository, 'río');
   }
@@ -33,6 +39,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto) {
     const publicQuery: PaginationQueryDto = {
       ...query,
@@ -43,8 +50,20 @@ export class RiosService extends BasePatrimonialService<Rio> {
       RioResponseDto.fromEntity(rio),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((rio) => rio.fotografiaPrincipalId),
+    );
+
+    const rios = result.items.map((rio) => ({
+      ...rio,
+
+      fotografiaPrincipalUrl: rio.fotografiaPrincipalId
+        ? (urlsFotografias[String(rio.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      rios: result.items,
+      rios,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -61,6 +80,7 @@ export class RiosService extends BasePatrimonialService<Rio> {
 
     return RioResponseDto.fromEntity(rio);
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (rio) =>
       RioResponseDto.fromEntity(rio),

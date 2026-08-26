@@ -14,13 +14,13 @@ export class AuditorioResponseDto {
 
   @ApiProperty({
     example:
-      'Espacio destinado a la conservación y difusión de la historia y cultura local.',
+      'Espacio destinado a actividades culturales, comunitarias y eventos institucionales.',
   })
   declare descripcion: string;
 
   @ApiPropertyOptional({
     example:
-      'El auditorio conserva colecciones relacionadas con la historia del cantón Zamora.',
+      'El auditorio ha sido utilizado históricamente para actividades culturales y comunitarias del cantón.',
     nullable: true,
   })
   declare resenaHistorica: string | null;
@@ -84,6 +84,13 @@ export class AuditorioResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/auditorios/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-07T16:00:00.000Z',
   })
@@ -94,7 +101,10 @@ export class AuditorioResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(auditorio: Auditorio): AuditorioResponseDto {
+  static fromEntity(
+    auditorio: Auditorio,
+    fotografiaPrincipalUrl: string | null = null,
+  ): AuditorioResponseDto {
     return {
       id: auditorio.id,
       nombre: auditorio.nombre,
@@ -110,6 +120,7 @@ export class AuditorioResponseDto {
       fuentesInformacion: auditorio.fuentesInformacion,
       observaciones: auditorio.observaciones,
       fotografiaPrincipalId: auditorio.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: auditorio.fechaRegistro,
       fechaModificacion: auditorio.fechaModificacion,
     };

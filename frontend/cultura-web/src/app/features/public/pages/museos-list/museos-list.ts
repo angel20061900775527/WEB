@@ -6,6 +6,10 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Museo } from '../../../../core/services/museos.service';
 import { MuseosPublicService } from '../../../../core/services/museos-public.service';
 
+type MuseoPublico = Museo & {
+  fotografiaPrincipalUrl?: string | null;
+};
+
 @Component({
   selector: 'app-public-museos-list',
   imports: [CommonModule, RouterLink],
@@ -18,7 +22,8 @@ export class MuseosList implements OnInit, OnDestroy {
   private readonly searchSubject = new Subject<string>();
   private readonly destroy$ = new Subject<void>();
 
-  readonly museos = signal<Museo[]>([]);
+  readonly museos = signal<MuseoPublico[]>([]);
+
   readonly cargando = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -62,49 +67,86 @@ export class MuseosList implements OnInit, OnDestroy {
     this.museosService.getAll(this.page(), this.limit(), this.search(), 'ASC').subscribe({
       next: (response) => {
         this.museos.set(response.museos);
+
         this.total.set(response.total);
         this.page.set(response.page);
         this.limit.set(response.limit);
         this.totalPages.set(response.totalPages);
+
         this.cargando.set(false);
       },
+
       error: () => {
         this.error.set('No se pudo cargar el listado de museos.');
+
         this.cargando.set(false);
       },
     });
   }
 
   segmentarCoincidencias(texto: string): { texto: string; coincide: boolean }[] {
-    const busqueda = this.search().trim();
+    const busqueda = this.normalizarTexto(this.search().trim());
 
     if (!busqueda) {
-      return [{ texto, coincide: false }];
+      return [
+        {
+          texto,
+          coincide: false,
+        },
+      ];
     }
 
-    const expresionSegura = busqueda.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const textoNormalizado = this.normalizarTexto(texto);
 
-    const regex = new RegExp(`(${expresionSegura})`, 'gi');
+    const segmentos: {
+      texto: string;
+      coincide: boolean;
+    }[] = [];
 
-    return texto
-      .split(regex)
-      .filter((parte) => parte.length > 0)
-      .map((parte) => ({
-        texto: parte,
-        coincide: parte.toLowerCase() === busqueda.toLowerCase(),
-      }));
+    let posicion = 0;
+
+    while (posicion < texto.length) {
+      const indice = textoNormalizado.indexOf(busqueda, posicion);
+
+      if (indice === -1) {
+        segmentos.push({
+          texto: texto.slice(posicion),
+          coincide: false,
+        });
+
+        break;
+      }
+
+      if (indice > posicion) {
+        segmentos.push({
+          texto: texto.slice(posicion, indice),
+          coincide: false,
+        });
+      }
+
+      const fin = indice + busqueda.length;
+
+      segmentos.push({
+        texto: texto.slice(indice, fin),
+        coincide: true,
+      });
+
+      posicion = fin;
+    }
+
+    return segmentos.length > 0 ? segmentos : [{ texto, coincide: false }];
   }
 
-  obtenerCoincidenciaSecundaria(museo: Museo): { etiqueta: string; texto: string } | null {
-    const busqueda = this.search().trim().toLowerCase();
+  obtenerCoincidenciaSecundaria(museo: MuseoPublico): { etiqueta: string; texto: string } | null {
+    const busqueda = this.normalizarTexto(this.search().trim());
 
     if (!busqueda) {
       return null;
     }
 
     if (
-      museo.nombre.toLowerCase().includes(busqueda) ||
-      museo.ubicacion.toLowerCase().includes(busqueda)
+      this.normalizarTexto(museo.nombre).includes(busqueda) ||
+      this.normalizarTexto(museo.ubicacion).includes(busqueda)
     ) {
       return null;
     }
@@ -141,10 +183,10 @@ export class MuseosList implements OnInit, OnDestroy {
     ];
 
     for (const campo of campos) {
-      if (campo.texto?.toLowerCase().includes(busqueda)) {
+      if (campo.texto && this.normalizarTexto(campo.texto).includes(busqueda)) {
         return {
           etiqueta: campo.etiqueta,
-          texto: campo.texto,
+          texto: this.obtenerFragmento(campo.texto),
         };
       }
     }
@@ -168,5 +210,30 @@ export class MuseosList implements OnInit, OnDestroy {
 
     this.page.update((page) => page + 1);
     this.cargarMuseos();
+  }
+
+  private obtenerFragmento(texto: string): string {
+    const busqueda = this.normalizarTexto(this.search().trim());
+
+    const textoNormalizado = this.normalizarTexto(texto);
+
+    const indice = textoNormalizado.indexOf(busqueda);
+
+    if (indice < 0 || texto.length <= 160) {
+      return texto;
+    }
+
+    const inicio = Math.max(0, indice - 60);
+
+    const fin = Math.min(texto.length, indice + busqueda.length + 80);
+
+    return `${inicio > 0 ? '…' : ''}${texto.slice(inicio, fin)}${fin < texto.length ? '…' : ''}`;
+  }
+
+  private normalizarTexto(texto: string): string {
+    return texto
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
   }
 }

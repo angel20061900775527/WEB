@@ -12,11 +12,16 @@ export interface Plaza {
   fechaCreacion: string | null;
   estado: EstadoPlaza;
   ubicacion: string;
+
   latitud: number | null;
   longitud: number | null;
+
   fuentesInformacion: string | null;
   observaciones: string | null;
+
   fotografiaPrincipalId: string | null;
+  fotografiaPrincipalUrl?: string | null;
+
   fechaRegistro: string;
   fechaModificacion: string;
 }
@@ -35,8 +40,10 @@ export interface CreatePlazaPayload {
   resenaHistorica?: string | null;
   fechaCreacion?: string | null;
   ubicacion: string;
+
   latitud?: number | null;
   longitud?: number | null;
+
   fuentesInformacion?: string | null;
   observaciones?: string | null;
 }
@@ -47,8 +54,10 @@ export interface UpdatePlazaPayload {
   resenaHistorica?: string | null;
   fechaCreacion?: string | null;
   ubicacion?: string;
+
   latitud?: number | null;
   longitud?: number | null;
+
   fuentesInformacion?: string | null;
   observaciones?: string | null;
 }

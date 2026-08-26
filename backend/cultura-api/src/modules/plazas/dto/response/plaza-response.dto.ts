@@ -72,6 +72,13 @@ export class PlazaResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/plazas/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-07T16:00:00.000Z',
   })
@@ -82,7 +89,10 @@ export class PlazaResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(plaza: Plaza): PlazaResponseDto {
+  static fromEntity(
+    plaza: Plaza,
+    fotografiaPrincipalUrl: string | null = null,
+  ): PlazaResponseDto {
     return {
       id: plaza.id,
       nombre: plaza.nombre,
@@ -96,6 +106,7 @@ export class PlazaResponseDto {
       fuentesInformacion: plaza.fuentesInformacion,
       observaciones: plaza.observaciones,
       fotografiaPrincipalId: plaza.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: plaza.fechaRegistro,
       fechaModificacion: plaza.fechaModificacion,
     };

@@ -23,6 +23,7 @@ export interface Museo {
   observaciones: string | null;
 
   fotografiaPrincipalId: string | null;
+  fotografiaPrincipalUrl?: string | null;
 
   fechaRegistro: string;
   fechaModificacion: string;

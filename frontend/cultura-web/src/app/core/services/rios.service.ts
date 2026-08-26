@@ -13,7 +13,9 @@ export interface Rio {
   nombre: string;
   descripcion: string;
   resenaHistorica?: string | null;
+
   estado: EstadoRio;
+
   ubicacion: string;
 
   longitudKm?: number | null;
@@ -31,6 +33,7 @@ export interface Rio {
   observaciones?: string | null;
 
   fotografiaPrincipalId?: string | null;
+  fotografiaPrincipalUrl?: string | null;
 
   fechaRegistro: string;
   fechaModificacion: string;
@@ -111,7 +114,9 @@ export class RiosService {
       params = params.set('estado', estado);
     }
 
-    return this.http.get<RiosResponse>(this.apiUrl, { params });
+    return this.http.get<RiosResponse>(this.apiUrl, {
+      params,
+    });
   }
 
   getById(id: string): Observable<Rio> {

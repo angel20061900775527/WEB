@@ -92,6 +92,13 @@ export class MonumentoResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/monumentos/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-05T16:00:00.000Z',
   })
@@ -102,7 +109,10 @@ export class MonumentoResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(monumento: Monumento): MonumentoResponseDto {
+  static fromEntity(
+    monumento: Monumento,
+    fotografiaPrincipalUrl: string | null = null,
+  ): MonumentoResponseDto {
     return {
       id: monumento.id,
       nombre: monumento.nombre,
@@ -119,6 +129,7 @@ export class MonumentoResponseDto {
       fuentesInformacion: monumento.fuentesInformacion,
       observaciones: monumento.observaciones,
       fotografiaPrincipalId: monumento.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: monumento.fechaRegistro,
       fechaModificacion: monumento.fechaModificacion,
     };

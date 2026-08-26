@@ -9,7 +9,9 @@ export class RioResponseDto {
   @ApiProperty({ example: '1' })
   declare id: number;
 
-  @ApiProperty({ example: 'Río Zamora' })
+  @ApiProperty({
+    example: 'Río Zamora',
+  })
   declare nombre: string;
 
   @ApiProperty({
@@ -103,6 +105,13 @@ export class RioResponseDto {
   })
   declare fotografiaPrincipalId: string | null;
 
+  @ApiPropertyOptional({
+    example:
+      'http://localhost:3000/uploads/patrimonio/rios/1724051000000-583920134.jpg',
+    nullable: true,
+  })
+  declare fotografiaPrincipalUrl: string | null;
+
   @ApiProperty({
     example: '2026-08-07T16:00:00.000Z',
   })
@@ -113,7 +122,10 @@ export class RioResponseDto {
   })
   declare fechaModificacion: Date;
 
-  static fromEntity(rio: Rio): RioResponseDto {
+  static fromEntity(
+    rio: Rio,
+    fotografiaPrincipalUrl: string | null = null,
+  ): RioResponseDto {
     return {
       id: rio.id,
       nombre: rio.nombre,
@@ -132,6 +144,7 @@ export class RioResponseDto {
       fuentesInformacion: rio.fuentesInformacion,
       observaciones: rio.observaciones,
       fotografiaPrincipalId: rio.fotografiaPrincipalId,
+      fotografiaPrincipalUrl,
       fechaRegistro: rio.fechaRegistro,
       fechaModificacion: rio.fechaModificacion,
     };

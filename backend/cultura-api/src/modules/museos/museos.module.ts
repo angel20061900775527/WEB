@@ -1,12 +1,15 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MuseosPublicController } from './museos-public.controller';
+
+import { FotografiasModule } from '../fotografias/fotografias.module';
+
 import { Museo } from './entities/museo.entity';
 import { MuseosController } from './museos.controller';
+import { MuseosPublicController } from './museos-public.controller';
 import { MuseosService } from './museos.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Museo])],
+  imports: [TypeOrmModule.forFeature([Museo]), FotografiasModule],
   controllers: [MuseosController, MuseosPublicController],
   providers: [MuseosService],
   exports: [MuseosService],

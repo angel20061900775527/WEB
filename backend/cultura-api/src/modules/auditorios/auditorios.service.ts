@@ -1,21 +1,27 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EstadoAuditorio } from './enums/estado-auditorio.enum';
+
 import { ApiResponseDto } from '../../common/dto/api-response.dto';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto';
 import { BasePatrimonialService } from '../../common/services/base-patrimonial.service';
+
+import { FotografiasService } from '../fotografias/fotografias.service';
+
 import { CreateAuditorioDto } from './dto/request/create-auditorio.dto';
 import { UpdateEstadoAuditorioDto } from './dto/request/update-estado-auditorio.dto';
 import { UpdateAuditorioDto } from './dto/request/update-auditorio.dto';
 import { AuditorioResponseDto } from './dto/response/auditorio-response.dto';
 import { Auditorio } from './entities/auditorio.entity';
+import { EstadoAuditorio } from './enums/estado-auditorio.enum';
 
 @Injectable()
 export class AuditoriosService extends BasePatrimonialService<Auditorio> {
   constructor(
     @InjectRepository(Auditorio)
     private readonly auditoriosRepository: Repository<Auditorio>,
+
+    private readonly fotografiasService: FotografiasService,
   ) {
     super(auditoriosRepository, 'auditorio');
   }
@@ -33,6 +39,7 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
       totalPages: result.totalPages,
     };
   }
+
   async findAllPublic(query: PaginationQueryDto) {
     const publicQuery: PaginationQueryDto = {
       ...query,
@@ -43,8 +50,20 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
       AuditorioResponseDto.fromEntity(auditorio),
     );
 
+    const urlsFotografias = await this.fotografiasService.obtenerUrlsPorIds(
+      result.items.map((auditorio) => auditorio.fotografiaPrincipalId),
+    );
+
+    const auditorios = result.items.map((auditorio) => ({
+      ...auditorio,
+
+      fotografiaPrincipalUrl: auditorio.fotografiaPrincipalId
+        ? (urlsFotografias[String(auditorio.fotografiaPrincipalId)] ?? null)
+        : null,
+    }));
+
     return {
-      auditorios: result.items,
+      auditorios,
       total: result.total,
       page: result.page,
       limit: result.limit,
@@ -61,6 +80,7 @@ export class AuditoriosService extends BasePatrimonialService<Auditorio> {
 
     return AuditorioResponseDto.fromEntity(auditorio);
   }
+
   async findDeleted(query: PaginationQueryDto) {
     const result = await this.findAllDeleted(query, (auditorio) =>
       AuditorioResponseDto.fromEntity(auditorio),
