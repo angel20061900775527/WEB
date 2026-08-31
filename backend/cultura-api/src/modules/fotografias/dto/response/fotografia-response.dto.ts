@@ -46,8 +46,7 @@ export class FotografiaResponseDto {
   declare ruta: string;
 
   @ApiProperty({
-    example:
-      'http://localhost:3000/uploads/patrimonio/parques/1724051000000-583920134.jpg',
+    example: '/uploads/patrimonio/parques/1724051000000-583920134.jpg',
   })
   declare url: string;
 
@@ -78,7 +77,7 @@ export class FotografiaResponseDto {
       mimeType: fotografia.mimeType,
       tamanioBytes: String(fotografia.tamanioBytes),
       ruta: rutaNormalizada,
-      url: `http://localhost:3000${rutaPublica}`,
+      url: rutaPublica,
       descripcion: fotografia.descripcion,
       fechaRegistro: fotografia.fechaRegistro,
     };
