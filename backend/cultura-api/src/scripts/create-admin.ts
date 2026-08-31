@@ -17,6 +17,14 @@ const dataSource = new DataSource({
 });
 
 async function main(): Promise<void> {
+  const adminPassword = process.env.ADMIN_INITIAL_PASSWORD;
+
+  if (!adminPassword) {
+    throw new Error(
+      'ADMIN_INITIAL_PASSWORD no está configurado en las variables de entorno.',
+    );
+  }
+
   await dataSource.initialize();
 
   const repository = dataSource.getRepository(Usuario);
@@ -35,7 +43,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const passwordHash = await bcrypt.hash('Admin123*', 12);
+  const passwordHash = await bcrypt.hash(adminPassword, 12);
 
   const usuario = repository.create({
     username,
@@ -57,6 +65,5 @@ async function main(): Promise<void> {
 
 main().catch((error) => {
   console.error('Error al crear usuario administrador:', error);
-
   process.exit(1);
 });
