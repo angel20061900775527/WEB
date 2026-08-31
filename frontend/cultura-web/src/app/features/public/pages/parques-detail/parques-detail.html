@@ -74,11 +74,24 @@
         fotografiasSecundarias().length === 0
       "
     >
-      <figure class="public-detail__main-image">
+      <figure
+        class="public-detail__main-image"
+        (click)="abrirFotografia(principal)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="
+          'Ampliar fotografía de ' + parque.nombre
+        "
+        (keydown.enter)="abrirFotografia(principal)"
+      >
         <img
           [src]="principal.url"
           [alt]="principal.descripcion || parque.nombre"
         />
+
+        <span class="public-detail__zoom">
+          Ampliar
+        </span>
 
         <figcaption *ngIf="principal.descripcion">
           {{ principal.descripcion }}
@@ -95,6 +108,13 @@
             let fotografia of fotografiasSecundarias()
               | slice: 0 : 3
           "
+          (click)="abrirFotografia(fotografia)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="
+            'Ampliar fotografía de ' + parque.nombre
+          "
+          (keydown.enter)="abrirFotografia(fotografia)"
         >
           <img
             [src]="fotografia.url"
@@ -228,4 +248,76 @@
       />
     </section>
   </article>
+
+  <div
+    class="photo-viewer"
+    *ngIf="fotografiaSeleccionada() as fotografia"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Visor de fotografías"
+    (click)="cerrarFotografia()"
+  >
+    <div
+      class="photo-viewer__content"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="photo-viewer__close"
+        aria-label="Cerrar fotografía"
+        (click)="cerrarFotografia()"
+      >
+        ×
+      </button>
+
+      <button
+        *ngIf="fotografiasGaleria().length > 1"
+        type="button"
+        class="
+          photo-viewer__navigation
+          photo-viewer__navigation--previous
+        "
+        aria-label="Fotografía anterior"
+        (click)="fotografiaAnterior()"
+      >
+        ‹
+      </button>
+
+      <div class="photo-viewer__image-container">
+        <img
+          [src]="fotografia.url"
+          [alt]="
+            fotografia.descripcion ||
+            parque()?.nombre ||
+            'Fotografía patrimonial'
+          "
+        />
+      </div>
+
+      <button
+        *ngIf="fotografiasGaleria().length > 1"
+        type="button"
+        class="
+          photo-viewer__navigation
+          photo-viewer__navigation--next
+        "
+        aria-label="Fotografía siguiente"
+        (click)="fotografiaSiguiente()"
+      >
+        ›
+      </button>
+
+      <div class="photo-viewer__information">
+        <span class="photo-viewer__counter">
+          {{ indiceFotografiaSeleccionada() + 1 }}
+          /
+          {{ fotografiasGaleria().length }}
+        </span>
+
+        <p *ngIf="fotografia.descripcion">
+          {{ fotografia.descripcion }}
+        </p>
+      </div>
+    </div>
+  </div>
 </section>

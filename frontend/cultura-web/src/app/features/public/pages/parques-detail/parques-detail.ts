@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Fotografia } from '../../../../core/services/fotografias.service';
@@ -16,6 +16,7 @@ import { PatrimonialMap } from '../../../../shared/components/patrimonial-map/pa
 })
 export class ParquesDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
 
   private readonly parquesService = inject(ParquesPublicService);
 
@@ -29,6 +30,8 @@ export class ParquesDetail implements OnInit {
 
   readonly error = signal<string | null>(null);
   readonly errorFotografias = signal<string | null>(null);
+
+  readonly fotografiaSeleccionada = signal<Fotografia | null>(null);
 
   readonly fotografiaPrincipal = computed(() => {
     const parque = this.parque();
@@ -63,6 +66,28 @@ export class ParquesDetail implements OnInit {
     );
   });
 
+  readonly fotografiasGaleria = computed(() => {
+    const principal = this.fotografiaPrincipal();
+
+    if (!principal) {
+      return this.fotografias();
+    }
+
+    return [principal, ...this.fotografiasSecundarias()];
+  });
+
+  readonly indiceFotografiaSeleccionada = computed(() => {
+    const seleccionada = this.fotografiaSeleccionada();
+
+    if (!seleccionada) {
+      return -1;
+    }
+
+    return this.fotografiasGaleria().findIndex(
+      (fotografia) => String(fotografia.id) === String(seleccionada.id),
+    );
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -72,6 +97,67 @@ export class ParquesDetail implements OnInit {
     }
 
     this.cargarParque(id);
+  }
+
+  abrirFotografia(fotografia: Fotografia): void {
+    this.fotografiaSeleccionada.set(fotografia);
+
+    this.document.body.style.overflow = 'hidden';
+  }
+
+  cerrarFotografia(): void {
+    this.fotografiaSeleccionada.set(null);
+
+    this.document.body.style.overflow = '';
+  }
+
+  fotografiaAnterior(): void {
+    const fotografias = this.fotografiasGaleria();
+
+    if (fotografias.length <= 1) {
+      return;
+    }
+
+    const indice = this.indiceFotografiaSeleccionada();
+
+    const nuevoIndice = indice <= 0 ? fotografias.length - 1 : indice - 1;
+
+    this.fotografiaSeleccionada.set(fotografias[nuevoIndice]);
+  }
+
+  fotografiaSiguiente(): void {
+    const fotografias = this.fotografiasGaleria();
+
+    if (fotografias.length <= 1) {
+      return;
+    }
+
+    const indice = this.indiceFotografiaSeleccionada();
+
+    const nuevoIndice = indice >= fotografias.length - 1 ? 0 : indice + 1;
+
+    this.fotografiaSeleccionada.set(fotografias[nuevoIndice]);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.cerrarFotografia();
+    }
+  }
+
+  @HostListener('document:keydown.arrowleft')
+  onArrowLeft(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.fotografiaAnterior();
+    }
+  }
+
+  @HostListener('document:keydown.arrowright')
+  onArrowRight(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.fotografiaSiguiente();
+    }
   }
 
   private cargarParque(id: string): void {
