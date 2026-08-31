@@ -1,52 +1,55 @@
 <section class="public-detail">
-  <nav class="public-detail__navigation">
-    <a
-      class="public-detail__back"
-      [routerLink]="['/public/parques']"
-    >
-      <span aria-hidden="true">←</span>
-      <span>Volver a Parques</span>
-    </a>
-  </nav>
+  <header class="public-detail__hero">
+    <div class="public-detail__hero-inner">
+      <a
+        class="public-detail__back"
+        [routerLink]="['/public/parques']"
+      >
+        <span aria-hidden="true">←</span>
+        <span>Volver a Parques</span>
+      </a>
 
-  <div
-    class="public-detail__state"
-    *ngIf="cargando()"
-  >
-    Cargando información...
-  </div>
-
-  <div
-    class="public-detail__state public-detail__state--error"
-    *ngIf="error()"
-  >
-    {{ error() }}
-  </div>
-
-  <article *ngIf="parque() as parque">
-    <header class="public-detail__header">
-      <span class="public-detail__eyebrow">
-        Patrimonio cultural
-        <span aria-hidden="true">·</span>
-        Parque
-      </span>
-
-      <h1>
-        {{ parque.nombre }}
-      </h1>
-
-      <div class="public-detail__location">
-        <span
-          class="public-detail__location-marker"
-          aria-hidden="true"
-        ></span>
-
-        <span>
-          {{ parque.ubicacion }}
-        </span>
+      <div
+        class="public-detail__state"
+        *ngIf="cargando()"
+      >
+        Cargando información...
       </div>
-    </header>
 
+      <div
+        class="public-detail__state public-detail__state--error"
+        *ngIf="error()"
+      >
+        {{ error() }}
+      </div>
+
+      <div *ngIf="parque() as parque">
+        <span class="public-detail__eyebrow">
+          Patrimonio cultural · Parque
+        </span>
+
+        <h1>
+          {{ parque.nombre }}
+        </h1>
+
+        <div class="public-detail__location">
+          <span
+            class="public-detail__location-dot"
+            aria-hidden="true"
+          ></span>
+
+          <span>
+            {{ parque.ubicacion }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <article
+    class="public-detail__body"
+    *ngIf="parque() as parque"
+  >
     <div
       class="public-detail__state"
       *ngIf="cargandoFotografias()"
@@ -67,54 +70,46 @@
         !cargandoFotografias() &&
         fotografiaPrincipal() as principal
       "
+      [class.public-detail__gallery--single]="
+        fotografiasSecundarias().length === 0
+      "
     >
       <figure class="public-detail__main-image">
         <img
           [src]="principal.url"
-          [alt]="
-            principal.descripcion ||
-            parque.nombre
-          "
+          [alt]="principal.descripcion || parque.nombre"
         />
 
-        <figcaption
-          *ngIf="principal.descripcion"
-        >
+        <figcaption *ngIf="principal.descripcion">
           {{ principal.descripcion }}
         </figcaption>
       </figure>
 
       <div
         class="public-detail__secondary-images"
-        *ngIf="
-          fotografiasSecundarias().length > 0
-        "
+        *ngIf="fotografiasSecundarias().length > 0"
       >
         <figure
           class="public-detail__secondary-image"
           *ngFor="
             let fotografia of fotografiasSecundarias()
+              | slice: 0 : 3
           "
         >
           <img
             [src]="fotografia.url"
-            [alt]="
-              fotografia.descripcion ||
-              parque.nombre
-            "
+            [alt]="fotografia.descripcion || parque.nombre"
           />
 
-          <figcaption
-            *ngIf="fotografia.descripcion"
-          >
+          <figcaption *ngIf="fotografia.descripcion">
             {{ fotografia.descripcion }}
           </figcaption>
         </figure>
       </div>
     </section>
 
-    <div class="public-detail__information">
-      <main class="public-detail__main-content">
+    <section class="public-detail__information">
+      <div class="public-detail__main-content">
         <section class="public-detail__section">
           <span class="public-detail__section-label">
             Información
@@ -145,7 +140,7 @@
             {{ parque.resenaHistorica }}
           </p>
         </section>
-      </main>
+      </div>
 
       <aside class="public-detail__sidebar">
         <div
@@ -182,7 +177,7 @@
             Coordenadas
           </span>
 
-          <strong class="public-detail__coordinates">
+          <strong>
             {{ parque.latitud }},
             {{ parque.longitud }}
           </strong>
@@ -201,7 +196,7 @@
           </p>
         </div>
       </aside>
-    </div>
+    </section>
 
     <section
       class="public-detail__map-section"
@@ -210,6 +205,22 @@
         parque.longitud != null
       "
     >
+      <div class="public-detail__map-heading">
+        <div>
+          <span class="public-detail__section-label">
+            Ubicación
+          </span>
+
+          <h2>
+            Conoce dónde se encuentra
+          </h2>
+        </div>
+
+        <p>
+          Consulta la localización registrada de este elemento patrimonial.
+        </p>
+      </div>
+
       <app-patrimonial-map
         [latitud]="parque.latitud"
         [longitud]="parque.longitud"
