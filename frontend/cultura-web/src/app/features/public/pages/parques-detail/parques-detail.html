@@ -1,9 +1,15 @@
 <section class="public-detail">
-  <a class="public-detail__back" [routerLink]="['/public/parques']">
+  <a
+    class="public-detail__back"
+    [routerLink]="['/public/parques']"
+  >
     ← Volver a Parques
   </a>
 
-  <div class="public-detail__state" *ngIf="cargando()">
+  <div
+    class="public-detail__state"
+    *ngIf="cargando()"
+  >
     Cargando información...
   </div>
 
@@ -20,7 +26,9 @@
         Patrimonio cultural · Parque
       </span>
 
-      <h1>{{ parque.nombre }}</h1>
+      <h1>
+        {{ parque.nombre }}
+      </h1>
 
       <p class="public-detail__location">
         {{ parque.ubicacion }}
@@ -43,33 +51,50 @@
 
     <section
       class="public-detail__gallery"
-      *ngIf="!cargandoFotografias() && fotografiaPrincipal() as principal"
+      *ngIf="
+        !cargandoFotografias() &&
+        fotografiaPrincipal() as principal
+      "
     >
       <figure class="public-detail__main-image">
         <img
           [src]="principal.url"
-          [alt]="principal.descripcion || parque.nombre"
+          [alt]="
+            principal.descripcion ||
+            parque.nombre
+          "
         />
 
-        <figcaption *ngIf="principal.descripcion">
+        <figcaption
+          *ngIf="principal.descripcion"
+        >
           {{ principal.descripcion }}
         </figcaption>
       </figure>
 
       <div
         class="public-detail__secondary-images"
-        *ngIf="fotografiasSecundarias().length > 0"
+        *ngIf="
+          fotografiasSecundarias().length > 0
+        "
       >
         <figure
           class="public-detail__secondary-image"
-          *ngFor="let fotografia of fotografiasSecundarias()"
+          *ngFor="
+            let fotografia of fotografiasSecundarias()
+          "
         >
           <img
             [src]="fotografia.url"
-            [alt]="fotografia.descripcion || parque.nombre"
+            [alt]="
+              fotografia.descripcion ||
+              parque.nombre
+            "
           />
 
-          <figcaption *ngIf="fotografia.descripcion">
+          <figcaption
+            *ngIf="fotografia.descripcion"
+          >
             {{ fotografia.descripcion }}
           </figcaption>
         </figure>
@@ -78,41 +103,63 @@
 
     <div class="public-detail__content">
       <section class="public-detail__section">
-        <h2>Descripción</h2>
-        <p>{{ parque.descripcion }}</p>
+        <h2>
+          Descripción
+        </h2>
+
+        <p>
+          {{ parque.descripcion }}
+        </p>
       </section>
 
       <section
         class="public-detail__section"
         *ngIf="parque.resenaHistorica"
       >
-        <h2>Reseña histórica</h2>
-        <p>{{ parque.resenaHistorica }}</p>
+        <h2>
+          Reseña histórica
+        </h2>
+
+        <p>
+          {{ parque.resenaHistorica }}
+        </p>
       </section>
 
       <section
         class="public-detail__section"
         *ngIf="parque.fechaCreacion"
       >
-        <h2>Fecha de creación</h2>
-        <p>{{ parque.fechaCreacion }}</p>
+        <h2>
+          Fecha de creación
+        </h2>
+
+        <p>
+          {{ parque.fechaCreacion }}
+        </p>
       </section>
 
       <section
         class="public-detail__section"
         *ngIf="parque.fuentesInformacion"
       >
-        <h2>Fuentes de información</h2>
-        <p>{{ parque.fuentesInformacion }}</p>
-      </section>
+        <h2>
+          Fuentes de información
+        </h2>
 
-      <section
-        class="public-detail__section"
-        *ngIf="parque.latitud != null && parque.longitud != null"
-      >
-        <h2>Coordenadas</h2>
-        <p>{{ parque.latitud }}, {{ parque.longitud }}</p>
+        <p>
+          {{ parque.fuentesInformacion }}
+        </p>
       </section>
     </div>
+
+    <app-patrimonial-map
+      *ngIf="
+        parque.latitud != null &&
+        parque.longitud != null
+      "
+      [latitud]="parque.latitud"
+      [longitud]="parque.longitud"
+      [titulo]="parque.nombre"
+    />
   </article>
 </section>

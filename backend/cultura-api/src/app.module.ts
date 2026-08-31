@@ -38,7 +38,7 @@ import { UsuariosModule } from './modules/usuarios/usuarios.module';
          * La estructura de la base de datos se administrará
          * mediante migraciones de TypeORM.
          */
-        synchronize: true,
+        synchronize: false,
 
         logging: false,
       }),

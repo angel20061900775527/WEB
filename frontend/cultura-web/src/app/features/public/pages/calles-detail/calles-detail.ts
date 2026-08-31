@@ -6,10 +6,11 @@ import { Calle } from '../../../../core/services/calles.service';
 import { CallesPublicService } from '../../../../core/services/calles-public.service';
 import { Fotografia } from '../../../../core/services/fotografias.service';
 import { FotografiasPublicService } from '../../../../core/services/fotografias-public.service';
+import { PatrimonialMap } from '../../../../shared/components/patrimonial-map/patrimonial-map';
 
 @Component({
   selector: 'app-public-calles-detail',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PatrimonialMap],
   templateUrl: './calles-detail.html',
   styleUrl: './calles-detail.scss',
 })
@@ -80,8 +81,9 @@ export class CallesDetail implements OnInit {
         this.calle.set(calle);
         this.cargando.set(false);
 
-        this.cargarFotografias(calle.id);
+        this.cargarFotografias(String(calle.id));
       },
+
       error: () => {
         this.error.set('No se encontró la calle solicitada.');
         this.cargando.set(false);
@@ -98,9 +100,12 @@ export class CallesDetail implements OnInit {
         this.fotografias.set(fotografias);
         this.cargandoFotografias.set(false);
       },
+
       error: () => {
         this.fotografias.set([]);
+
         this.errorFotografias.set('No se pudieron cargar las fotografías.');
+
         this.cargandoFotografias.set(false);
       },
     });

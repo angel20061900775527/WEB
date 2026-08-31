@@ -1,0 +1,30 @@
+@if (tieneCoordenadasValidas()) {
+  <section class="patrimonial-map">
+    <div class="patrimonial-map__header">
+      <div>
+        <span class="patrimonial-map__eyebrow">
+          Localización
+        </span>
+
+        <h2>Ubicación en el mapa</h2>
+      </div>
+
+      <span class="patrimonial-map__coordinates">
+        {{ latitud }}, {{ longitud }}
+      </span>
+    </div>
+
+    <div
+      #mapContainer
+      class="patrimonial-map__canvas"
+      role="region"
+      [attr.aria-label]="'Ubicación de ' + titulo"
+    ></div>
+
+    <div class="patrimonial-map__footer">
+      <span>
+        Usa los controles del mapa para acercar o alejar.
+      </span>
+    </div>
+  </section>
+}

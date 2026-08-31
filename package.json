@@ -1,5 +1,9 @@
 {
   "devDependencies": {
+    "@types/leaflet": "^1.9.22",
     "@types/multer": "^2.2.0"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4"
   }
 }

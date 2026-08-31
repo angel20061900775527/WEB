@@ -6,10 +6,11 @@ import { Fotografia } from '../../../../core/services/fotografias.service';
 import { FotografiasPublicService } from '../../../../core/services/fotografias-public.service';
 import { Parque } from '../../../../core/services/parques.service';
 import { ParquesPublicService } from '../../../../core/services/parques-public.service';
+import { PatrimonialMap } from '../../../../shared/components/patrimonial-map/patrimonial-map';
 
 @Component({
   selector: 'app-public-parques-detail',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PatrimonialMap],
   templateUrl: './parques-detail.html',
   styleUrl: './parques-detail.scss',
 })
@@ -80,8 +81,9 @@ export class ParquesDetail implements OnInit {
         this.parque.set(parque);
         this.cargando.set(false);
 
-        this.cargarFotografias(parque.id);
+        this.cargarFotografias(String(parque.id));
       },
+
       error: () => {
         this.error.set('No se encontró el parque solicitado.');
         this.cargando.set(false);
@@ -98,9 +100,12 @@ export class ParquesDetail implements OnInit {
         this.fotografias.set(fotografias);
         this.cargandoFotografias.set(false);
       },
+
       error: () => {
         this.fotografias.set([]);
+
         this.errorFotografias.set('No se pudieron cargar las fotografías.');
+
         this.cargandoFotografias.set(false);
       },
     });

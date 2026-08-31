@@ -1,0 +1,102 @@
+:host {
+  display: block;
+}
+
+.patrimonial-map {
+  overflow: hidden;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 14px;
+  background: var(--sigpac-surface);
+  box-shadow: var(--sigpac-shadow);
+}
+
+.patrimonial-map__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--sigpac-border);
+}
+
+.patrimonial-map__eyebrow {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--sigpac-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.patrimonial-map__header h2 {
+  margin: 0;
+  color: var(--sigpac-text);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.patrimonial-map__coordinates {
+  color: var(--sigpac-text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.patrimonial-map__canvas {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background: var(--sigpac-surface-soft);
+  z-index: 0;
+}
+
+.patrimonial-map__footer {
+  padding: 9px 18px;
+  border-top: 1px solid var(--sigpac-border);
+  color: var(--sigpac-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/*
+ * Leaflet crea internamente elementos con z-index altos.
+ * Mantener el mapa contenido evita que sus controles
+ * interfieran con otros elementos de la interfaz.
+ */
+:host ::ng-deep .leaflet-container {
+  font-family: inherit;
+}
+
+:host ::ng-deep .leaflet-control-zoom {
+  border: 0;
+  box-shadow: var(--sigpac-shadow);
+}
+
+:host ::ng-deep .leaflet-control-zoom a {
+  color: var(--sigpac-text);
+}
+
+:host ::ng-deep .leaflet-control-attribution {
+  font-size: 10px;
+}
+
+@media (max-width: 768px) {
+  .patrimonial-map__header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+    padding: 14px;
+  }
+
+  .patrimonial-map__coordinates {
+    white-space: normal;
+  }
+
+  .patrimonial-map__canvas {
+    height: 300px;
+  }
+
+  .patrimonial-map__footer {
+    padding: 9px 14px;
+  }
+}
