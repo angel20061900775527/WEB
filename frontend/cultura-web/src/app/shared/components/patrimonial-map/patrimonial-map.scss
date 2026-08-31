@@ -5,7 +5,7 @@
 .patrimonial-map {
   overflow: hidden;
   border: 1px solid var(--sigpac-border);
-  border-radius: 14px;
+  border-radius: 18px;
   background: var(--sigpac-surface);
   box-shadow: var(--sigpac-shadow);
 }
@@ -14,89 +14,255 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  padding: 16px 18px;
-  border-bottom: 1px solid var(--sigpac-border);
+  gap: 32px;
+  padding: 20px 22px;
+  background: var(--sigpac-surface);
+}
+
+.patrimonial-map__heading {
+  min-width: 0;
 }
 
 .patrimonial-map__eyebrow {
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
   color: var(--sigpac-primary);
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.patrimonial-map__header h2 {
+.patrimonial-map__heading h2 {
   margin: 0;
   color: var(--sigpac-text);
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.patrimonial-map__heading p {
+  margin: 6px 0 0;
+  color: var(--sigpac-text-muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .patrimonial-map__coordinates {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 3px;
+  padding: 9px 12px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 10px;
+  background: var(--sigpac-surface-soft);
+}
+
+.patrimonial-map__coordinates-label {
   color: var(--sigpac-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.patrimonial-map__coordinates strong {
+  color: var(--sigpac-text);
   font-size: 12px;
+  font-weight: 650;
   white-space: nowrap;
+}
+
+.patrimonial-map__map-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--sigpac-border);
+  border-bottom: 1px solid var(--sigpac-border);
 }
 
 .patrimonial-map__canvas {
   position: relative;
   width: 100%;
-  height: 360px;
+  height: 430px;
   background: var(--sigpac-surface-soft);
   z-index: 0;
 }
 
+.patrimonial-map__badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 500;
+
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 11px;
+
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+
+  color: #252525;
+  font-size: 11px;
+  font-weight: 700;
+
+  backdrop-filter: blur(8px);
+}
+
+.patrimonial-map__badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sigpac-primary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+}
+
 .patrimonial-map__footer {
-  padding: 9px 18px;
-  border-top: 1px solid var(--sigpac-border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 8px 18px;
+
   color: var(--sigpac-text-muted);
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.4;
 }
 
+.patrimonial-map__footer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 18px;
+  height: 18px;
+
+  border: 1px solid var(--sigpac-border);
+  border-radius: 50%;
+
+  color: var(--sigpac-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
 /*
- * Leaflet crea internamente elementos con z-index altos.
- * Mantener el mapa contenido evita que sus controles
- * interfieran con otros elementos de la interfaz.
+ * Leaflet
  */
+
 :host ::ng-deep .leaflet-container {
   font-family: inherit;
+  background: var(--sigpac-surface-soft);
 }
 
 :host ::ng-deep .leaflet-control-zoom {
+  overflow: hidden;
   border: 0;
-  box-shadow: var(--sigpac-shadow);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.16);
 }
 
 :host ::ng-deep .leaflet-control-zoom a {
-  color: var(--sigpac-text);
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+
+  border-color: var(--sigpac-border);
+
+  background: rgba(255, 255, 255, 0.95);
+
+  color: #252525;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+:host ::ng-deep .leaflet-control-zoom a:hover {
+  background: #ffffff;
+  color: var(--sigpac-primary);
 }
 
 :host ::ng-deep .leaflet-control-attribution {
-  font-size: 10px;
+  padding: 3px 6px;
+
+  background: rgba(255, 255, 255, 0.86);
+
+  color: #555;
+  font-size: 9px;
+
+  backdrop-filter: blur(6px);
+}
+
+:host ::ng-deep .leaflet-tooltip {
+  padding: 7px 10px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: rgba(30, 30, 30, 0.92);
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+:host ::ng-deep .leaflet-tooltip-top::before {
+  border-top-color: rgba(30, 30, 30, 0.92);
 }
 
 @media (max-width: 768px) {
+  .patrimonial-map {
+    border-radius: 14px;
+  }
+
   .patrimonial-map__header {
     align-items: flex-start;
     flex-direction: column;
-    gap: 7px;
-    padding: 14px;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .patrimonial-map__heading h2 {
+    font-size: 18px;
   }
 
   .patrimonial-map__coordinates {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .patrimonial-map__coordinates strong {
     white-space: normal;
   }
 
   .patrimonial-map__canvas {
-    height: 300px;
+    height: 340px;
+  }
+
+  .patrimonial-map__badge {
+    top: 12px;
+    right: 12px;
   }
 
   .patrimonial-map__footer {
+    align-items: flex-start;
     padding: 9px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .patrimonial-map__canvas {
+    height: 300px;
+  }
+
+  .patrimonial-map__badge {
+    display: none;
   }
 }

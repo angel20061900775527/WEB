@@ -16,7 +16,9 @@ import { PatrimonialMap } from '../../../../shared/components/patrimonial-map/pa
 })
 export class ParquesDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+
   private readonly parquesService = inject(ParquesPublicService);
+
   private readonly fotografiasService = inject(FotografiasPublicService);
 
   readonly parque = signal<Parque | null>(null);
@@ -86,6 +88,7 @@ export class ParquesDetail implements OnInit {
 
       error: () => {
         this.error.set('No se encontró el parque solicitado.');
+
         this.cargando.set(false);
       },
     });

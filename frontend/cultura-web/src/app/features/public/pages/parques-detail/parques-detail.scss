@@ -3,168 +3,391 @@
 }
 
 .public-detail {
-  width: min(1100px, calc(100% - 32px));
+  width: min(1180px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 40px 0 64px;
+  padding: 30px 0 72px;
+}
+
+/* Navegación */
+
+.public-detail__navigation {
+  margin-bottom: 26px;
 }
 
 .public-detail__back {
-  display: inline-block;
-  margin-bottom: 32px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  color: var(--sigpac-text-muted);
+  font-size: 13px;
+  font-weight: 650;
   text-decoration: none;
+
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
 }
 
 .public-detail__back:hover {
-  text-decoration: underline;
+  color: var(--sigpac-primary);
+  transform: translateX(-2px);
 }
 
+/* Cabecera */
+
 .public-detail__header {
-  margin-bottom: 36px;
+  max-width: 900px;
+  margin-bottom: 30px;
 }
 
 .public-detail__eyebrow {
   display: inline-block;
-  margin-bottom: 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+
+  color: var(--sigpac-primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  opacity: 0.6;
 }
 
 .public-detail__header h1 {
   margin: 0;
-  font-size: clamp(2.3rem, 6vw, 4.5rem);
-  line-height: 1.05;
+
+  color: var(--sigpac-text);
+  font-size: clamp(2.1rem, 4.5vw, 3.7rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
 }
 
 .public-detail__location {
-  margin: 18px 0 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: 15px;
+
+  color: var(--sigpac-text-muted);
+  font-size: 14px;
+  font-weight: 550;
 }
 
+.public-detail__location-marker {
+  display: inline-block;
+
+  width: 9px;
+  height: 9px;
+
+  border: 2px solid var(--sigpac-primary);
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 3px
+    color-mix(
+      in srgb,
+      var(--sigpac-primary) 12%,
+      transparent
+    );
+}
+
+/* Galería */
+
 .public-detail__gallery {
-  margin-bottom: 40px;
+  margin-bottom: 44px;
 }
 
 .public-detail__main-image {
+  position: relative;
+
   margin: 0;
   overflow: hidden;
-  border: 1px solid rgba(127, 127, 127, 0.25);
-  border-radius: 24px;
+
+  border: 1px solid var(--sigpac-border);
+  border-radius: 18px;
+
+  background: var(--sigpac-surface-soft);
+  box-shadow: var(--sigpac-shadow);
 }
 
 .public-detail__main-image img {
   display: block;
+
   width: 100%;
-  height: min(60vh, 620px);
+  height: clamp(360px, 48vw, 540px);
+
   object-fit: cover;
+  object-position: center;
 }
 
 .public-detail__main-image figcaption {
-  padding: 14px 18px;
-  font-size: 0.9rem;
+  padding: 11px 16px;
+
+  border-top: 1px solid var(--sigpac-border);
+
+  color: var(--sigpac-text-muted);
+  font-size: 12px;
   line-height: 1.5;
-  opacity: 0.75;
 }
 
 .public-detail__secondary-images {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 16px;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .public-detail__secondary-image {
   margin: 0;
   overflow: hidden;
-  border: 1px solid rgba(127, 127, 127, 0.25);
-  border-radius: 18px;
+
+  border: 1px solid var(--sigpac-border);
+  border-radius: 12px;
+
+  background: var(--sigpac-surface);
 }
 
 .public-detail__secondary-image img {
   display: block;
+
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
+
   object-fit: cover;
+
+  transition: transform 220ms ease;
+}
+
+.public-detail__secondary-image:hover img {
+  transform: scale(1.025);
 }
 
 .public-detail__secondary-image figcaption {
-  padding: 10px 12px;
-  font-size: 0.85rem;
+  padding: 8px 10px;
+
+  color: var(--sigpac-text-muted);
+  font-size: 11px;
   line-height: 1.4;
-  opacity: 0.75;
 }
 
-.public-detail__content {
+/* Información principal */
+
+.public-detail__information {
   display: grid;
-  gap: 24px;
+  grid-template-columns:
+    minmax(0, 1.7fr)
+    minmax(270px, 0.75fr);
+
+  align-items: start;
+  gap: 42px;
+
+  margin-bottom: 48px;
+}
+
+.public-detail__main-content {
+  display: grid;
+  gap: 36px;
 }
 
 .public-detail__section {
-  padding: 28px;
-  border: 1px solid rgba(127, 127, 127, 0.25);
-  border-radius: 20px;
+  padding-bottom: 34px;
+  border-bottom: 1px solid var(--sigpac-border);
+}
+
+.public-detail__section:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.public-detail__section-label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--sigpac-primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
 .public-detail__section h2 {
-  margin: 0 0 14px;
-  font-size: 1.25rem;
+  margin: 0 0 13px;
+
+  color: var(--sigpac-text);
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.25;
 }
 
 .public-detail__section p {
   margin: 0;
-  line-height: 1.7;
+
+  color: var(--sigpac-text);
+  font-size: 15px;
+  line-height: 1.8;
   white-space: pre-line;
 }
 
+/* Ficha lateral */
+
+.public-detail__sidebar {
+  overflow: hidden;
+
+  border: 1px solid var(--sigpac-border);
+  border-radius: 16px;
+
+  background: var(--sigpac-surface);
+  box-shadow: var(--sigpac-shadow);
+}
+
+.public-detail__fact {
+  padding: 16px 18px;
+
+  border-bottom: 1px solid var(--sigpac-border);
+}
+
+.public-detail__fact:last-child {
+  border-bottom: 0;
+}
+
+.public-detail__fact-label {
+  display: block;
+  margin-bottom: 5px;
+
+  color: var(--sigpac-text-muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.public-detail__fact strong {
+  display: block;
+
+  color: var(--sigpac-text);
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.public-detail__fact p {
+  margin: 0;
+
+  color: var(--sigpac-text);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.public-detail__coordinates {
+  word-break: break-word;
+}
+
+/* Mapa */
+
+.public-detail__map-section {
+  padding-top: 8px;
+}
+
+/* Estados */
+
 .public-detail__state {
-  padding: 40px 24px;
-  border: 1px solid rgba(127, 127, 127, 0.25);
-  border-radius: 18px;
+  margin: 20px 0;
+  padding: 28px 20px;
+
+  border: 1px solid var(--sigpac-border);
+  border-radius: 14px;
+
+  background: var(--sigpac-surface);
+
+  color: var(--sigpac-text-muted);
+  font-size: 14px;
   text-align: center;
 }
 
 .public-detail__state--error {
-  font-weight: 600;
+  font-weight: 650;
 }
 
-@media (max-width: 800px) {
+/* Tablet */
+
+@media (max-width: 900px) {
   .public-detail__secondary-images {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
   }
 
-  .public-detail__main-image img {
-    height: 420px;
+  .public-detail__information {
+    grid-template-columns:
+      minmax(0, 1.4fr)
+      minmax(240px, 0.8fr);
+
+    gap: 28px;
   }
 }
 
-@media (max-width: 640px) {
+/* Móvil */
+
+@media (max-width: 700px) {
   .public-detail {
-    width: min(100% - 24px, 1100px);
-    padding: 28px 0 48px;
+    width: min(100% - 24px, 1180px);
+    padding: 22px 0 48px;
+  }
+
+  .public-detail__navigation {
+    margin-bottom: 20px;
   }
 
   .public-detail__header {
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+  }
+
+  .public-detail__header h1 {
+    font-size: clamp(2rem, 10vw, 2.9rem);
+  }
+
+  .public-detail__location {
+    align-items: flex-start;
+  }
+
+  .public-detail__main-image {
+    border-radius: 14px;
   }
 
   .public-detail__main-image img {
-    height: 300px;
+    height: auto;
+    aspect-ratio: 4 / 3;
   }
 
   .public-detail__secondary-images {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .public-detail__information {
     grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .public-detail__main-content {
+    gap: 28px;
   }
 
   .public-detail__section {
-    padding: 22px;
+    padding-bottom: 28px;
   }
-  app-patrimonial-map {
-  display: block;
-  margin-top: 24px;
+
+  .public-detail__sidebar {
+    border-radius: 14px;
+  }
 }
+
+@media (max-width: 430px) {
+  .public-detail__secondary-images {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
 }

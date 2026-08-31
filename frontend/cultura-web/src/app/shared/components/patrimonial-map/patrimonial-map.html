@@ -1,30 +1,56 @@
 @if (tieneCoordenadasValidas()) {
   <section class="patrimonial-map">
     <div class="patrimonial-map__header">
-      <div>
+      <div class="patrimonial-map__heading">
         <span class="patrimonial-map__eyebrow">
-          Localización
+          Ubicación geográfica
         </span>
 
-        <h2>Ubicación en el mapa</h2>
+        <h2>
+          {{ titulo }}
+        </h2>
+
+        <p>
+          Localización del elemento patrimonial.
+        </p>
       </div>
 
-      <span class="patrimonial-map__coordinates">
-        {{ latitud }}, {{ longitud }}
-      </span>
+      <div class="patrimonial-map__coordinates">
+        <span class="patrimonial-map__coordinates-label">
+          Coordenadas
+        </span>
+
+        <strong>
+          {{ latitud }}, {{ longitud }}
+        </strong>
+      </div>
     </div>
 
-    <div
-      #mapContainer
-      class="patrimonial-map__canvas"
-      role="region"
-      [attr.aria-label]="'Ubicación de ' + titulo"
-    ></div>
+    <div class="patrimonial-map__map-wrapper">
+      <div
+        #mapContainer
+        class="patrimonial-map__canvas"
+        role="region"
+        [attr.aria-label]="'Ubicación de ' + titulo"
+      ></div>
 
-    <div class="patrimonial-map__footer">
+      <div class="patrimonial-map__badge">
+        <span class="patrimonial-map__badge-dot"></span>
+
+        <span>
+          Ubicación registrada
+        </span>
+      </div>
+    </div>
+
+    <footer class="patrimonial-map__footer">
+      <span class="patrimonial-map__footer-icon">
+        +
+      </span>
+
       <span>
-        Usa los controles del mapa para acercar o alejar.
+        Utiliza los controles del mapa para acercar o alejar la vista.
       </span>
-    </div>
+    </footer>
   </section>
 }

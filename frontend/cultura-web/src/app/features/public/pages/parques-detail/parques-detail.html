@@ -1,10 +1,13 @@
 <section class="public-detail">
-  <a
-    class="public-detail__back"
-    [routerLink]="['/public/parques']"
-  >
-    ← Volver a Parques
-  </a>
+  <nav class="public-detail__navigation">
+    <a
+      class="public-detail__back"
+      [routerLink]="['/public/parques']"
+    >
+      <span aria-hidden="true">←</span>
+      <span>Volver a Parques</span>
+    </a>
+  </nav>
 
   <div
     class="public-detail__state"
@@ -23,16 +26,25 @@
   <article *ngIf="parque() as parque">
     <header class="public-detail__header">
       <span class="public-detail__eyebrow">
-        Patrimonio cultural · Parque
+        Patrimonio cultural
+        <span aria-hidden="true">·</span>
+        Parque
       </span>
 
       <h1>
         {{ parque.nombre }}
       </h1>
 
-      <p class="public-detail__location">
-        {{ parque.ubicacion }}
-      </p>
+      <div class="public-detail__location">
+        <span
+          class="public-detail__location-marker"
+          aria-hidden="true"
+        ></span>
+
+        <span>
+          {{ parque.ubicacion }}
+        </span>
+      </div>
     </header>
 
     <div
@@ -101,65 +113,108 @@
       </div>
     </section>
 
-    <div class="public-detail__content">
-      <section class="public-detail__section">
-        <h2>
-          Descripción
-        </h2>
+    <div class="public-detail__information">
+      <main class="public-detail__main-content">
+        <section class="public-detail__section">
+          <span class="public-detail__section-label">
+            Información
+          </span>
 
-        <p>
-          {{ parque.descripcion }}
-        </p>
-      </section>
+          <h2>
+            Descripción
+          </h2>
 
-      <section
-        class="public-detail__section"
-        *ngIf="parque.resenaHistorica"
-      >
-        <h2>
-          Reseña histórica
-        </h2>
+          <p>
+            {{ parque.descripcion }}
+          </p>
+        </section>
 
-        <p>
-          {{ parque.resenaHistorica }}
-        </p>
-      </section>
+        <section
+          class="public-detail__section"
+          *ngIf="parque.resenaHistorica"
+        >
+          <span class="public-detail__section-label">
+            Historia
+          </span>
 
-      <section
-        class="public-detail__section"
-        *ngIf="parque.fechaCreacion"
-      >
-        <h2>
-          Fecha de creación
-        </h2>
+          <h2>
+            Reseña histórica
+          </h2>
 
-        <p>
-          {{ parque.fechaCreacion }}
-        </p>
-      </section>
+          <p>
+            {{ parque.resenaHistorica }}
+          </p>
+        </section>
+      </main>
 
-      <section
-        class="public-detail__section"
-        *ngIf="parque.fuentesInformacion"
-      >
-        <h2>
-          Fuentes de información
-        </h2>
+      <aside class="public-detail__sidebar">
+        <div
+          class="public-detail__fact"
+          *ngIf="parque.fechaCreacion"
+        >
+          <span class="public-detail__fact-label">
+            Fecha de creación
+          </span>
 
-        <p>
-          {{ parque.fuentesInformacion }}
-        </p>
-      </section>
+          <strong>
+            {{ parque.fechaCreacion }}
+          </strong>
+        </div>
+
+        <div class="public-detail__fact">
+          <span class="public-detail__fact-label">
+            Ubicación
+          </span>
+
+          <strong>
+            {{ parque.ubicacion }}
+          </strong>
+        </div>
+
+        <div
+          class="public-detail__fact"
+          *ngIf="
+            parque.latitud != null &&
+            parque.longitud != null
+          "
+        >
+          <span class="public-detail__fact-label">
+            Coordenadas
+          </span>
+
+          <strong class="public-detail__coordinates">
+            {{ parque.latitud }},
+            {{ parque.longitud }}
+          </strong>
+        </div>
+
+        <div
+          class="public-detail__fact"
+          *ngIf="parque.fuentesInformacion"
+        >
+          <span class="public-detail__fact-label">
+            Fuentes de información
+          </span>
+
+          <p>
+            {{ parque.fuentesInformacion }}
+          </p>
+        </div>
+      </aside>
     </div>
 
-    <app-patrimonial-map
+    <section
+      class="public-detail__map-section"
       *ngIf="
         parque.latitud != null &&
         parque.longitud != null
       "
-      [latitud]="parque.latitud"
-      [longitud]="parque.longitud"
-      [titulo]="parque.nombre"
-    />
+    >
+      <app-patrimonial-map
+        [latitud]="parque.latitud"
+        [longitud]="parque.longitud"
+        [titulo]="parque.nombre"
+      />
+    </section>
   </article>
 </section>
