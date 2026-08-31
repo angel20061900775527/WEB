@@ -26,20 +26,24 @@ services:
       timeout: 5s
       retries: 5
 
-    migrations:
+  migrations:
     build:
       context: ./backend/cultura-api
       dockerfile: Dockerfile
     container_name: sigpac-migrations
     restart: "no"
+
     env_file:
       - .env.docker
+
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
+
     depends_on:
       postgres:
         condition: service_healthy
+
     command:
       [
         "./node_modules/.bin/typeorm",
@@ -47,6 +51,7 @@ services:
         "-d",
         "dist/database/data-source.js"
       ]
+
     networks:
       - sigpac-network
 
@@ -66,40 +71,7 @@ services:
       DB_PORT: 5432
 
     depends_on:
-  postgres:
-    condition: service_healthy
-  migrations:
-    condition: service_completed_successfully
-
-    volumes:
-      - ./uploads:/app/uploads
-
-    networks:
-      - sigpac-network
-
-
-  frontend:
-    build:
-      context: ./frontend/cultura-web
-      dockerfile: Dockerfile
-
-    container_name: sigpac-frontend
-    restart: unless-stopped
-
-    depends_on:
-      - backend
-
-    ports:
-      - "80:80"
-
-    networks:
-      - sigpac-network
-
-
-volumes:
-  postgres_data:
-
-
-networks:
-  sigpac-network:
-    driver: bridge
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
