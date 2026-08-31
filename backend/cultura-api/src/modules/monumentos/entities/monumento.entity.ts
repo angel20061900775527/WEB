@@ -1,14 +1,15 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { PatrimonialEntity } from '../../../common/entities/patrimonial.entity';
+
 import { TipoMonumento } from '../enums/tipo-monumento.enum';
 import { EstadoMonumento } from '../enums/estado-monumento.enum';
 
 @Entity({
   name: 'monumentos',
 })
+@Index('idx_monumentos_nombre', ['nombre'])
 export class Monumento extends PatrimonialEntity {
-  @Index('idx_monumentos_nombre')
   @Index('idx_monumentos_tipo')
   @Column({
     type: 'enum',

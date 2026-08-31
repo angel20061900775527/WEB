@@ -1,13 +1,14 @@
 import { Column, Entity, Index } from 'typeorm';
 
 import { PatrimonialEntity } from '../../../common/entities/patrimonial.entity';
+
 import { EstadoCalle } from '../enums/estado-calle.enum';
 
 @Entity({
   name: 'calles',
 })
+@Index('idx_calles_nombre', ['nombre'])
 export class Calle extends PatrimonialEntity {
-  @Index('idx_calles_nombre')
   @Column({
     type: 'date',
     name: 'fecha_denominacion',
