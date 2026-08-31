@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 export type EstadoCalle = 'BORRADOR' | 'PUBLICADO' | 'INACTIVO';
@@ -62,7 +62,7 @@ export interface UpdateCallePayload {
 export class CallesService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/calles';
+  private readonly apiUrl = '/api/calles';
 
   getAll(
     page = 1,
@@ -123,3 +123,4 @@ export class CallesService {
     return this.http.patch(`${this.apiUrl}/${id}/restaurar`, {});
   }
 }
+

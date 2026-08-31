@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Monumento, MonumentosResponse } from './monumentos.service';
 export class MonumentosPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/monumentos';
+  private readonly apiUrl = '/api/public/monumentos';
 
   getAll(
     page = 1,
@@ -31,3 +31,4 @@ export class MonumentosPublicService {
     return this.http.get<Monumento>(`${this.apiUrl}/${id}`);
   }
 }
+

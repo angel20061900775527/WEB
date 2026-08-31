@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -25,7 +25,7 @@ export interface Fotografia {
 export class FotografiasService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/fotografias';
+  private readonly apiUrl = '/api/fotografias';
 
   getAll(tipoPatrimonio: TipoPatrimonio, registroId: string | number): Observable<Fotografia[]> {
     return this.http.get<Fotografia[]>(`${this.apiUrl}/${tipoPatrimonio}/${registroId}`);
@@ -60,3 +60,4 @@ export class FotografiasService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }
+

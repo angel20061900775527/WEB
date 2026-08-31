@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -95,7 +95,7 @@ export interface UpdateRioPayload {
 export class RiosService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/rios';
+  private readonly apiUrl = '/api/rios';
 
   getAll(
     page = 1,
@@ -158,3 +158,4 @@ export class RiosService {
     return this.http.patch(`${this.apiUrl}/${id}/restaurar`, {});
   }
 }
+

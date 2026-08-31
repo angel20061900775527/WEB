@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -84,7 +84,7 @@ export interface ApiResponse<T> {
 export class MuseosService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/museos';
+  private readonly apiUrl = '/api/museos';
 
   getAll(
     page = 1,
@@ -151,3 +151,4 @@ export class MuseosService {
     return this.http.patch<ApiResponse<Museo>>(`${this.apiUrl}/${id}/restaurar`, {});
   }
 }
+

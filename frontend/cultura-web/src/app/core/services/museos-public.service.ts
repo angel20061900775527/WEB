@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Museo, MuseosResponse } from './museos.service';
 export class MuseosPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/museos';
+  private readonly apiUrl = '/api/public/museos';
 
   getAll(
     page = 1,
@@ -34,3 +34,4 @@ export class MuseosPublicService {
     return this.http.get<Museo>(`${this.apiUrl}/${id}`);
   }
 }
+

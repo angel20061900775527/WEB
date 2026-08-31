@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Rio, RiosResponse } from './rios.service';
 export class RiosPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/rios';
+  private readonly apiUrl = '/api/public/rios';
 
   getAll(
     page = 1,
@@ -31,3 +31,4 @@ export class RiosPublicService {
     return this.http.get<Rio>(`${this.apiUrl}/${id}`);
   }
 }
+

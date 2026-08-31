@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -59,7 +59,7 @@ export interface CreateParquePayload {
 export class ParquesService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/parques';
+  private readonly apiUrl = '/api/parques';
 
   getAll(
     page = 1,
@@ -117,3 +117,4 @@ export class ParquesService {
     return this.http.patch(`${this.apiUrl}/${id}/restaurar`, {});
   }
 }
+

@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Calle, CallesResponse } from './calles.service';
 export class CallesPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/calles';
+  private readonly apiUrl = '/api/public/calles';
 
   getAll(
     page = 1,
@@ -33,3 +33,4 @@ export class CallesPublicService {
     return this.http.get<Calle>(`${this.apiUrl}/${id}`);
   }
 }
+

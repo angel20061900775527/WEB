@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Auditorio, AuditoriosResponse } from './auditorios.service';
 export class AuditoriosPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/auditorios';
+  private readonly apiUrl = '/api/public/auditorios';
 
   getAll(
     page = 1,
@@ -34,3 +34,4 @@ export class AuditoriosPublicService {
     return this.http.get<Auditorio>(`${this.apiUrl}/${id}`);
   }
 }
+

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+﻿import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
@@ -32,7 +32,7 @@ export class AuthService {
   }
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
+  private readonly apiUrl = '/api/auth';
 
   private readonly tokenKey = 'sigpac_token';
   private readonly usuarioKey = 'sigpac_usuario';
@@ -85,3 +85,4 @@ export class AuthService {
     }
   }
 }
+

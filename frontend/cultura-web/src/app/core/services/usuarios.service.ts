@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -38,7 +38,7 @@ export interface UpdateUsuarioPayload {
 export class UsuariosService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/usuarios';
+  private readonly apiUrl = '/api/usuarios';
 
   getAll(search = ''): Observable<Usuario[]> {
     let params = new HttpParams();
@@ -72,3 +72,4 @@ export class UsuariosService {
     return this.http.patch<void>(`${this.apiUrl}/${id}/password`, { password });
   }
 }
+

@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+﻿import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { Plaza, PlazasResponse } from './plazas.service';
 export class PlazasPublicService {
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:3000/api/public/plazas';
+  private readonly apiUrl = '/api/public/plazas';
 
   getAll(
     page = 1,
@@ -34,3 +34,4 @@ export class PlazasPublicService {
     return this.http.get<Plaza>(`${this.apiUrl}/${id}`);
   }
 }
+
