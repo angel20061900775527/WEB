@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Calle } from '../../../../core/services/calles.service';
@@ -16,7 +16,10 @@ import { PatrimonialMap } from '../../../../shared/components/patrimonial-map/pa
 })
 export class CallesDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
+  private readonly document = inject(DOCUMENT);
+
   private readonly callesService = inject(CallesPublicService);
+
   private readonly fotografiasService = inject(FotografiasPublicService);
 
   readonly calle = signal<Calle | null>(null);
@@ -27,6 +30,8 @@ export class CallesDetail implements OnInit {
 
   readonly error = signal<string | null>(null);
   readonly errorFotografias = signal<string | null>(null);
+
+  readonly fotografiaSeleccionada = signal<Fotografia | null>(null);
 
   readonly fotografiaPrincipal = computed(() => {
     const calle = this.calle();
@@ -61,6 +66,28 @@ export class CallesDetail implements OnInit {
     );
   });
 
+  readonly fotografiasGaleria = computed(() => {
+    const principal = this.fotografiaPrincipal();
+
+    if (!principal) {
+      return this.fotografias();
+    }
+
+    return [principal, ...this.fotografiasSecundarias()];
+  });
+
+  readonly indiceFotografiaSeleccionada = computed(() => {
+    const seleccionada = this.fotografiaSeleccionada();
+
+    if (!seleccionada) {
+      return -1;
+    }
+
+    return this.fotografiasGaleria().findIndex(
+      (fotografia) => String(fotografia.id) === String(seleccionada.id),
+    );
+  });
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -70,6 +97,65 @@ export class CallesDetail implements OnInit {
     }
 
     this.cargarCalle(id);
+  }
+
+  abrirFotografia(fotografia: Fotografia): void {
+    this.fotografiaSeleccionada.set(fotografia);
+    this.document.body.style.overflow = 'hidden';
+  }
+
+  cerrarFotografia(): void {
+    this.fotografiaSeleccionada.set(null);
+    this.document.body.style.overflow = '';
+  }
+
+  fotografiaAnterior(): void {
+    const fotografias = this.fotografiasGaleria();
+
+    if (fotografias.length <= 1) {
+      return;
+    }
+
+    const indice = this.indiceFotografiaSeleccionada();
+
+    const nuevoIndice = indice <= 0 ? fotografias.length - 1 : indice - 1;
+
+    this.fotografiaSeleccionada.set(fotografias[nuevoIndice]);
+  }
+
+  fotografiaSiguiente(): void {
+    const fotografias = this.fotografiasGaleria();
+
+    if (fotografias.length <= 1) {
+      return;
+    }
+
+    const indice = this.indiceFotografiaSeleccionada();
+
+    const nuevoIndice = indice >= fotografias.length - 1 ? 0 : indice + 1;
+
+    this.fotografiaSeleccionada.set(fotografias[nuevoIndice]);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.cerrarFotografia();
+    }
+  }
+
+  @HostListener('document:keydown.arrowleft')
+  onArrowLeft(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.fotografiaAnterior();
+    }
+  }
+
+  @HostListener('document:keydown.arrowright')
+  onArrowRight(): void {
+    if (this.fotografiaSeleccionada()) {
+      this.fotografiaSiguiente();
+    }
   }
 
   private cargarCalle(id: string): void {
@@ -86,6 +172,7 @@ export class CallesDetail implements OnInit {
 
       error: () => {
         this.error.set('No se encontró la calle solicitada.');
+
         this.cargando.set(false);
       },
     });
