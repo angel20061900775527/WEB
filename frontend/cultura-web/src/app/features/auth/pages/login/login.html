@@ -1,116 +1,166 @@
 <section class="login-page">
-  <div class="login-card">
-    <div class="login-brand">
-      <div class="login-brand__icon">
-        <mat-icon>museum</mat-icon>
+  <div class="login-shell">
+    <aside class="login-identity">
+      <div class="login-identity__top">
+        <div class="login-brand">
+          <div class="login-brand__icon">
+            <mat-icon>museum</mat-icon>
+          </div>
+
+          <div>
+            <span class="login-brand__eyebrow">
+              PATRIMONIO · CULTURA · IDENTIDAD
+            </span>
+
+            <h1>SIGPAC</h1>
+
+            <p>
+              Sistema de Gestión del Patrimonio Cultural
+            </p>
+          </div>
+        </div>
+
+        <div class="login-identity__content">
+          <span class="login-identity__label">
+            GAD MUNICIPAL DE ZAMORA
+          </span>
+
+          <h2>
+            Gestión institucional del patrimonio cultural
+          </h2>
+
+          <p>
+            Administra y mantiene actualizada la información patrimonial
+            del cantón Zamora desde una plataforma centralizada.
+          </p>
+        </div>
       </div>
 
-      <div>
-        <h1>SIGPAC</h1>
-        <p>GADM Zamora</p>
+      <div class="login-identity__footer">
+        <span class="login-identity__dot"></span>
+        <span>Acceso exclusivo para personal autorizado</span>
       </div>
-    </div>
+    </aside>
 
-    <div class="login-header">
-      <span>ACCESO AL SISTEMA</span>
-      <h2>Iniciar sesión</h2>
-      <p>
-        Ingresa tus credenciales para administrar la información
-        patrimonial.
-      </p>
-    </div>
+    <main class="login-panel">
+      <div class="login-panel__content">
+        <div class="login-header">
+          <span>ACCESO AL SISTEMA</span>
 
-    @if (error()) {
-      <div class="login-error">
-        <mat-icon>error_outline</mat-icon>
-        <span>{{ error() }}</span>
-      </div>
-    }
+          <h2>Iniciar sesión</h2>
 
-    <form
-      [formGroup]="form"
-      (ngSubmit)="iniciarSesion()"
-      class="login-form"
-    >
-      <mat-form-field appearance="outline">
-        <mat-label>Usuario</mat-label>
+          <p>
+            Ingresa tus credenciales institucionales para continuar.
+          </p>
+        </div>
 
-        <mat-icon matPrefix>person</mat-icon>
+        @if (error()) {
+          <div class="login-error">
+            <mat-icon>error_outline</mat-icon>
 
-        <input
-          matInput
-          type="text"
-          formControlName="username"
-          autocomplete="username"
-        />
-
-        @if (
-          form.controls.username.touched &&
-          form.controls.username.invalid
-        ) {
-          <mat-error>
-            El usuario es obligatorio.
-          </mat-error>
+            <span>{{ error() }}</span>
+          </div>
         }
-      </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Contraseña</mat-label>
-
-        <mat-icon matPrefix>lock</mat-icon>
-
-        <input
-          matInput
-          [type]="ocultarPassword() ? 'password' : 'text'"
-          formControlName="password"
-          autocomplete="current-password"
-        />
-
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="ocultarPassword.update((valor) => !valor)"
-          [attr.aria-label]="
-            ocultarPassword()
-              ? 'Mostrar contraseña'
-              : 'Ocultar contraseña'
-          "
+        <form
+          [formGroup]="form"
+          (ngSubmit)="iniciarSesion()"
+          class="login-form"
         >
-          <mat-icon>
-            {{ ocultarPassword() ? 'visibility' : 'visibility_off' }}
-          </mat-icon>
-        </button>
+          <mat-form-field appearance="outline">
+            <mat-label>Usuario</mat-label>
 
-        @if (
-          form.controls.password.touched &&
-          form.controls.password.invalid
-        ) {
-          <mat-error>
-            La contraseña es obligatoria.
-          </mat-error>
-        }
-      </mat-form-field>
+            <mat-icon matPrefix>person</mat-icon>
 
-<button
-  mat-flat-button
-  type="submit"
-  class="login-submit"
-  [disabled]="form.invalid || loading()"
->
-  @if (loading()) {
-    Ingresando...
-  } @else {
-    <ng-container>
-      <mat-icon>login</mat-icon>
-      <span>Ingresar</span>
-    </ng-container>
-  }
-</button>
-    </form>
+            <input
+              matInput
+              type="text"
+              formControlName="username"
+              autocomplete="username"
+            />
 
-    <div class="login-footer">
-      Sistema de Gestión del Patrimonio Cultural
-    </div>
+            @if (
+              form.controls.username.touched &&
+              form.controls.username.invalid
+            ) {
+              <mat-error>
+                El usuario es obligatorio.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Contraseña</mat-label>
+
+            <mat-icon matPrefix>lock</mat-icon>
+
+            <input
+              matInput
+              [type]="ocultarPassword() ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="current-password"
+            />
+
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="ocultarPassword.update((valor) => !valor)"
+              [attr.aria-label]="
+                ocultarPassword()
+                  ? 'Mostrar contraseña'
+                  : 'Ocultar contraseña'
+              "
+            >
+              <mat-icon>
+                {{
+                  ocultarPassword()
+                    ? 'visibility'
+                    : 'visibility_off'
+                }}
+              </mat-icon>
+            </button>
+
+            @if (
+              form.controls.password.touched &&
+              form.controls.password.invalid
+            ) {
+              <mat-error>
+                La contraseña es obligatoria.
+              </mat-error>
+            }
+          </mat-form-field>
+
+          <button
+            mat-flat-button
+            type="submit"
+            class="login-submit"
+            [disabled]="form.invalid || loading()"
+          >
+            @if (loading()) {
+              <span>Ingresando...</span>
+            } @else {
+              <ng-container>
+                <mat-icon>login</mat-icon>
+                <span>Ingresar al sistema</span>
+              </ng-container>
+            }
+          </button>
+        </form>
+
+        <div class="login-security">
+          <mat-icon>shield</mat-icon>
+
+          <p>
+            Tus credenciales son utilizadas únicamente para el acceso
+            administrativo a SIGPAC.
+          </p>
+        </div>
+
+        <div class="login-footer">
+          Sistema de Gestión del Patrimonio Cultural · GADM Zamora
+        </div>
+      </div>
+    </main>
   </div>
 </section>
