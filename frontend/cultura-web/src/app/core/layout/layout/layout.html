@@ -9,61 +9,69 @@
 
   <mat-sidenav-content class="app-content">
     <mat-toolbar class="toolbar">
-      <button
-        mat-icon-button
-        type="button"
-        matTooltip="Mostrar u ocultar menú"
-        aria-label="Mostrar u ocultar menú"
-        (click)="toggleSidebar()"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
+      <div class="toolbar__left">
+        <button
+          mat-icon-button
+          type="button"
+          class="toolbar__menu"
+          matTooltip="Mostrar u ocultar menú"
+          aria-label="Mostrar u ocultar menú"
+          (click)="toggleSidebar()"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
 
-      <div class="toolbar__title">
-        <span>Panel administrativo</span>
-        <small>Sistema de Gestión del Patrimonio Cultural</small>
+        <div class="toolbar__title">
+          <span>Panel administrativo</span>
+
+          <small>
+            Gestión del Patrimonio Cultural
+          </small>
+        </div>
       </div>
 
       <span class="toolbar__spacer"></span>
 
-      <button
-        mat-icon-button
-        type="button"
-        matTooltip="Notificaciones"
-        aria-label="Notificaciones"
-      >
-        <mat-icon>notifications_none</mat-icon>
-      </button>
+      <div class="toolbar__right">
+        <button
+          mat-icon-button
+          type="button"
+          class="toolbar__action"
+          matTooltip="Notificaciones"
+          aria-label="Notificaciones"
+        >
+          <mat-icon>notifications_none</mat-icon>
+        </button>
 
-@if (usuario(); as usuarioActual) {
-  <div class="user-session">
-    <div class="user-button">
-      <span class="user-avatar">
-        {{ obtenerIniciales() }}
-      </span>
+        @if (usuario(); as usuarioActual) {
+          <div class="user-session">
+            <div class="user-avatar">
+              {{ obtenerIniciales() }}
+            </div>
 
-      <span class="user-information">
-        <strong>
-          {{ obtenerNombreCompleto() }}
-        </strong>
+            <div class="user-information">
+              <strong>
+                {{ obtenerNombreCompleto() }}
+              </strong>
 
-        <small>
-          {{ obtenerNombreRol() }}
-        </small>
-      </span>
-    </div>
+              <small>
+                {{ obtenerNombreRol() }}
+              </small>
+            </div>
 
-    <button
-      mat-icon-button
-      type="button"
-      matTooltip="Cerrar sesión"
-      aria-label="Cerrar sesión"
-      (click)="cerrarSesion()"
-    >
-      <mat-icon>logout</mat-icon>
-    </button>
-  </div>
-}
+            <button
+              mat-icon-button
+              type="button"
+              class="user-session__logout"
+              matTooltip="Cerrar sesión"
+              aria-label="Cerrar sesión"
+              (click)="cerrarSesion()"
+            >
+              <mat-icon>logout</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
     </mat-toolbar>
 
     <main class="page-content">
@@ -71,7 +79,13 @@
     </main>
 
     <footer class="footer">
-      © 2026 GADM Zamora · SIGPAC
+      <span>
+        SIGPAC · Sistema de Gestión del Patrimonio Cultural
+      </span>
+
+      <span>
+        GAD Municipal de Zamora · 2026
+      </span>
     </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -1,35 +1,81 @@
 <section class="dashboard-page">
-  <header class="dashboard-header">
-    <div>
+  <header class="dashboard-hero">
+    <div class="dashboard-hero__content">
       <span class="dashboard-eyebrow">
         PANEL GENERAL
       </span>
 
-      <h1>SIGPAC</h1>
+      <h1>
+        Gestión del patrimonio cultural
+      </h1>
 
       <p>
-        Sistema de Gestión del Patrimonio Cultural del cantón Zamora.
+        Administra la información patrimonial registrada
+        en SIGPAC para el cantón Zamora.
       </p>
+    </div>
+
+    <div class="dashboard-hero__brand">
+      <div class="dashboard-hero__brand-icon">
+        <mat-icon>museum</mat-icon>
+      </div>
+
+      <div>
+        <strong>SIGPAC</strong>
+
+        <span>
+          GAD Municipal de Zamora
+        </span>
+      </div>
     </div>
   </header>
 
   @if (loading()) {
-    <p>Cargando estadísticas...</p>
+    <div class="dashboard-state">
+      <mat-icon>hourglass_top</mat-icon>
+
+      <span>
+        Cargando estadísticas...
+      </span>
+    </div>
   }
 
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        dashboard-state
+        dashboard-state--error
+      "
+    >
+      <mat-icon>error_outline</mat-icon>
+
+      <span>
+        {{ error() }}
+      </span>
+    </div>
   }
 
   <section class="modules-section">
-    <div class="section-header">
+    <header class="section-header">
       <div>
-        <h2>Módulos del sistema</h2>
+        <span class="section-header__eyebrow">
+          ADMINISTRACIÓN
+        </span>
+
+        <h2>
+          Módulos del sistema
+        </h2>
+
         <p>
-          Selecciona una categoría para administrar sus registros.
+          Selecciona una categoría para gestionar
+          sus registros patrimoniales.
         </p>
       </div>
-    </div>
+
+      <span class="section-header__count">
+        7 categorías
+      </span>
+    </header>
 
     <div class="modules-grid">
       @for (module of modules(); track module.route) {
@@ -40,47 +86,116 @@
           (click)="abrirModulo(module.route)"
           (keydown.enter)="abrirModulo(module.route)"
         >
-          <div class="module-card__icon">
-            <mat-icon>
-              {{ module.icon }}
+          <div class="module-card__header">
+            <div class="module-card__icon">
+              <mat-icon>
+                {{ module.icon }}
+              </mat-icon>
+            </div>
+
+            <div class="module-card__heading">
+              <span>
+                MÓDULO
+              </span>
+
+              <h3>
+                {{ module.title }}
+              </h3>
+            </div>
+
+            <mat-icon class="module-card__arrow">
+              arrow_forward
             </mat-icon>
           </div>
 
-          <div class="module-card__content">
-            <h3>
-              {{ module.title }}
-            </h3>
+          <div class="module-card__body">
+            <div class="module-card__total">
+              <strong>
+                {{ module.total }}
+              </strong>
 
-            <strong class="module-card__total">
-              {{ module.total }} registros
-            </strong>
+              <span>
+                {{
+                  module.total === 1
+                    ? 'registro'
+                    : 'registros'
+                }}
+              </span>
+            </div>
 
             <div class="module-card__stats">
-              <div>
-                <span>Publicados</span>
-                <strong>{{ module.publicados }}</strong>
+              <div
+                class="
+                  module-stat
+                  module-stat--published
+                "
+              >
+                <span class="module-stat__dot"></span>
+
+                <div>
+                  <strong>
+                    {{ module.publicados }}
+                  </strong>
+
+                  <span>
+                    Publicados
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <span>Borradores</span>
-                <strong>{{ module.borradores }}</strong>
+              <div
+                class="
+                  module-stat
+                  module-stat--draft
+                "
+              >
+                <span class="module-stat__dot"></span>
+
+                <div>
+                  <strong>
+                    {{ module.borradores }}
+                  </strong>
+
+                  <span>
+                    Borradores
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <span>Inactivos</span>
-                <strong>{{ module.inactivos }}</strong>
+              <div
+                class="
+                  module-stat
+                  module-stat--inactive
+                "
+              >
+                <span class="module-stat__dot"></span>
+
+                <div>
+                  <strong>
+                    {{ module.inactivos }}
+                  </strong>
+
+                  <span>
+                    Inactivos
+                  </span>
+                </div>
               </div>
             </div>
 
-            <p>
+            <p class="module-card__description">
               {{ module.description }}
             </p>
           </div>
 
-          <div class="module-card__action">
-            <span>Ingresar</span>
-            <mat-icon>arrow_forward</mat-icon>
-          </div>
+          <footer class="module-card__footer">
+            <span>
+              Administrar módulo
+            </span>
+
+            <mat-icon>
+              arrow_forward
+            </mat-icon>
+          </footer>
         </article>
       }
     </div>
