@@ -1,6 +1,5 @@
 :host {
   display: block;
-
   width: 260px;
   height: 100%;
 }
@@ -20,8 +19,7 @@
 
   overflow: hidden;
 
-  background:
-    var(--sigpac-surface);
+  background: var(--sigpac-surface);
 }
 
 /* ==========================================================
@@ -64,8 +62,7 @@
   width: 74px;
   height: 2px;
 
-  background:
-    var(--sigpac-yellow);
+  background: var(--sigpac-yellow);
 }
 
 .brand__logo {
@@ -109,8 +106,7 @@
 .brand__eyebrow {
   margin-bottom: 1px;
 
-  color:
-    var(--sigpac-primary);
+  color: var(--sigpac-primary);
 
   font-size: 7px;
   font-weight: 800;
@@ -118,8 +114,7 @@
 }
 
 .brand__text strong {
-  color:
-    var(--sigpac-text);
+  color: var(--sigpac-text);
 
   font-size: 17px;
   font-weight: 800;
@@ -129,8 +124,7 @@
 .brand__institution {
   margin-top: 2px;
 
-  color:
-    var(--sigpac-text-muted);
+  color: var(--sigpac-text-muted);
 
   font-size: 9px;
   font-weight: 500;
@@ -143,12 +137,15 @@
 .sidebar-content {
   flex: 1;
 
+  min-width: 0;
+
   padding:
     16px
     10px
     100px;
 
   overflow-y: auto;
+  overflow-x: hidden;
 
   scrollbar-width: thin;
 }
@@ -156,6 +153,10 @@
 /* ==========================================================
    SECCIONES
    ========================================================== */
+
+.navigation-section {
+  min-width: 0;
+}
 
 .navigation-section + .navigation-section {
   margin-top: 18px;
@@ -174,8 +175,7 @@
 }
 
 .navigation-title span {
-  color:
-    var(--sigpac-text-soft);
+  color: var(--sigpac-text-soft);
 
   font-size: 8px;
   font-weight: 800;
@@ -187,20 +187,26 @@
    ========================================================== */
 
 .navigation {
+  width: 100%;
+  min-width: 0;
+
   padding: 0;
 }
 
 .navigation__item {
   position: relative;
 
+  width: 100%;
+  min-width: 0;
   min-height: 44px;
 
   margin-bottom: 3px;
 
   border-radius: 11px;
 
-  color:
-    var(--sigpac-text);
+  color: var(--sigpac-text);
+
+  overflow: hidden;
 
   transition:
     background 150ms ease,
@@ -209,25 +215,21 @@
 }
 
 .navigation__item mat-icon[matListItemIcon] {
-  color:
-    var(--sigpac-text-muted);
+  color: var(--sigpac-text-muted);
 
   transition:
     color 150ms ease;
 }
 
 .navigation__item:hover {
-  background:
-    var(--sigpac-primary-soft);
+  background: var(--sigpac-primary-soft);
 
-  color:
-    var(--sigpac-primary);
+  color: var(--sigpac-primary);
 }
 
 .navigation__item:hover
 mat-icon[matListItemIcon] {
-  color:
-    var(--sigpac-primary);
+  color: var(--sigpac-primary);
 }
 
 .navigation__item--active {
@@ -257,8 +259,7 @@ mat-icon[matListItemIcon] {
     4px
     0;
 
-  background:
-    var(--sigpac-primary);
+  background: var(--sigpac-primary);
 }
 
 .navigation__item--active
@@ -276,8 +277,7 @@ mat-icon[matListItemIcon] {
   width: 17px;
   height: 17px;
 
-  color:
-    var(--sigpac-border-dark);
+  color: var(--sigpac-border-dark);
 
   font-size: 17px;
 
@@ -299,8 +299,7 @@ mat-icon[matListItemIcon] {
 .navigation__arrow {
   opacity: 1;
 
-  color:
-    var(--sigpac-primary);
+  color: var(--sigpac-primary);
 
   transform:
     translateY(-50%)
@@ -332,8 +331,7 @@ mat-icon[matListItemIcon] {
 
   border-radius: 12px;
 
-  background:
-    var(--sigpac-surface-soft);
+  background: var(--sigpac-surface-soft);
 }
 
 .sidebar-footer__icon {
@@ -347,11 +345,9 @@ mat-icon[matListItemIcon] {
 
   border-radius: 9px;
 
-  background:
-    var(--sigpac-primary-soft);
+  background: var(--sigpac-primary-soft);
 
-  color:
-    var(--sigpac-primary);
+  color: var(--sigpac-primary);
 }
 
 .sidebar-footer__icon mat-icon {
@@ -368,8 +364,7 @@ mat-icon[matListItemIcon] {
 }
 
 .sidebar-footer span {
-  color:
-    var(--sigpac-text-muted);
+  color: var(--sigpac-text-muted);
 
   font-size: 8px;
 }
@@ -377,8 +372,7 @@ mat-icon[matListItemIcon] {
 .sidebar-footer strong {
   margin-top: 2px;
 
-  color:
-    var(--sigpac-text);
+  color: var(--sigpac-text);
 
   font-size: 10px;
   font-weight: 750;
