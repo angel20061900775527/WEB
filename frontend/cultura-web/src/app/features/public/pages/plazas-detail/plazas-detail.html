@@ -1,87 +1,336 @@
-<section>
-  <a [routerLink]="['/public/plazas']">
-    ← Volver a Plazas
-  </a>
+<section class="public-detail">
+  <header class="public-detail__hero">
+    <div class="public-detail__hero-inner">
+      <a
+        class="public-detail__back"
+        [routerLink]="['/public/plazas']"
+      >
+        <span aria-hidden="true">←</span>
+        <span>Volver a Plazas</span>
+      </a>
 
-  <div *ngIf="cargando()">
-    Cargando plaza...
-  </div>
+      <div
+        class="public-detail__state"
+        *ngIf="cargando()"
+      >
+        Cargando información...
+      </div>
 
-  <div *ngIf="error()">
-    {{ error() }}
-  </div>
+      <div
+        class="public-detail__state public-detail__state--error"
+        *ngIf="error()"
+      >
+        {{ error() }}
+      </div>
 
-  <article *ngIf="plaza() as plaza">
-    <h1>{{ plaza.nombre }}</h1>
+      <div *ngIf="plaza() as plaza">
+        <span class="public-detail__eyebrow">
+          Patrimonio cultural · Plaza
+        </span>
 
-    <p>
-      <strong>Ubicación:</strong>
-      {{ plaza.ubicacion }}
-    </p>
+        <h1>
+          {{ plaza.nombre }}
+        </h1>
 
-    <p *ngIf="plaza.fechaCreacion">
-      <strong>Fecha de creación:</strong>
-      {{ plaza.fechaCreacion }}
-    </p>
+        <div class="public-detail__location">
+          <span
+            class="public-detail__location-dot"
+            aria-hidden="true"
+          ></span>
 
-    <section *ngIf="cargandoFotografias()">
+          <span>
+            {{ plaza.ubicacion }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <article
+    class="public-detail__body"
+    *ngIf="plaza() as plaza"
+  >
+    <div
+      class="public-detail__state"
+      *ngIf="cargandoFotografias()"
+    >
       Cargando fotografías...
+    </div>
+
+    <div
+      class="public-detail__state public-detail__state--error"
+      *ngIf="errorFotografias()"
+    >
+      {{ errorFotografias() }}
+    </div>
+
+    <section
+      class="public-detail__gallery"
+      *ngIf="
+        !cargandoFotografias() &&
+        fotografiaPrincipal() as principal
+      "
+      [class.public-detail__gallery--single]="
+        fotografiasSecundarias().length === 0
+      "
+    >
+      <figure
+        class="public-detail__main-image"
+        (click)="abrirFotografia(principal)"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="
+          'Ampliar fotografía de ' + plaza.nombre
+        "
+        (keydown.enter)="abrirFotografia(principal)"
+      >
+        <img
+          [src]="principal.url"
+          [alt]="
+            principal.descripcion ||
+            plaza.nombre
+          "
+        />
+
+        <span class="public-detail__zoom">
+          Ampliar
+        </span>
+
+        <figcaption
+          *ngIf="principal.descripcion"
+        >
+          {{ principal.descripcion }}
+        </figcaption>
+      </figure>
+
+      <div
+        class="public-detail__secondary-images"
+        *ngIf="
+          fotografiasSecundarias().length > 0
+        "
+      >
+        <figure
+          class="public-detail__secondary-image"
+          *ngFor="
+            let fotografia of fotografiasSecundarias()
+              | slice: 0 : 3
+          "
+          (click)="abrirFotografia(fotografia)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="
+            'Ampliar fotografía de ' + plaza.nombre
+          "
+          (keydown.enter)="abrirFotografia(fotografia)"
+        >
+          <img
+            [src]="fotografia.url"
+            [alt]="
+              fotografia.descripcion ||
+              plaza.nombre
+            "
+          />
+
+          <figcaption
+            *ngIf="fotografia.descripcion"
+          >
+            {{ fotografia.descripcion }}
+          </figcaption>
+        </figure>
+      </div>
     </section>
 
-    <section *ngIf="errorFotografias()">
-      {{ errorFotografias() }}
+    <section class="public-detail__information">
+      <div class="public-detail__main-content">
+        <section class="public-detail__section">
+          <span class="public-detail__section-label">
+            Información
+          </span>
+
+          <h2>
+            Descripción
+          </h2>
+
+          <p>
+            {{ plaza.descripcion }}
+          </p>
+        </section>
+
+        <section
+          class="public-detail__section"
+          *ngIf="plaza.resenaHistorica"
+        >
+          <span class="public-detail__section-label">
+            Historia
+          </span>
+
+          <h2>
+            Reseña histórica
+          </h2>
+
+          <p>
+            {{ plaza.resenaHistorica }}
+          </p>
+        </section>
+      </div>
+
+      <aside class="public-detail__sidebar">
+        <div
+          class="public-detail__fact"
+          *ngIf="plaza.fechaCreacion"
+        >
+          <span class="public-detail__fact-label">
+            Fecha de creación
+          </span>
+
+          <strong>
+            {{ plaza.fechaCreacion }}
+          </strong>
+        </div>
+
+        <div class="public-detail__fact">
+          <span class="public-detail__fact-label">
+            Ubicación
+          </span>
+
+          <strong>
+            {{ plaza.ubicacion }}
+          </strong>
+        </div>
+
+        <div
+          class="public-detail__fact"
+          *ngIf="
+            plaza.latitud != null &&
+            plaza.longitud != null
+          "
+        >
+          <span class="public-detail__fact-label">
+            Coordenadas
+          </span>
+
+          <strong>
+            {{ plaza.latitud }},
+            {{ plaza.longitud }}
+          </strong>
+        </div>
+
+        <div
+          class="public-detail__fact"
+          *ngIf="plaza.fuentesInformacion"
+        >
+          <span class="public-detail__fact-label">
+            Fuentes de información
+          </span>
+
+          <p>
+            {{ plaza.fuentesInformacion }}
+          </p>
+        </div>
+      </aside>
     </section>
 
     <section
-      *ngIf="!cargandoFotografias() && fotografiaPrincipal() as principal"
+      class="public-detail__map-section"
+      *ngIf="
+        plaza.latitud != null &&
+        plaza.longitud != null
+      "
     >
-      <h2>Fotografía principal</h2>
+      <div class="public-detail__map-heading">
+        <div>
+          <span class="public-detail__section-label">
+            Ubicación
+          </span>
 
-      <img
-        [src]="principal.url"
-        [alt]="principal.descripcion || plaza.nombre"
-        style="max-width: 600px; width: 100%;"
+          <h2>
+            Conoce dónde se encuentra
+          </h2>
+        </div>
+
+        <p>
+          Consulta la localización registrada de esta
+          plaza patrimonial.
+        </p>
+      </div>
+
+      <app-patrimonial-map
+        [latitud]="plaza.latitud"
+        [longitud]="plaza.longitud"
+        [titulo]="plaza.nombre"
       />
-
-      <p *ngIf="principal.descripcion">
-        {{ principal.descripcion }}
-      </p>
     </section>
+  </article>
 
-    <section *ngIf="fotografiasSecundarias().length > 0">
-      <h2>Galería</h2>
+  <div
+    class="photo-viewer"
+    *ngIf="fotografiaSeleccionada() as fotografia"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Visor de fotografías"
+    (click)="cerrarFotografia()"
+  >
+    <div
+      class="photo-viewer__content"
+      (click)="$event.stopPropagation()"
+    >
+      <button
+        type="button"
+        class="photo-viewer__close"
+        aria-label="Cerrar fotografía"
+        (click)="cerrarFotografia()"
+      >
+        ×
+      </button>
 
-      <div *ngFor="let fotografia of fotografiasSecundarias()">
+      <button
+        *ngIf="fotografiasGaleria().length > 1"
+        type="button"
+        class="
+          photo-viewer__navigation
+          photo-viewer__navigation--previous
+        "
+        aria-label="Fotografía anterior"
+        (click)="fotografiaAnterior()"
+      >
+        ‹
+      </button>
+
+      <div class="photo-viewer__image-container">
         <img
           [src]="fotografia.url"
-          [alt]="fotografia.descripcion || plaza.nombre"
-          style="max-width: 300px; width: 100%;"
+          [alt]="
+            fotografia.descripcion ||
+            plaza()?.nombre ||
+            'Fotografía patrimonial'
+          "
         />
+      </div>
+
+      <button
+        *ngIf="fotografiasGaleria().length > 1"
+        type="button"
+        class="
+          photo-viewer__navigation
+          photo-viewer__navigation--next
+        "
+        aria-label="Fotografía siguiente"
+        (click)="fotografiaSiguiente()"
+      >
+        ›
+      </button>
+
+      <div class="photo-viewer__information">
+        <span class="photo-viewer__counter">
+          {{ indiceFotografiaSeleccionada() + 1 }}
+          /
+          {{ fotografiasGaleria().length }}
+        </span>
 
         <p *ngIf="fotografia.descripcion">
           {{ fotografia.descripcion }}
         </p>
       </div>
-    </section>
-
-    <section>
-      <h2>Descripción</h2>
-      <p>{{ plaza.descripcion }}</p>
-    </section>
-
-    <section *ngIf="plaza.resenaHistorica">
-      <h2>Reseña histórica</h2>
-      <p>{{ plaza.resenaHistorica }}</p>
-    </section>
-
-    <section *ngIf="plaza.fuentesInformacion">
-      <h2>Fuentes de información</h2>
-      <p>{{ plaza.fuentesInformacion }}</p>
-    </section>
-
-    <section *ngIf="plaza.latitud != null && plaza.longitud != null">
-      <h2>Coordenadas</h2>
-      <p>{{ plaza.latitud }}, {{ plaza.longitud }}</p>
-    </section>
-  </article>
+    </div>
+  </div>
 </section>
