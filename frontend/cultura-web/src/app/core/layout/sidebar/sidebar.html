@@ -1,37 +1,105 @@
-<div class="brand">
-  <div class="brand__logo">
-    <mat-icon>museum</mat-icon>
-  </div>
+<div class="sidebar-shell">
+  <header class="brand">
+    <div class="brand__logo">
+      <mat-icon>museum</mat-icon>
+    </div>
 
-  <div class="brand__text">
-    <strong>SIGPAC</strong>
-    <span>GADM Zamora</span>
-  </div>
-</div>
-
-<div class="navigation-title">MENÚ PRINCIPAL</div>
-
-<mat-nav-list class="navigation">
-  @for (item of navigationItems(); track item.route) {
-    <a
-      mat-list-item
-      [routerLink]="item.route"
-      routerLinkActive="navigation__item--active"
-      [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
-      class="navigation__item"
-    >
-      <mat-icon matListItemIcon>
-        {{ item.icon }}
-      </mat-icon>
-
-      <span matListItemTitle>
-        {{ item.label }}
+    <div class="brand__text">
+      <span class="brand__eyebrow">
+        PATRIMONIO · CULTURA
       </span>
-    </a>
-  }
-</mat-nav-list>
 
-<div class="sidebar-footer">
-  <span>Sistema de Gestión del</span>
-  <strong>Patrimonio Cultural</strong>
+      <strong>SIGPAC</strong>
+
+      <span class="brand__institution">
+        GAD Municipal de Zamora
+      </span>
+    </div>
+  </header>
+
+  <div class="sidebar-content">
+    <section class="navigation-section">
+      <div class="navigation-title">
+        <span>NAVEGACIÓN</span>
+      </div>
+
+      <mat-nav-list class="navigation">
+        @for (item of navigationItems(); track item.route) {
+          @if (item.route !== '/usuarios') {
+            <a
+              mat-list-item
+              [routerLink]="item.route"
+              routerLinkActive="navigation__item--active"
+              [routerLinkActiveOptions]="{
+                exact: item.route === '/dashboard'
+              }"
+              class="navigation__item"
+            >
+              <mat-icon matListItemIcon>
+                {{ item.icon }}
+              </mat-icon>
+
+              <span matListItemTitle>
+                {{ item.label }}
+              </span>
+
+              <mat-icon
+                class="navigation__arrow"
+                aria-hidden="true"
+              >
+                chevron_right
+              </mat-icon>
+            </a>
+          }
+        }
+      </mat-nav-list>
+    </section>
+
+    @if (navigationItems().length > 8) {
+      <section class="navigation-section navigation-section--system">
+        <div class="navigation-title">
+          <span>ADMINISTRACIÓN</span>
+        </div>
+
+        <mat-nav-list class="navigation">
+          @for (item of navigationItems(); track item.route) {
+            @if (item.route === '/usuarios') {
+              <a
+                mat-list-item
+                [routerLink]="item.route"
+                routerLinkActive="navigation__item--active"
+                class="navigation__item"
+              >
+                <mat-icon matListItemIcon>
+                  {{ item.icon }}
+                </mat-icon>
+
+                <span matListItemTitle>
+                  {{ item.label }}
+                </span>
+
+                <mat-icon
+                  class="navigation__arrow"
+                  aria-hidden="true"
+                >
+                  chevron_right
+                </mat-icon>
+              </a>
+            }
+          }
+        </mat-nav-list>
+      </section>
+    }
+  </div>
+
+  <footer class="sidebar-footer">
+    <div class="sidebar-footer__icon">
+      <mat-icon>verified_user</mat-icon>
+    </div>
+
+    <div>
+      <span>Sistema institucional</span>
+      <strong>Gestión patrimonial</strong>
+    </div>
+  </footer>
 </div>
