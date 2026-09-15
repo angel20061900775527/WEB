@@ -1,12 +1,16 @@
-<section class="patrimonial-detail-page">
-  <div class="patrimonial-detail-actions">
-    <a routerLink="/rios">
+<section class="patrimonial-admin-detail">
+  <div class="patrimonial-admin-detail__actions">
+    <a
+      routerLink="/rios"
+      class="patrimonial-admin-detail__back"
+    >
       ← Volver a Ríos
     </a>
 
     @if (puedeAdministrar()) {
       <button
         type="button"
+        class="patrimonial-admin-detail__edit"
         (click)="editar()"
       >
         Editar río
@@ -15,308 +19,413 @@
   </div>
 
   @if (loading()) {
-    <p>Cargando información del río...</p>
+    <div class="patrimonial-admin-message">
+      Cargando información del río...
+    </div>
   }
 
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        patrimonial-admin-message
+        patrimonial-admin-message--error
+      "
+    >
+      {{ error() }}
+    </div>
   }
 
   @if (!loading() && !error() && rio(); as rioActual) {
-    <div class="patrimonial-detail-header">
-      <div>
+    <header class="patrimonial-admin-detail__hero">
+      <div class="patrimonial-admin-detail__hero-content">
+        <span class="patrimonial-admin-detail__eyebrow">
+          Patrimonio · Río
+        </span>
+
         <h1>{{ rioActual.nombre }}</h1>
-        <p>{{ rioActual.ubicacion }}</p>
+
+        <p class="patrimonial-admin-detail__location">
+          {{ rioActual.ubicacion }}
+        </p>
       </div>
 
-      <div class="patrimonial-status-control">
-        <label for="estado">Estado</label>
-
-        @if (puedeAdministrar()) {
-          <select
-            #estadoSelect
-            id="estado"
-            [value]="rioActual.estado"
-            [disabled]="cambiandoEstado()"
-            (change)="
-              cambiarEstado(
-                estadoSelect.value === 'PUBLICADO'
-                  ? 'PUBLICADO'
-                  : estadoSelect.value === 'INACTIVO'
-                    ? 'INACTIVO'
-                    : 'BORRADOR'
-              )
-            "
-          >
-            <option value="BORRADOR">Borrador</option>
-            <option value="PUBLICADO">Publicado</option>
-            <option value="INACTIVO">Inactivo</option>
-          </select>
-
-          @if (cambiandoEstado()) {
-            <span>Actualizando...</span>
-          }
-
-          @if (mensajeEstado()) {
-            <span>{{ mensajeEstado() }}</span>
-          }
-        } @else {
-          <span>{{ rioActual.estado }}</span>
-        }
+      <div class="patrimonial-admin-detail__hero-status">
+        <span
+          class="patrimonial-admin-detail__status"
+          [class.patrimonial-admin-detail__status--publicado]="
+            rioActual.estado === 'PUBLICADO'
+          "
+          [class.patrimonial-admin-detail__status--borrador]="
+            rioActual.estado === 'BORRADOR'
+          "
+          [class.patrimonial-admin-detail__status--inactivo]="
+            rioActual.estado === 'INACTIVO'
+          "
+        >
+          {{
+            rioActual.estado === 'PUBLICADO'
+              ? 'Publicado'
+              : rioActual.estado === 'INACTIVO'
+                ? 'Inactivo'
+                : 'Borrador'
+          }}
+        </span>
       </div>
-    </div>
+    </header>
 
-    <section class="patrimonial-photos">
-      <div class="patrimonial-photos-header">
+    <section class="patrimonial-admin-section">
+      <div class="patrimonial-admin-section__header">
         <div>
+          <span class="patrimonial-admin-section__kicker">
+            Archivo fotográfico
+          </span>
+
           <h2>Fotografías</h2>
-          <p>Galería fotográfica del río.</p>
+
+          <p>
+            Galería fotográfica asociada al río.
+          </p>
         </div>
       </div>
 
       @if (errorFotografias()) {
-        <p>{{ errorFotografias() }}</p>
-      }
-
-      @if (mensajeFotografias()) {
-        <p>{{ mensajeFotografias() }}</p>
+        <div
+          class="
+            patrimonial-admin-message
+            patrimonial-admin-message--error
+          "
+        >
+          {{ errorFotografias() }}
+        </div>
       }
 
       @if (loadingFotografias()) {
-        <p>Cargando fotografías...</p>
+        <div class="patrimonial-admin-message">
+          Cargando fotografías...
+        </div>
       } @else {
         @if (fotografiaPrincipal(); as principal) {
-          <div class="patrimonial-main-photo">
-            <img
-              [src]="principal.url"
-              [alt]="principal.descripcion || rioActual.nombre"
-            />
+          <article class="patrimonial-admin-main-photo">
+            <div
+              class="patrimonial-admin-main-photo__image"
+            >
+              <img
+                [src]="principal.url"
+                [alt]="
+                  principal.descripcion ||
+                  rioActual.nombre
+                "
+              />
 
-            <div>
+              <span
+                class="patrimonial-admin-main-photo__badge"
+              >
+                Principal
+              </span>
+            </div>
+
+            <div
+              class="patrimonial-admin-main-photo__content"
+            >
               <strong>Fotografía principal</strong>
 
-              @if (principal.descripcion) {
-                <p>{{ principal.descripcion }}</p>
-              }
+              <p>
+                {{
+                  principal.descripcion ||
+                  'Sin descripción registrada.'
+                }}
+              </p>
             </div>
-          </div>
+          </article>
         } @else {
-          <p>
-            Este río aún no tiene fotografía principal.
-          </p>
+          <div class="patrimonial-admin-empty">
+            <strong>Sin fotografía principal</strong>
+
+            <p>
+              Este río todavía no tiene una fotografía
+              principal asignada.
+            </p>
+          </div>
         }
 
         @if (fotografiasSecundarias().length > 0) {
-          <div class="patrimonial-photo-gallery">
+          <div class="patrimonial-admin-gallery">
             @for (
               fotografia of fotografiasSecundarias();
               track fotografia.id
             ) {
-              <article class="patrimonial-photo-card">
-                <img
-                  [src]="fotografia.url"
-                  [alt]="
-                    fotografia.descripcion ||
-                    fotografia.nombreOriginal
-                  "
-                />
+              <article
+                class="patrimonial-admin-gallery__item"
+              >
+                <div
+                  class="patrimonial-admin-gallery__image"
+                >
+                  <img
+                    [src]="fotografia.url"
+                    [alt]="
+                      fotografia.descripcion ||
+                      fotografia.nombreOriginal
+                    "
+                  />
+                </div>
 
-                <div>
-                  @if (fotografia.descripcion) {
-                    <p>
-                      {{ fotografia.descripcion }}
-                    </p>
-                  }
-
-                  @if (puedeAdministrar()) {
-                    <div class="patrimonial-photo-actions">
-                      <button
-                        type="button"
-                        [disabled]="
-                          cambiandoPrincipal() ||
-                          eliminandoFotografia()
-                        "
-                        (click)="establecerPrincipal(fotografia)"
-                      >
-                        Hacer principal
-                      </button>
-
-                      <button
-                        type="button"
-                        [disabled]="
-                          cambiandoPrincipal() ||
-                          eliminandoFotografia()
-                        "
-                        (click)="eliminarFotografia(fotografia)"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  }
+                <div
+                  class="patrimonial-admin-gallery__content"
+                >
+                  <p>
+                    {{
+                      fotografia.descripcion ||
+                      'Sin descripción'
+                    }}
+                  </p>
                 </div>
               </article>
             }
           </div>
         }
-
-        @if (
-          !fotografiaPrincipal() &&
-          fotografias().length === 0
-        ) {
-          <p>No hay fotografías registradas.</p>
-        }
-      }
-
-      @if (puedeAdministrar()) {
-        <div class="patrimonial-photo-upload">
-          <h3>Agregar fotografía</h3>
-
-          <label>
-            <span>Imagen</span>
-
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              (change)="seleccionarArchivo($event)"
-            />
-          </label>
-
-          <label>
-            <span>Descripción</span>
-
-            <textarea
-              #descripcionInput
-              rows="3"
-              [value]="descripcionFotografia()"
-              (input)="
-                actualizarDescripcion(
-                  descripcionInput.value
-                )
-              "
-              placeholder="Descripción opcional de la fotografía"
-            ></textarea>
-          </label>
-
-          <button
-            type="button"
-            [disabled]="
-              !archivoSeleccionado() ||
-              subiendoFotografia()
-            "
-            (click)="subirFotografia()"
-          >
-            @if (subiendoFotografia()) {
-              Subiendo...
-            } @else {
-              Subir fotografía
-            }
-          </button>
-        </div>
       }
     </section>
 
-    <div class="patrimonial-detail-content">
-      <div>
-        <h2>Descripción</h2>
-        <p>{{ rioActual.descripcion }}</p>
-      </div>
-
-      <div>
-        <h2>Tipo</h2>
-        <p>{{ rioActual.tipo }}</p>
-      </div>
-
-      <div>
-        <h2>Estado de conservación</h2>
-        <p>{{ rioActual.estadoConservacion }}</p>
-      </div>
-
-      <div>
-        <h2>Apto para balneario</h2>
-        <p>
-          @if (rioActual.aptoBalneario) {
-            Sí
-          } @else {
-            No
-          }
-        </p>
-      </div>
-
-      @if (rioActual.resenaHistorica) {
+    <section class="patrimonial-admin-section">
+      <div class="patrimonial-admin-section__header">
         <div>
-          <h2>Reseña histórica</h2>
-          <p>{{ rioActual.resenaHistorica }}</p>
-        </div>
-      }
+          <span class="patrimonial-admin-section__kicker">
+            Ficha patrimonial
+          </span>
 
-      <div>
-        <h2>Ubicación</h2>
-        <p>{{ rioActual.ubicacion }}</p>
-      </div>
+          <h2>Información del río</h2>
 
-      @if (
-        rioActual.longitudKm !== null &&
-        rioActual.longitudKm !== undefined
-      ) {
-        <div>
-          <h2>Longitud</h2>
-          <p>{{ rioActual.longitudKm }} km</p>
-        </div>
-      }
-
-      @if (rioActual.cuencaHidrografica) {
-        <div>
-          <h2>Cuenca hidrográfica</h2>
-          <p>{{ rioActual.cuencaHidrografica }}</p>
-        </div>
-      }
-
-      @if (rioActual.afluenteDe) {
-        <div>
-          <h2>Afluente de</h2>
-          <p>{{ rioActual.afluenteDe }}</p>
-        </div>
-      }
-
-      @if (
-        rioActual.latitud !== null &&
-        rioActual.latitud !== undefined &&
-        rioActual.longitud !== null &&
-        rioActual.longitud !== undefined
-      ) {
-        <div>
-          <h2>Coordenadas</h2>
           <p>
-            Latitud: {{ rioActual.latitud }}
-            <br />
-            Longitud: {{ rioActual.longitud }}
+            Información registrada actualmente en SIGPAC.
           </p>
         </div>
-      }
-
-      @if (rioActual.fuentesInformacion) {
-        <div>
-          <h2>Fuentes de información</h2>
-          <p>{{ rioActual.fuentesInformacion }}</p>
-        </div>
-      }
-
-      @if (rioActual.observaciones) {
-        <div>
-          <h2>Observaciones</h2>
-          <p>{{ rioActual.observaciones }}</p>
-        </div>
-      }
-
-      <div>
-        <h2>Información del registro</h2>
-
-        <p>
-          Registrado: {{ rioActual.fechaRegistro }}
-          <br />
-          Última modificación: {{ rioActual.fechaModificacion }}
-        </p>
       </div>
-    </div>
+
+      <div class="patrimonial-admin-info">
+        <article
+          class="
+            patrimonial-admin-info__card
+            patrimonial-admin-info__card--wide
+          "
+        >
+          <span class="patrimonial-admin-info__label">
+            Descripción
+          </span>
+
+          <h3>Descripción general</h3>
+
+          <p>{{ rioActual.descripcion }}</p>
+        </article>
+
+        @if (rioActual.resenaHistorica) {
+          <article
+            class="
+              patrimonial-admin-info__card
+              patrimonial-admin-info__card--wide
+            "
+          >
+            <span class="patrimonial-admin-info__label">
+              Historia
+            </span>
+
+            <h3>Reseña histórica</h3>
+
+            <p>{{ rioActual.resenaHistorica }}</p>
+          </article>
+        }
+
+        <article class="patrimonial-admin-info__card">
+          <span class="patrimonial-admin-info__label">
+            Clasificación
+          </span>
+
+          <h3>Características generales</h3>
+
+          <div class="patrimonial-admin-info__values">
+            <div class="patrimonial-admin-info__value">
+              <span>Tipo</span>
+
+              <strong>
+                {{
+                  rioActual.tipo === 'PRINCIPAL'
+                    ? 'Principal'
+                    : rioActual.tipo === 'AFLUENTE'
+                      ? 'Afluente'
+                      : rioActual.tipo === 'QUEBRADA'
+                        ? 'Quebrada'
+                        : 'Estero'
+                }}
+              </strong>
+            </div>
+
+            <div class="patrimonial-admin-info__value">
+              <span>Estado de conservación</span>
+
+              <strong>
+                {{
+                  rioActual.estadoConservacion === 'EXCELENTE'
+                    ? 'Excelente'
+                    : rioActual.estadoConservacion === 'BUENO'
+                      ? 'Bueno'
+                      : rioActual.estadoConservacion === 'REGULAR'
+                        ? 'Regular'
+                        : 'Deteriorado'
+                }}
+              </strong>
+            </div>
+
+            <div class="patrimonial-admin-info__value">
+              <span>Apto para balneario</span>
+
+              <strong>
+                {{ rioActual.aptoBalneario ? 'Sí' : 'No' }}
+              </strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="patrimonial-admin-info__card">
+          <span class="patrimonial-admin-info__label">
+            Hidrografía
+          </span>
+
+          <h3>Características hidrográficas</h3>
+
+          <div class="patrimonial-admin-info__values">
+            @if (
+              rioActual.longitudKm !== null &&
+              rioActual.longitudKm !== undefined
+            ) {
+              <div class="patrimonial-admin-info__value">
+                <span>Longitud</span>
+                <strong>
+                  {{ rioActual.longitudKm }} km
+                </strong>
+              </div>
+            }
+
+            @if (rioActual.cuencaHidrografica) {
+              <div class="patrimonial-admin-info__value">
+                <span>Cuenca hidrográfica</span>
+
+                <strong>
+                  {{ rioActual.cuencaHidrografica }}
+                </strong>
+              </div>
+            }
+
+            @if (rioActual.afluenteDe) {
+              <div class="patrimonial-admin-info__value">
+                <span>Afluente de</span>
+
+                <strong>
+                  {{ rioActual.afluenteDe }}
+                </strong>
+              </div>
+            }
+          </div>
+        </article>
+
+        <article class="patrimonial-admin-info__card">
+          <span class="patrimonial-admin-info__label">
+            Localización
+          </span>
+
+          <h3>Ubicación</h3>
+
+          <p>{{ rioActual.ubicacion }}</p>
+
+          @if (
+            rioActual.latitud !== null &&
+            rioActual.latitud !== undefined &&
+            rioActual.longitud !== null &&
+            rioActual.longitud !== undefined
+          ) {
+            <div class="patrimonial-admin-info__values">
+              <div class="patrimonial-admin-info__value">
+                <span>Latitud</span>
+
+                <strong>
+                  {{ rioActual.latitud }}
+                </strong>
+              </div>
+
+              <div class="patrimonial-admin-info__value">
+                <span>Longitud</span>
+
+                <strong>
+                  {{ rioActual.longitud }}
+                </strong>
+              </div>
+            </div>
+          }
+        </article>
+
+        @if (rioActual.fuentesInformacion) {
+          <article
+            class="
+              patrimonial-admin-info__card
+              patrimonial-admin-info__card--wide
+            "
+          >
+            <span class="patrimonial-admin-info__label">
+              Referencias
+            </span>
+
+            <h3>Fuentes de información</h3>
+
+            <p>{{ rioActual.fuentesInformacion }}</p>
+          </article>
+        }
+
+        @if (rioActual.observaciones) {
+          <article
+            class="
+              patrimonial-admin-info__card
+              patrimonial-admin-info__card--wide
+            "
+          >
+            <span class="patrimonial-admin-info__label">
+              Información adicional
+            </span>
+
+            <h3>Observaciones</h3>
+
+            <p>{{ rioActual.observaciones }}</p>
+          </article>
+        }
+
+        <article
+          class="
+            patrimonial-admin-info__card
+            patrimonial-admin-info__card--wide
+          "
+        >
+          <span class="patrimonial-admin-info__label">
+            Sistema
+          </span>
+
+          <h3>Información del registro</h3>
+
+          <div class="patrimonial-admin-info__values">
+            <div class="patrimonial-admin-info__value">
+              <span>Registrado</span>
+
+              <strong>
+                {{ rioActual.fechaRegistro }}
+              </strong>
+            </div>
+
+            <div class="patrimonial-admin-info__value">
+              <span>Última modificación</span>
+
+              <strong>
+                {{ rioActual.fechaModificacion }}
+              </strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
   }
 </section>
