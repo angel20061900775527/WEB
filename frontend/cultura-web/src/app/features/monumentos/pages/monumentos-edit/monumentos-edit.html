@@ -55,9 +55,7 @@
       (ngSubmit)="guardar()"
     >
       <section class="patrimonial-admin-form__section">
-        <div
-          class="patrimonial-admin-form__section-header"
-        >
+        <div class="patrimonial-admin-form__section-header">
           <h2>Información general</h2>
 
           <p>
@@ -105,17 +103,9 @@
                 )
               "
             >
-              <option value="BORRADOR">
-                Borrador
-              </option>
-
-              <option value="PUBLICADO">
-                Publicado
-              </option>
-
-              <option value="INACTIVO">
-                Inactivo
-              </option>
+              <option value="BORRADOR">Borrador</option>
+              <option value="PUBLICADO">Publicado</option>
+              <option value="INACTIVO">Inactivo</option>
             </select>
           </div>
 
@@ -214,9 +204,7 @@
       </section>
 
       <section class="patrimonial-admin-form__section">
-        <div
-          class="patrimonial-admin-form__section-header"
-        >
+        <div class="patrimonial-admin-form__section-header">
           <h2>Ubicación</h2>
 
           <p>
@@ -232,9 +220,7 @@
               patrimonial-admin-form__field--wide
             "
           >
-            <label for="ubicacion">
-              Ubicación
-            </label>
+            <label for="ubicacion">Ubicación</label>
 
             <input
               id="ubicacion"
@@ -254,9 +240,7 @@
           </div>
 
           <div class="patrimonial-admin-form__field">
-            <label for="latitud">
-              Latitud
-            </label>
+            <label for="latitud">Latitud</label>
 
             <input
               id="latitud"
@@ -267,9 +251,7 @@
           </div>
 
           <div class="patrimonial-admin-form__field">
-            <label for="longitud">
-              Longitud
-            </label>
+            <label for="longitud">Longitud</label>
 
             <input
               id="longitud"
@@ -282,9 +264,7 @@
       </section>
 
       <section class="patrimonial-admin-form__section">
-        <div
-          class="patrimonial-admin-form__section-header"
-        >
+        <div class="patrimonial-admin-form__section-header">
           <h2>Información complementaria</h2>
 
           <p>
@@ -331,9 +311,7 @@
       </section>
 
       <section class="patrimonial-admin-form__section">
-        <div
-          class="patrimonial-admin-form__section-header"
-        >
+        <div class="patrimonial-admin-form__section-header">
           <h2>Fotografías</h2>
 
           <p>
@@ -375,9 +353,7 @@
                 fotografia of fotografias();
                 track fotografia.id
               ) {
-                <article
-                  class="patrimonial-admin-edit-photo"
-                >
+                <article class="patrimonial-admin-edit-photo">
                   <div
                     class="patrimonial-admin-edit-photo__image"
                   >
@@ -460,57 +436,142 @@
         }
 
         <div class="patrimonial-admin-upload">
-          <h3>Agregar fotografía</h3>
+          <h3>Agregar fotografías</h3>
 
-          <div class="patrimonial-admin-form__grid">
-            <div class="patrimonial-admin-form__field">
-              <label for="fotoMonumento">
-                Imagen
-              </label>
+          <label class="patrimonial-admin-upload__selector">
+            <strong>Seleccionar imágenes</strong>
 
-              <input
-                id="fotoMonumento"
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                (change)="seleccionarArchivo($event)"
-              />
+            <span>
+              Puede seleccionar varias fotografías JPG,
+              PNG o WEBP al mismo tiempo.
+            </span>
+
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp"
+              [disabled]="subiendoFotografia()"
+              (change)="seleccionarArchivos($event)"
+            />
+          </label>
+
+          @if (fotografiasSeleccionadas().length > 0) {
+            <div class="patrimonial-admin-upload__list">
+              @for (
+                seleccionada of fotografiasSeleccionadas();
+                track seleccionada.id
+              ) {
+                <article class="patrimonial-admin-upload__item">
+                  <div
+                    class="patrimonial-admin-upload__item-header"
+                  >
+                    <div
+                      class="patrimonial-admin-upload__filename"
+                    >
+                      <strong>
+                        {{ seleccionada.file.name }}
+                      </strong>
+
+                      <span>
+                        {{
+                          (
+                            seleccionada.file.size /
+                            1024 /
+                            1024
+                          ).toFixed(2)
+                        }}
+                        MB
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="patrimonial-admin-upload__remove"
+                      [disabled]="subiendoFotografia()"
+                      (click)="
+                        quitarFotografiaSeleccionada(
+                          seleccionada.id
+                        )
+                      "
+                      title="Quitar fotografía"
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <textarea
+                    #descripcionSeleccionada
+                    class="
+                      patrimonial-admin-upload__description
+                    "
+                    rows="2"
+                    [value]="seleccionada.descripcion"
+                    [disabled]="
+                      seleccionada.estado === 'SUBIENDO'
+                    "
+                    (input)="
+                      actualizarDescripcion(
+                        seleccionada.id,
+                        descripcionSeleccionada.value
+                      )
+                    "
+                    placeholder="Descripción opcional de esta fotografía"
+                  ></textarea>
+
+                  @if (
+                    seleccionada.estado === 'SUBIENDO'
+                  ) {
+                    <small>
+                      Subiendo fotografía...
+                    </small>
+                  }
+
+                  @if (
+                    seleccionada.estado === 'ERROR'
+                  ) {
+                    <small>
+                      {{
+                        seleccionada.error ||
+                        'No se pudo subir la fotografía.'
+                      }}
+                    </small>
+                  }
+                </article>
+              }
             </div>
 
-            <div class="patrimonial-admin-form__field">
-              <label for="descripcionFotografia">
-                Descripción
-              </label>
+            <div class="patrimonial-admin-upload__footer">
+              <button
+                type="button"
+                class="patrimonial-admin-upload__clear"
+                [disabled]="subiendoFotografia()"
+                (click)="limpiarSeleccion()"
+              >
+                Limpiar selección
+              </button>
 
-              <textarea
-                #descripcionInput
-                id="descripcionFotografia"
-                rows="3"
-                [value]="descripcionFotografia()"
-                (input)="
-                  actualizarDescripcion(
-                    descripcionInput.value
-                  )
+              <button
+                type="button"
+                class="patrimonial-admin-upload__button"
+                [disabled]="
+                  totalPendientes() === 0 ||
+                  subiendoFotografia()
                 "
-                placeholder="Descripción opcional de la fotografía"
-              ></textarea>
+                (click)="subirFotografias()"
+              >
+                @if (subiendoFotografia()) {
+                  Subiendo...
+                } @else {
+                  Subir {{ totalPendientes() }}
+                  {{
+                    totalPendientes() === 1
+                      ? 'fotografía'
+                      : 'fotografías'
+                  }}
+                }
+              </button>
             </div>
-          </div>
-
-          <button
-            type="button"
-            class="patrimonial-admin-upload__button"
-            [disabled]="
-              !archivoSeleccionado() ||
-              subiendoFotografia()
-            "
-            (click)="subirFotografia()"
-          >
-            @if (subiendoFotografia()) {
-              Subiendo...
-            } @else {
-              Subir fotografía
-            }
-          </button>
+          }
         </div>
       </section>
 

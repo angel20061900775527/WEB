@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -14,6 +14,14 @@ import {
   UpdateRioPayload,
 } from '../../../../core/services/rios.service';
 
+interface FotografiaSeleccionada {
+  id: number;
+  archivo: File;
+  descripcion: string;
+  estado: 'PENDIENTE' | 'SUBIENDO' | 'COMPLETADA' | 'ERROR';
+  error?: string;
+}
+
 @Component({
   selector: 'app-rios-edit',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
@@ -25,13 +33,15 @@ export class RiosEdit implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly riosService = inject(RiosService);
-
   private readonly fotografiasService = inject(FotografiasService);
+
+  private contadorArchivos = 0;
 
   rioId = '';
 
   rio = signal<Rio | null>(null);
   fotografias = signal<Fotografia[]>([]);
+  fotografiasSeleccionadas = signal<FotografiaSeleccionada[]>([]);
 
   loading = signal(false);
   saving = signal(false);
@@ -47,33 +57,28 @@ export class RiosEdit implements OnInit {
   errorFotografias = signal('');
   mensajeFotografias = signal('');
 
-  archivoSeleccionado = signal<File | null>(null);
-  descripcionFotografia = signal('');
-
   estado = signal<EstadoRio>('BORRADOR');
+
+  readonly totalPendientes = computed(
+    () =>
+      this.fotografiasSeleccionadas().filter(
+        (fotografia) => fotografia.estado === 'PENDIENTE' || fotografia.estado === 'ERROR',
+      ).length,
+  );
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(150)]],
-
     descripcion: ['', Validators.required],
-
     resenaHistorica: [''],
-
     ubicacion: ['', [Validators.required, Validators.maxLength(255)]],
-
     longitudKm: [''],
     cuencaHidrografica: [''],
     afluenteDe: [''],
-
     estadoConservacion: this.fb.nonNullable.control<EstadoConservacionRio>('BUENO'),
-
     tipo: this.fb.nonNullable.control<TipoRio>('PRINCIPAL'),
-
     aptoBalneario: [false],
-
     latitud: [''],
     longitud: [''],
-
     fuentesInformacion: [''],
     observaciones: [''],
   });
@@ -105,20 +110,15 @@ export class RiosEdit implements OnInit {
           nombre: rio.nombre,
           descripcion: rio.descripcion,
           resenaHistorica: rio.resenaHistorica ?? '',
-
           ubicacion: rio.ubicacion,
 
           longitudKm:
             rio.longitudKm !== null && rio.longitudKm !== undefined ? String(rio.longitudKm) : '',
 
           cuencaHidrografica: rio.cuencaHidrografica ?? '',
-
           afluenteDe: rio.afluenteDe ?? '',
-
           estadoConservacion: rio.estadoConservacion,
-
           tipo: rio.tipo,
-
           aptoBalneario: rio.aptoBalneario,
 
           latitud: rio.latitud !== null && rio.latitud !== undefined ? String(rio.latitud) : '',
@@ -126,7 +126,6 @@ export class RiosEdit implements OnInit {
           longitud: rio.longitud !== null && rio.longitud !== undefined ? String(rio.longitud) : '',
 
           fuentesInformacion: rio.fuentesInformacion ?? '',
-
           observaciones: rio.observaciones ?? '',
         });
 
@@ -137,7 +136,6 @@ export class RiosEdit implements OnInit {
         console.error('Error al cargar río:', error);
 
         this.error.set('No se pudo cargar la información del río.');
-
         this.loading.set(false);
       },
     });
@@ -175,24 +173,75 @@ export class RiosEdit implements OnInit {
     return String(rioActual.fotografiaPrincipalId) === String(fotografia.id);
   }
 
-  seleccionarArchivo(event: Event): void {
+  seleccionarArchivos(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0] ?? null;
+    const archivos = Array.from(input.files ?? []);
 
-    this.archivoSeleccionado.set(file);
+    if (archivos.length === 0) {
+      return;
+    }
+
+    const nuevasFotografias: FotografiaSeleccionada[] = archivos.map((archivo) => ({
+      id: ++this.contadorArchivos,
+      archivo,
+      descripcion: '',
+      estado: 'PENDIENTE',
+    }));
+
+    this.fotografiasSeleccionadas.update((actuales) => [...actuales, ...nuevasFotografias]);
+
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+
+    input.value = '';
+  }
+
+  actualizarDescripcion(id: number, descripcion: string): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              descripcion,
+            }
+          : fotografia,
+      ),
+    );
+  }
+
+  quitarFotografiaSeleccionada(id: number): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.filter((fotografia) => fotografia.id !== id),
+    );
+
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
   }
 
-  actualizarDescripcion(valor: string): void {
-    this.descripcionFotografia.set(valor);
+  limpiarSeleccion(): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.set([]);
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
   }
 
-  subirFotografia(): void {
-    const file = this.archivoSeleccionado();
+  subirFotografias(): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
 
-    if (!file) {
-      this.errorFotografias.set('Seleccione una imagen antes de continuar.');
+    const pendientes = this.fotografiasSeleccionadas().filter(
+      (fotografia) => fotografia.estado === 'PENDIENTE' || fotografia.estado === 'ERROR',
+    );
+
+    if (pendientes.length === 0) {
       return;
     }
 
@@ -200,28 +249,99 @@ export class RiosEdit implements OnInit {
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
 
+    this.subirSiguienteFotografia(pendientes, 0, 0, 0);
+  }
+
+  private subirSiguienteFotografia(
+    pendientes: FotografiaSeleccionada[],
+    indice: number,
+    completadas: number,
+    errores: number,
+  ): void {
+    if (indice >= pendientes.length) {
+      this.finalizarCargaFotografias(completadas, errores);
+      return;
+    }
+
+    const fotografia = pendientes[indice];
+
+    this.actualizarEstadoSeleccionada(fotografia.id, 'SUBIENDO');
+
     this.fotografiasService
-      .upload('RIO', this.rioId, file, this.descripcionFotografia())
+      .upload('RIO', this.rioId, fotografia.archivo, fotografia.descripcion.trim())
       .subscribe({
-        next: (fotografia) => {
-          this.fotografias.update((fotografias) => [fotografia, ...fotografias]);
+        next: (fotografiaSubida) => {
+          this.fotografias.update((actuales) => [fotografiaSubida, ...actuales]);
 
-          this.archivoSeleccionado.set(null);
-          this.descripcionFotografia.set('');
+          this.actualizarEstadoSeleccionada(fotografia.id, 'COMPLETADA');
 
-          this.mensajeFotografias.set('Fotografía subida correctamente.');
-
-          this.subiendoFotografia.set(false);
+          this.subirSiguienteFotografia(pendientes, indice + 1, completadas + 1, errores);
         },
 
         error: (error) => {
           console.error('Error al subir fotografía:', error);
 
-          this.errorFotografias.set(error?.error?.message ?? 'No se pudo subir la fotografía.');
+          this.actualizarEstadoSeleccionada(
+            fotografia.id,
+            'ERROR',
+            error?.error?.message ?? 'No se pudo subir la fotografía.',
+          );
 
-          this.subiendoFotografia.set(false);
+          this.subirSiguienteFotografia(pendientes, indice + 1, completadas, errores + 1);
         },
       });
+  }
+
+  private finalizarCargaFotografias(completadas: number, errores: number): void {
+    this.subiendoFotografia.set(false);
+
+    if (errores === 0) {
+      this.fotografiasSeleccionadas.set([]);
+
+      this.mensajeFotografias.set(
+        completadas === 1
+          ? 'Fotografía subida correctamente.'
+          : `${completadas} fotografías subidas correctamente.`,
+      );
+
+      return;
+    }
+
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.filter((fotografia) => fotografia.estado !== 'COMPLETADA'),
+    );
+
+    if (completadas > 0) {
+      this.mensajeFotografias.set(
+        `${completadas} fotografía${completadas === 1 ? '' : 's'} subida${
+          completadas === 1 ? '' : 's'
+        } correctamente.`,
+      );
+    }
+
+    this.errorFotografias.set(
+      `${errores} fotografía${errores === 1 ? '' : 's'} no ${
+        errores === 1 ? 'pudo' : 'pudieron'
+      } subirse. Puede volver a intentarlo.`,
+    );
+  }
+
+  private actualizarEstadoSeleccionada(
+    id: number,
+    estado: FotografiaSeleccionada['estado'],
+    error?: string,
+  ): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              estado,
+              error,
+            }
+          : fotografia,
+      ),
+    );
   }
 
   establecerPrincipal(fotografia: Fotografia): void {

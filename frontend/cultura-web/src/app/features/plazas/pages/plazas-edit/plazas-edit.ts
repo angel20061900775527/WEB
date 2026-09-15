@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Fotografia, FotografiasService } from '../../../../core/services/fotografias.service';
+
 import {
   EstadoPlaza,
   Plaza,
@@ -32,6 +33,8 @@ export class PlazasEdit implements OnInit {
   private readonly plazasService = inject(PlazasService);
   private readonly fotografiasService = inject(FotografiasService);
 
+  private siguienteFotografiaId = 1;
+
   plazaId = '';
 
   loading = signal(false);
@@ -43,6 +46,8 @@ export class PlazasEdit implements OnInit {
   estado = signal<EstadoPlaza>('BORRADOR');
 
   fotografias = signal<Fotografia[]>([]);
+  fotografiasSeleccionadas = signal<FotografiaSeleccionada[]>([]);
+
   loadingFotografias = signal(false);
   errorFotografias = signal('');
   mensajeFotografias = signal('');
@@ -52,10 +57,6 @@ export class PlazasEdit implements OnInit {
   subiendoFotografias = signal(false);
 
   fotografiaPrincipalId = signal<string | number | null>(null);
-
-  fotografiasSeleccionadas = signal<FotografiaSeleccionada[]>([]);
-
-  private siguienteFotografiaId = 1;
 
   readonly totalPendientes = computed(
     () =>
@@ -107,6 +108,7 @@ export class PlazasEdit implements OnInit {
     this.plazasService.getById(id).subscribe({
       next: (plaza: Plaza) => {
         this.estado.set(plaza.estado);
+
         this.fotografiaPrincipalId.set(plaza.fotografiaPrincipalId ?? null);
 
         this.form.patchValue({
@@ -129,6 +131,7 @@ export class PlazasEdit implements OnInit {
 
         this.loading.set(false);
       },
+
       error: (error) => {
         console.error('Error al cargar plaza:', error);
 
@@ -148,6 +151,7 @@ export class PlazasEdit implements OnInit {
         this.fotografias.set(fotografias);
         this.loadingFotografias.set(false);
       },
+
       error: (error) => {
         console.error('Error al cargar fotografías:', error);
 
@@ -179,13 +183,17 @@ export class PlazasEdit implements OnInit {
     const value = this.form.getRawValue();
 
     const latitudTexto = String(value.latitud ?? '').trim();
+
     const longitudTexto = String(value.longitud ?? '').trim();
 
     const payload: UpdatePlazaPayload = {
       nombre: value.nombre.trim(),
       descripcion: value.descripcion.trim(),
+
       resenaHistorica: value.resenaHistorica.trim() || null,
+
       fechaCreacion: value.fechaCreacion || null,
+
       ubicacion: value.ubicacion.trim(),
 
       latitud: latitudTexto ? Number(latitudTexto) : null,
@@ -211,6 +219,7 @@ export class PlazasEdit implements OnInit {
 
             this.router.navigate(['/plazas', this.plazaId]);
           },
+
           error: (error) => {
             console.error('Error al actualizar estado de la plaza:', error);
 
@@ -223,6 +232,7 @@ export class PlazasEdit implements OnInit {
           },
         });
       },
+
       error: (error) => {
         console.error('Error al actualizar plaza:', error);
 
@@ -235,7 +245,6 @@ export class PlazasEdit implements OnInit {
 
   seleccionarFotografias(event: Event): void {
     const input = event.target as HTMLInputElement;
-
     const archivos = Array.from(input.files ?? []);
 
     if (archivos.length === 0) {
@@ -278,9 +287,26 @@ export class PlazasEdit implements OnInit {
     this.fotografiasSeleccionadas.update((fotografias) =>
       fotografias.filter((item) => item.id !== id),
     );
+
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+  }
+
+  limpiarSeleccion(): void {
+    if (this.subiendoFotografias()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.set([]);
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
   }
 
   subirFotografias(): void {
+    if (this.subiendoFotografias()) {
+      return;
+    }
+
     const pendientes = this.fotografiasSeleccionadas().filter(
       (item) => item.estado === 'PENDIENTE' || item.estado === 'ERROR',
     );
@@ -293,27 +319,17 @@ export class PlazasEdit implements OnInit {
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
 
-    this.subirSiguienteFotografia(pendientes, 0);
+    this.subirSiguienteFotografia(pendientes, 0, 0, 0);
   }
 
-  private subirSiguienteFotografia(pendientes: FotografiaSeleccionada[], indice: number): void {
+  private subirSiguienteFotografia(
+    pendientes: FotografiaSeleccionada[],
+    indice: number,
+    completadas: number,
+    errores: number,
+  ): void {
     if (indice >= pendientes.length) {
-      this.subiendoFotografias.set(false);
-
-      const existenErrores = this.fotografiasSeleccionadas().some(
-        (item) => item.estado === 'ERROR',
-      );
-
-      if (!existenErrores) {
-        this.mensajeFotografias.set('Fotografías subidas correctamente.');
-
-        this.fotografiasSeleccionadas.set([]);
-      } else {
-        this.errorFotografias.set(
-          'Algunas fotografías no pudieron subirse. Puede volver a intentarlo.',
-        );
-      }
-
+      this.finalizarCargaFotografias(completadas, errores);
       return;
     }
 
@@ -329,8 +345,9 @@ export class PlazasEdit implements OnInit {
 
           this.actualizarEstadoFotografia(fotografia.id, 'COMPLETADA');
 
-          this.subirSiguienteFotografia(pendientes, indice + 1);
+          this.subirSiguienteFotografia(pendientes, indice + 1, completadas + 1, errores);
         },
+
         error: (error) => {
           console.error('Error al subir fotografía:', error);
 
@@ -340,9 +357,43 @@ export class PlazasEdit implements OnInit {
             error?.error?.message ?? 'No se pudo subir la fotografía.',
           );
 
-          this.subirSiguienteFotografia(pendientes, indice + 1);
+          this.subirSiguienteFotografia(pendientes, indice + 1, completadas, errores + 1);
         },
       });
+  }
+
+  private finalizarCargaFotografias(completadas: number, errores: number): void {
+    this.subiendoFotografias.set(false);
+
+    if (errores === 0) {
+      this.fotografiasSeleccionadas.set([]);
+
+      this.mensajeFotografias.set(
+        completadas === 1
+          ? 'Fotografía subida correctamente.'
+          : `${completadas} fotografías subidas correctamente.`,
+      );
+
+      return;
+    }
+
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.filter((fotografia) => fotografia.estado !== 'COMPLETADA'),
+    );
+
+    if (completadas > 0) {
+      this.mensajeFotografias.set(
+        `${completadas} fotografía${completadas === 1 ? '' : 's'} subida${
+          completadas === 1 ? '' : 's'
+        } correctamente.`,
+      );
+    }
+
+    this.errorFotografias.set(
+      `${errores} fotografía${errores === 1 ? '' : 's'} no ${
+        errores === 1 ? 'pudo' : 'pudieron'
+      } subirse. Puede volver a intentarlo.`,
+    );
   }
 
   private actualizarEstadoFotografia(
@@ -380,6 +431,7 @@ export class PlazasEdit implements OnInit {
 
         this.cambiandoPrincipal.set(false);
       },
+
       error: (error) => {
         console.error('Error al establecer fotografía principal:', error);
 
@@ -420,6 +472,7 @@ export class PlazasEdit implements OnInit {
 
         this.eliminandoFotografia.set(false);
       },
+
       error: (error) => {
         console.error('Error al eliminar fotografía:', error);
 

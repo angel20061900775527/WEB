@@ -31,8 +31,10 @@
 
   @if (error()) {
     <div
-      class="patrimonial-admin-form__message
-             patrimonial-admin-form__message--error"
+      class="
+        patrimonial-admin-form__message
+        patrimonial-admin-form__message--error
+      "
     >
       {{ error() }}
     </div>
@@ -40,8 +42,10 @@
 
   @if (success()) {
     <div
-      class="patrimonial-admin-form__message
-             patrimonial-admin-form__message--success"
+      class="
+        patrimonial-admin-form__message
+        patrimonial-admin-form__message--success
+      "
     >
       {{ success() }}
     </div>
@@ -53,22 +57,21 @@
       [formGroup]="form"
       (ngSubmit)="guardar()"
     >
-      <!-- ==========================================
-           INFORMACIÓN GENERAL
-           ========================================== -->
-
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
           <h2>Información general</h2>
 
           <p>
-            Datos principales y estado administrativo de la plaza.
+            Datos principales y estado administrativo
+            de la plaza.
           </p>
         </div>
 
         <div class="patrimonial-admin-form__grid">
           <div class="patrimonial-admin-form__field">
-            <label for="nombre">Nombre</label>
+            <label for="nombre">
+              Nombre
+            </label>
 
             <input
               id="nombre"
@@ -88,7 +91,9 @@
           </div>
 
           <div class="patrimonial-admin-form__field">
-            <label for="estado">Estado</label>
+            <label for="estado">
+              Estado
+            </label>
 
             <select
               #estadoSelect
@@ -132,8 +137,10 @@
           </div>
 
           <div
-            class="patrimonial-admin-form__field
-                   patrimonial-admin-form__field--wide"
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
           >
             <label for="descripcion">
               Descripción
@@ -156,8 +163,10 @@
           </div>
 
           <div
-            class="patrimonial-admin-form__field
-                   patrimonial-admin-form__field--wide"
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
           >
             <label for="resenaHistorica">
               Reseña histórica
@@ -172,10 +181,6 @@
         </div>
       </section>
 
-      <!-- ==========================================
-           UBICACIÓN
-           ========================================== -->
-
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
           <h2>Ubicación</h2>
@@ -187,8 +192,10 @@
 
         <div class="patrimonial-admin-form__grid">
           <div
-            class="patrimonial-admin-form__field
-                   patrimonial-admin-form__field--wide"
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
           >
             <label for="ubicacion">
               Ubicación
@@ -239,23 +246,24 @@
         </div>
       </section>
 
-      <!-- ==========================================
-           INFORMACIÓN COMPLEMENTARIA
-           ========================================== -->
-
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
-          <h2>Información complementaria</h2>
+          <h2>
+            Información complementaria
+          </h2>
 
           <p>
-            Fuentes documentales y observaciones del registro.
+            Fuentes documentales y observaciones
+            del registro.
           </p>
         </div>
 
         <div class="patrimonial-admin-form__grid">
           <div
-            class="patrimonial-admin-form__field
-                   patrimonial-admin-form__field--wide"
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
           >
             <label for="fuentesInformacion">
               Fuentes de información
@@ -269,8 +277,10 @@
           </div>
 
           <div
-            class="patrimonial-admin-form__field
-                   patrimonial-admin-form__field--wide"
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
           >
             <label for="observaciones">
               Observaciones
@@ -286,23 +296,22 @@
       </section>
     </form>
 
-    <!-- ==========================================
-         FOTOGRAFÍAS
-         ========================================== -->
-
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
         <h2>Fotografías</h2>
 
         <p>
-          Administra las fotografías registradas para esta plaza.
+          Administra las fotografías registradas
+          para esta plaza.
         </p>
       </div>
 
       @if (errorFotografias()) {
         <div
-          class="patrimonial-admin-message
-                 patrimonial-admin-message--error"
+          class="
+            patrimonial-admin-form__message
+            patrimonial-admin-form__message--error
+          "
         >
           {{ errorFotografias() }}
         </div>
@@ -310,15 +319,17 @@
 
       @if (mensajeFotografias()) {
         <div
-          class="patrimonial-admin-form__message
-                 patrimonial-admin-form__message--success"
+          class="
+            patrimonial-admin-form__message
+            patrimonial-admin-form__message--success
+          "
         >
           {{ mensajeFotografias() }}
         </div>
       }
 
       @if (loadingFotografias()) {
-        <div class="patrimonial-admin-message">
+        <div class="patrimonial-admin-form__message">
           Cargando fotografías...
         </div>
       } @else {
@@ -328,8 +339,12 @@
               fotografia of fotografias();
               track fotografia.id
             ) {
-              <article class="patrimonial-admin-edit-photo">
-                <div class="patrimonial-admin-edit-photo__image">
+              <article
+                class="patrimonial-admin-edit-photo"
+              >
+                <div
+                  class="patrimonial-admin-edit-photo__image"
+                >
                   <img
                     [src]="fotografia.url"
                     [alt]="
@@ -338,7 +353,9 @@
                     "
                   />
 
-                  @if (esFotografiaPrincipal(fotografia)) {
+                  @if (
+                    esFotografiaPrincipal(fotografia)
+                  ) {
                     <span
                       class="patrimonial-admin-edit-photo__badge"
                     >
@@ -347,7 +364,9 @@
                   }
                 </div>
 
-                <div class="patrimonial-admin-edit-photo__body">
+                <div
+                  class="patrimonial-admin-edit-photo__body"
+                >
                   <p>
                     {{
                       fotografia.descripcion ||
@@ -355,9 +374,13 @@
                     }}
                   </p>
 
-                  @if (!esFotografiaPrincipal(fotografia)) {
+                  @if (
+                    !esFotografiaPrincipal(fotografia)
+                  ) {
                     <div
-                      class="patrimonial-admin-edit-photo__actions"
+                      class="
+                        patrimonial-admin-edit-photo__actions
+                      "
                     >
                       <button
                         type="button"
@@ -374,7 +397,9 @@
 
                       <button
                         type="button"
-                        class="patrimonial-admin-edit-photo__delete"
+                        class="
+                          patrimonial-admin-edit-photo__delete
+                        "
                         [disabled]="
                           cambiandoPrincipal() ||
                           eliminandoFotografia()
@@ -398,111 +423,94 @@
             </strong>
 
             <p>
-              No hay fotografías registradas para esta plaza.
+              No hay fotografías registradas
+              para esta plaza.
             </p>
           </div>
         }
       }
 
-      <!-- ==========================================
-           AGREGAR FOTOGRAFÍAS
-           ========================================== -->
-
       <div class="patrimonial-admin-upload">
-        <h3>
-          Agregar fotografías
-        </h3>
+        <h3>Agregar fotografías</h3>
 
-        <div class="patrimonial-admin-form__field">
-          <label for="fotografiasPlaza">
+        <label class="patrimonial-admin-upload__selector">
+          <strong>
             Seleccionar imágenes
-          </label>
+          </strong>
+
+          <span>
+            Puede seleccionar varias fotografías JPG,
+            PNG o WEBP al mismo tiempo.
+          </span>
 
           <input
-            id="fotografiasPlaza"
             type="file"
             multiple
             accept="image/jpeg,image/png,image/webp"
+            [disabled]="subiendoFotografias()"
             (change)="seleccionarFotografias($event)"
           />
+        </label>
 
-          <span class="patrimonial-admin-form__field-help">
-            Puedes seleccionar varias imágenes y agregar
-            una descripción individual a cada una.
-          </span>
-        </div>
-
-        @if (fotografiasSeleccionadas().length > 0) {
-          @for (
-            fotografia of fotografiasSeleccionadas();
-            track fotografia.id
-          ) {
-            <div
-              class="patrimonial-admin-form__grid"
-              style="margin-top: 14px;"
-            >
-              <div class="patrimonial-admin-form__field">
-                <label>
-                  Archivo
-                </label>
-
-                <span class="patrimonial-admin-form__field-help">
-                  {{ fotografia.archivo.name }}
-                  ·
-                  {{
-                    fotografia.archivo.size /
-                      1024 /
-                      1024
-                      | number: '1.2-2'
-                  }}
-                  MB
-                </span>
-              </div>
-
-              <div class="patrimonial-admin-form__field">
-                <label>
-                  Estado
-                </label>
-
-                <span class="patrimonial-admin-form__field-help">
-                  @switch (fotografia.estado) {
-                    @case ('SUBIENDO') {
-                      Subiendo...
-                    }
-
-                    @case ('COMPLETADA') {
-                      Completada
-                    }
-
-                    @case ('ERROR') {
-                      Error
-                    }
-
-                    @default {
-                      Pendiente
-                    }
-                  }
-                </span>
-
-                @if (
-                  fotografia.estado === 'ERROR' &&
-                  fotografia.error
-                ) {
-                  <small>
-                    {{ fotografia.error }}
-                  </small>
-                }
-              </div>
-
-              <div
-                class="patrimonial-admin-form__field
-                       patrimonial-admin-form__field--wide"
+        @if (
+          fotografiasSeleccionadas().length > 0
+        ) {
+          <div class="patrimonial-admin-upload__list">
+            @for (
+              fotografia of fotografiasSeleccionadas();
+              track fotografia.id
+            ) {
+              <article
+                class="patrimonial-admin-upload__item"
               >
-                <label>
-                  Descripción
-                </label>
+                <div
+                  class="
+                    patrimonial-admin-upload__item-header
+                  "
+                >
+                  <div
+                    class="
+                      patrimonial-admin-upload__filename
+                    "
+                  >
+                    <strong>
+                      {{ fotografia.archivo.name }}
+                    </strong>
+
+                    <span>
+                      {{
+                        (
+                          fotografia.archivo.size /
+                          1024 /
+                          1024
+                        ).toFixed(2)
+                      }}
+                      MB
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="
+                      patrimonial-admin-upload__remove
+                    "
+                    [disabled]="subiendoFotografias()"
+                    (click)="
+                      quitarFotografiaSeleccionada(
+                        fotografia.id
+                      )
+                    "
+                    title="Quitar fotografía"
+                  >
+                    ×
+                  </button>
+                </div>
 
                 <textarea
+                  #descripcionSeleccionada
+                  class="
+                    patrimonial-admin-upload__description
+                  "
                   rows="2"
                   [value]="fotografia.descripcion"
                   [disabled]="
@@ -512,64 +520,78 @@
                   (input)="
                     actualizarDescripcionFotografia(
                       fotografia.id,
-                      $any($event.target).value
+                      descripcionSeleccionada.value
                     )
                   "
-                  placeholder="Descripción opcional"
+                  placeholder="Descripción opcional de esta fotografía"
                 ></textarea>
-              </div>
 
-              @if (
-                fotografia.estado !== 'SUBIENDO' &&
-                fotografia.estado !== 'COMPLETADA'
-              ) {
-                <div class="patrimonial-admin-form__field">
-                  <button
-                    type="button"
-                    class="patrimonial-admin-form__cancel"
-                    [disabled]="subiendoFotografias()"
-                    (click)="
-                      quitarFotografiaSeleccionada(
-                        fotografia.id
-                      )
-                    "
-                  >
-                    Quitar
-                  </button>
-                </div>
-              }
-            </div>
-          }
+                @if (
+                  fotografia.estado === 'SUBIENDO'
+                ) {
+                  <small>
+                    Subiendo fotografía...
+                  </small>
+                }
 
-          <button
-            type="button"
-            class="patrimonial-admin-upload__button"
-            [disabled]="
-              totalPendientes() === 0 ||
-              subiendoFotografias()
-            "
-            (click)="subirFotografias()"
-          >
-            @if (subiendoFotografias()) {
-              Subiendo fotografías...
-            } @else {
-              Subir {{ totalPendientes() }}
+                @if (
+                  fotografia.estado === 'COMPLETADA'
+                ) {
+                  <small>
+                    Fotografía subida correctamente.
+                  </small>
+                }
 
-              @if (totalPendientes() === 1) {
-                fotografía
-              } @else {
-                fotografías
-              }
+                @if (
+                  fotografia.estado === 'ERROR'
+                ) {
+                  <small>
+                    {{
+                      fotografia.error ||
+                      'No se pudo subir la fotografía.'
+                    }}
+                  </small>
+                }
+              </article>
             }
-          </button>
+          </div>
+
+          <div
+            class="patrimonial-admin-upload__footer"
+          >
+            <button
+              type="button"
+              class="patrimonial-admin-upload__clear"
+              [disabled]="subiendoFotografias()"
+              (click)="limpiarSeleccion()"
+            >
+              Limpiar selección
+            </button>
+
+            <button
+              type="button"
+              class="patrimonial-admin-upload__button"
+              [disabled]="
+                totalPendientes() === 0 ||
+                subiendoFotografias()
+              "
+              (click)="subirFotografias()"
+            >
+              @if (subiendoFotografias()) {
+                Subiendo...
+              } @else {
+                Subir {{ totalPendientes() }}
+                {{
+                  totalPendientes() === 1
+                    ? 'fotografía'
+                    : 'fotografías'
+                }}
+              }
+            </button>
+          </div>
         }
       </div>
     </section>
-
-    <!-- ==========================================
-         ACCIONES FINALES
-         SIEMPRE AL FINAL
-         ========================================== -->
 
     <div class="patrimonial-admin-form__actions">
       <button

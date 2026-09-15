@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -11,6 +11,14 @@ import {
   MonumentosService,
   UpdateMonumentoPayload,
 } from '../../../../core/services/monumentos.service';
+
+interface FotografiaSeleccionada {
+  id: string;
+  file: File;
+  descripcion: string;
+  estado: 'PENDIENTE' | 'SUBIENDO' | 'ERROR';
+  error?: string;
+}
 
 @Component({
   selector: 'app-monumentos-edit',
@@ -24,13 +32,14 @@ export class MonumentosEdit implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   private readonly monumentosService = inject(MonumentosService);
-
   private readonly fotografiasService = inject(FotografiasService);
 
   monumentoId = '';
 
   monumento = signal<Monumento | null>(null);
   fotografias = signal<Fotografia[]>([]);
+
+  fotografiasSeleccionadas = signal<FotografiaSeleccionada[]>([]);
 
   loading = signal(false);
   saving = signal(false);
@@ -46,10 +55,14 @@ export class MonumentosEdit implements OnInit {
   errorFotografias = signal('');
   mensajeFotografias = signal('');
 
-  archivoSeleccionado = signal<File | null>(null);
-  descripcionFotografia = signal('');
-
   estado = signal<EstadoMonumento>('BORRADOR');
+
+  totalPendientes = computed(
+    () =>
+      this.fotografiasSeleccionadas().filter(
+        (fotografia) => fotografia.estado === 'PENDIENTE' || fotografia.estado === 'ERROR',
+      ).length,
+  );
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(150)]],
@@ -110,7 +123,6 @@ export class MonumentosEdit implements OnInit {
               : '',
 
           fuentesInformacion: monumento.fuentesInformacion ?? '',
-
           observaciones: monumento.observaciones ?? '',
         });
 
@@ -159,26 +171,101 @@ export class MonumentosEdit implements OnInit {
     return String(monumentoActual.fotografiaPrincipalId) === String(fotografia.id);
   }
 
-  seleccionarArchivo(event: Event): void {
+  seleccionarArchivos(event: Event): void {
     const input = event.target as HTMLInputElement;
 
-    const file = input.files?.[0] ?? null;
+    const archivos = Array.from(input.files ?? []);
 
-    this.archivoSeleccionado.set(file);
+    if (archivos.length === 0) {
+      return;
+    }
 
+    const permitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
+    const archivosValidos = archivos.filter((file) => permitidos.includes(file.type));
+
+    if (archivosValidos.length !== archivos.length) {
+      this.errorFotografias.set(
+        'Algunos archivos fueron ignorados. Solo se permiten imágenes JPG, PNG o WEBP.',
+      );
+    } else {
+      this.errorFotografias.set('');
+    }
+
+    const existentes = this.fotografiasSeleccionadas();
+
+    const nuevas: FotografiaSeleccionada[] = archivosValidos
+      .filter(
+        (file) =>
+          !existentes.some(
+            (existente) =>
+              existente.file.name === file.name &&
+              existente.file.size === file.size &&
+              existente.file.lastModified === file.lastModified,
+          ),
+      )
+      .map((file) => ({
+        id: this.generarIdArchivo(file),
+        file,
+        descripcion: '',
+        estado: 'PENDIENTE' as const,
+      }));
+
+    this.fotografiasSeleccionadas.update((seleccionadas) => [...seleccionadas, ...nuevas]);
+
+    this.mensajeFotografias.set('');
+
+    /*
+     * Limpiamos el input para permitir seleccionar nuevamente
+     * un archivo que haya sido quitado de la lista.
+     */
+    input.value = '';
+  }
+
+  actualizarDescripcion(id: string, descripcion: string): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              descripcion,
+            }
+          : fotografia,
+      ),
+    );
+  }
+
+  quitarFotografiaSeleccionada(id: string): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.filter((fotografia) => fotografia.id !== id),
+    );
+  }
+
+  limpiarSeleccion(): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.set([]);
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
   }
 
-  actualizarDescripcion(valor: string): void {
-    this.descripcionFotografia.set(valor);
-  }
+  subirFotografias(): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
 
-  subirFotografia(): void {
-    const file = this.archivoSeleccionado();
+    const pendientes = this.fotografiasSeleccionadas().filter(
+      (fotografia) => fotografia.estado === 'PENDIENTE' || fotografia.estado === 'ERROR',
+    );
 
-    if (!file) {
-      this.errorFotografias.set('Seleccione una imagen antes de continuar.');
+    if (pendientes.length === 0) {
+      this.errorFotografias.set('Seleccione al menos una imagen antes de continuar.');
       return;
     }
 
@@ -186,28 +273,89 @@ export class MonumentosEdit implements OnInit {
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
 
+    this.subirFotografiaSecuencial(pendientes, 0, 0);
+  }
+
+  private subirFotografiaSecuencial(
+    pendientes: FotografiaSeleccionada[],
+    indice: number,
+    subidas: number,
+  ): void {
+    if (indice >= pendientes.length) {
+      this.subiendoFotografia.set(false);
+
+      const errores = this.fotografiasSeleccionadas().filter(
+        (fotografia) => fotografia.estado === 'ERROR',
+      ).length;
+
+      if (subidas > 0) {
+        this.mensajeFotografias.set(
+          subidas === 1
+            ? '1 fotografía subida correctamente.'
+            : `${subidas} fotografías subidas correctamente.`,
+        );
+      }
+
+      if (errores > 0) {
+        this.errorFotografias.set(
+          errores === 1
+            ? '1 fotografía no pudo subirse. Puede volver a intentarlo.'
+            : `${errores} fotografías no pudieron subirse. Puede volver a intentarlo.`,
+        );
+      }
+
+      return;
+    }
+
+    const seleccionada = pendientes[indice];
+
+    this.actualizarEstadoFotografia(seleccionada.id, 'SUBIENDO');
+
     this.fotografiasService
-      .upload('MONUMENTO', this.monumentoId, file, this.descripcionFotografia())
+      .upload('MONUMENTO', this.monumentoId, seleccionada.file, seleccionada.descripcion.trim())
       .subscribe({
         next: (fotografia) => {
           this.fotografias.update((fotografias) => [fotografia, ...fotografias]);
 
-          this.archivoSeleccionado.set(null);
-          this.descripcionFotografia.set('');
+          this.fotografiasSeleccionadas.update((fotografias) =>
+            fotografias.filter((item) => item.id !== seleccionada.id),
+          );
 
-          this.mensajeFotografias.set('Fotografía subida correctamente.');
-
-          this.subiendoFotografia.set(false);
+          this.subirFotografiaSecuencial(pendientes, indice + 1, subidas + 1);
         },
 
         error: (error) => {
           console.error('Error al subir fotografía:', error);
 
-          this.errorFotografias.set(error?.error?.message ?? 'No se pudo subir la fotografía.');
+          const mensaje = error?.error?.message ?? 'No se pudo subir la fotografía.';
 
-          this.subiendoFotografia.set(false);
+          this.actualizarEstadoFotografia(seleccionada.id, 'ERROR', mensaje);
+
+          this.subirFotografiaSecuencial(pendientes, indice + 1, subidas);
         },
       });
+  }
+
+  private actualizarEstadoFotografia(
+    id: string,
+    estado: 'PENDIENTE' | 'SUBIENDO' | 'ERROR',
+    error?: string,
+  ): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              estado,
+              error,
+            }
+          : fotografia,
+      ),
+    );
+  }
+
+  private generarIdArchivo(file: File): string {
+    return `${file.name}-${file.size}-${file.lastModified}-${Math.random().toString(36).slice(2)}`;
   }
 
   establecerPrincipal(fotografia: Fotografia): void {

@@ -2046,16 +2046,24 @@
   cursor: not-allowed;
 }
 
-/* FOTOGRAFÍAS EN EDICIÓN */
+/* ==========================================================
+   FOTOGRAFÍAS EN EDICIÓN
+   Gestor compartido:
+   Parques, Calles, Monumentos, Ríos,
+   Plazas, Museos y Auditorios
+   ========================================================== */
 
 .patrimonial-admin-edit-gallery {
   display: grid;
   grid-template-columns:
-    repeat(auto-fill, minmax(190px, 1fr));
+    repeat(auto-fill, minmax(180px, 210px));
+  justify-content: start;
   gap: 12px;
 }
 
 .patrimonial-admin-edit-photo {
+  width: 100%;
+  max-width: 210px;
   overflow: hidden;
   border: 1px solid var(--sigpac-border);
   border-radius: 11px;
@@ -2064,22 +2072,23 @@
 
 .patrimonial-admin-edit-photo__image {
   position: relative;
-  height: 135px;
+  width: 100%;
+  height: 125px;
   overflow: hidden;
   background: var(--sigpac-surface-muted);
 }
 
 .patrimonial-admin-edit-photo__image img {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
   object-fit: cover;
 }
 
 .patrimonial-admin-edit-photo__badge {
   position: absolute;
-  top: 9px;
-  left: 9px;
+  top: 8px;
+  left: 8px;
   padding: 5px 8px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.94);
@@ -2090,36 +2099,40 @@
 }
 
 .patrimonial-admin-edit-photo__body {
-  padding: 10px;
+  padding: 9px;
 }
 
 .patrimonial-admin-edit-photo__body p {
-  min-height: 30px;
-  margin: 0 0 9px;
+  min-height: 29px;
+  margin: 0;
   color: var(--sigpac-text-muted);
-  font-size: 10px;
+  font-size: 9px;
   line-height: 1.45;
 }
 
 .patrimonial-admin-edit-photo__actions {
   display: flex;
-  gap: 6px;
+  gap: 5px;
+  margin-top: 8px;
 }
 
 .patrimonial-admin-edit-photo__actions button {
-  min-height: 30px;
-  padding: 0 9px;
+  flex: 1;
+  min-height: 29px;
+  padding: 4px 6px;
   border: 1px solid var(--sigpac-border-dark);
   border-radius: 7px;
   background: var(--sigpac-surface);
   color: var(--sigpac-primary);
   font: inherit;
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 750;
   cursor: pointer;
 }
 
 .patrimonial-admin-edit-photo__delete {
+  border-color: #e8caca !important;
+  background: #fffafa !important;
   color: var(--sigpac-danger) !important;
 }
 
@@ -2127,6 +2140,10 @@
   opacity: 0.45;
   cursor: not-allowed;
 }
+
+/* ==========================================================
+   ESTADO VACÍO
+   ========================================================== */
 
 .patrimonial-admin-empty {
   padding: 18px;
@@ -2146,8 +2163,12 @@
   font-size: 10px;
 }
 
+/* ==========================================================
+   CARGA DE FOTOGRAFÍAS
+   ========================================================== */
+
 .patrimonial-admin-upload {
-  margin-top: 18px;
+  margin-top: 20px;
   padding-top: 17px;
   border-top: 1px solid var(--sigpac-border);
 }
@@ -2158,9 +2179,172 @@
   font-size: 13px;
 }
 
+/* SELECTOR MÚLTIPLE */
+
+.patrimonial-admin-upload__selector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px 17px;
+  border: 1px dashed var(--sigpac-border-dark);
+  border-radius: 10px;
+  background: var(--sigpac-surface-soft);
+  cursor: pointer;
+}
+
+.patrimonial-admin-upload__selector:hover {
+  border-color: var(--sigpac-primary);
+}
+
+.patrimonial-admin-upload__selector strong {
+  color: var(--sigpac-primary);
+  font-size: 11px;
+}
+
+.patrimonial-admin-upload__selector span {
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.patrimonial-admin-upload__selector input {
+  margin-top: 6px;
+  font-size: 10px;
+}
+
+/* LISTA DE ARCHIVOS SELECCIONADOS */
+
+.patrimonial-admin-upload__list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.patrimonial-admin-upload__item {
+  padding: 11px 12px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 9px;
+  background: var(--sigpac-surface);
+}
+
+.patrimonial-admin-upload__item-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.patrimonial-admin-upload__filename {
+  min-width: 0;
+  flex: 1;
+}
+
+.patrimonial-admin-upload__filename strong {
+  display: block;
+  overflow: hidden;
+  color: var(--sigpac-text);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patrimonial-admin-upload__filename span {
+  display: block;
+  margin-top: 2px;
+  color: var(--sigpac-text-soft);
+  font-size: 8px;
+}
+
+/* QUITAR ARCHIVO */
+
+.patrimonial-admin-upload__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 7px;
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text-muted);
+  font: inherit;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.patrimonial-admin-upload__remove:hover:not(:disabled) {
+  border-color: #e8caca;
+  background: #fffafa;
+  color: var(--sigpac-danger);
+}
+
+/* DESCRIPCIÓN INDIVIDUAL */
+
+.patrimonial-admin-upload__description {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 9px;
+  padding: 8px 9px;
+  box-sizing: border-box;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 8px;
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text);
+  font: inherit;
+  font-size: 9px;
+  line-height: 1.45;
+  outline: none;
+  resize: vertical;
+}
+
+.patrimonial-admin-upload__description:focus {
+  border-color: var(--sigpac-primary);
+  box-shadow: 0 0 0 3px rgba(31, 107, 45, 0.08);
+}
+
+.patrimonial-admin-upload__item small {
+  display: block;
+  margin-top: 6px;
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+}
+
+/* PIE DE CARGA */
+
+.patrimonial-admin-upload__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+/* BOTÓN LIMPIAR */
+
+.patrimonial-admin-upload__clear {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--sigpac-border-dark);
+  border-radius: 8px;
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text-muted);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.patrimonial-admin-upload__clear:hover:not(:disabled) {
+  border-color: var(--sigpac-primary);
+  color: var(--sigpac-primary);
+}
+
+/* BOTÓN SUBIR */
+
 .patrimonial-admin-upload__button {
   min-height: 36px;
-  margin-top: 13px;
   padding: 0 14px;
   border: 0;
   border-radius: 8px;
@@ -2172,12 +2356,26 @@
   cursor: pointer;
 }
 
-.patrimonial-admin-upload__button:disabled {
+.patrimonial-admin-upload__button:hover:not(:disabled) {
+  background: var(--sigpac-primary-hover);
+}
+
+.patrimonial-admin-upload__button:disabled,
+.patrimonial-admin-upload__clear:disabled,
+.patrimonial-admin-upload__remove:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 @media (max-width: 800px) {
+  .patrimonial-admin-edit-gallery {
+  grid-template-columns:
+    repeat(auto-fill, minmax(170px, 1fr));
+}
+
+.patrimonial-admin-edit-photo {
+  max-width: none;
+}
   .patrimonial-admin-form {
     padding-right: 18px;
     padding-left: 18px;
@@ -2222,4 +2420,12 @@
   .patrimonial-admin-edit-gallery {
     grid-template-columns: 1fr;
   }
+  .patrimonial-admin-upload__footer {
+  flex-direction: column-reverse;
+}
+
+.patrimonial-admin-upload__clear,
+.patrimonial-admin-upload__button {
+  width: 100%;
+}
 }
