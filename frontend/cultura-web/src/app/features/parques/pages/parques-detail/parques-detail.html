@@ -34,10 +34,6 @@
   }
 
   @if (!loading() && !error() && parque(); as parqueActual) {
-    <!-- =========================================
-         CABECERA
-         ========================================= -->
-
     <header class="parque-detail__hero">
       <div class="parque-detail__hero-main">
         <span class="parque-detail__eyebrow">
@@ -63,15 +59,6 @@
             id="estado"
             [value]="parqueActual.estado"
             [disabled]="cambiandoEstado()"
-            [class.parque-detail__status-select--publicado]="
-              parqueActual.estado === 'PUBLICADO'
-            "
-            [class.parque-detail__status-select--borrador]="
-              parqueActual.estado === 'BORRADOR'
-            "
-            [class.parque-detail__status-select--inactivo]="
-              parqueActual.estado === 'INACTIVO'
-            "
             (change)="
               cambiarEstado(
                 estadoSelect.value === 'PUBLICADO'
@@ -82,17 +69,9 @@
               )
             "
           >
-            <option value="BORRADOR">
-              Borrador
-            </option>
-
-            <option value="PUBLICADO">
-              Publicado
-            </option>
-
-            <option value="INACTIVO">
-              Inactivo
-            </option>
+            <option value="BORRADOR">Borrador</option>
+            <option value="PUBLICADO">Publicado</option>
+            <option value="INACTIVO">Inactivo</option>
           </select>
 
           @if (cambiandoEstado()) {
@@ -126,10 +105,6 @@
         }
       </div>
     </header>
-
-    <!-- =========================================
-         FOTOGRAFÍAS
-         ========================================= -->
 
     <section class="patrimonial-photos parque-detail__photos">
       <div class="patrimonial-photos-header parque-detail__section-header">
@@ -211,7 +186,6 @@
 
             <div>
               <strong>Sin fotografía principal</strong>
-
               <p>
                 Este parque aún no tiene una fotografía
                 establecida como principal.
@@ -224,7 +198,6 @@
           <div class="parque-detail__gallery-heading">
             <div>
               <h3>Galería</h3>
-
               <span>
                 Fotografías adicionales del registro
               </span>
@@ -249,9 +222,7 @@
 
                 <div class="parque-detail__photo-card-body">
                   @if (fotografia.descripcion) {
-                    <p>
-                      {{ fotografia.descripcion }}
-                    </p>
+                    <p>{{ fotografia.descripcion }}</p>
                   } @else {
                     <p class="parque-detail__photo-description-empty">
                       Sin descripción
@@ -301,10 +272,6 @@
         }
       }
 
-      <!-- =========================================
-           SUBIR FOTOGRAFÍA
-           ========================================= -->
-
       @if (puedeAdministrar()) {
         <div class="patrimonial-photo-upload parque-detail__upload">
           <div class="parque-detail__upload-heading">
@@ -313,71 +280,216 @@
             </div>
 
             <div>
-              <h3>Agregar fotografía</h3>
-
+              <h3>Agregar fotografías</h3>
               <p>
-                Incorpora una nueva imagen a la galería
-                de este parque.
+                Seleccione una o varias imágenes para incorporarlas
+                a la galería del parque.
               </p>
             </div>
           </div>
 
-          <div class="parque-detail__upload-fields">
-            <label class="parque-detail__field">
-              <span>Imagen</span>
+          <label class="parque-detail__file-selector">
+            <span class="parque-detail__file-selector-title">
+              Seleccionar imágenes
+            </span>
 
-              <input
-                #fileInput
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                (change)="seleccionarArchivo($event)"
-              />
+            <span class="parque-detail__file-selector-description">
+              Puede seleccionar varios archivos JPG, PNG o WEBP
+              al mismo tiempo.
+            </span>
 
-              <small>
-                Formatos permitidos: JPG, PNG o WEBP.
-              </small>
-            </label>
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp"
+              [disabled]="subiendoFotografia()"
+              (change)="seleccionarArchivos($event)"
+            />
+          </label>
 
-            <label class="parque-detail__field">
-              <span>Descripción</span>
+          @if (fotografiasSeleccionadas().length > 0) {
+            <div class="parque-detail__selection">
+              <div class="parque-detail__selection-header">
+                <div>
+                  <strong>
+                    {{ totalSeleccionadas() }}
+                    {{
+                      totalSeleccionadas() === 1
+                        ? 'fotografía seleccionada'
+                        : 'fotografías seleccionadas'
+                    }}
+                  </strong>
 
-              <textarea
-                #descripcionInput
-                rows="3"
-                [value]="descripcionFotografia()"
-                (input)="
-                  actualizarDescripcion(
-                    descripcionInput.value
-                  )
-                "
-                placeholder="Descripción opcional de la fotografía"
-              ></textarea>
-            </label>
-          </div>
+                  <span>
+                    Puede agregar una descripción diferente
+                    para cada fotografía.
+                  </span>
+                </div>
 
-          <div class="parque-detail__upload-actions">
-            <button
-              type="button"
-              [disabled]="
-                !archivoSeleccionado() ||
-                subiendoFotografia()
-              "
-              (click)="subirFotografia()"
-            >
-              @if (subiendoFotografia()) {
-                Subiendo...
-              } @else {
-                Subir fotografía
-              }
-            </button>
-          </div>
+                @if (!subiendoFotografia()) {
+                  <button
+                    type="button"
+                    class="parque-detail__clear-selection"
+                    (click)="limpiarSeleccion()"
+                  >
+                    Limpiar selección
+                  </button>
+                }
+              </div>
+
+              <div class="parque-detail__selected-list">
+                @for (
+                  fotografia of fotografiasSeleccionadas();
+                  track fotografia.id
+                ) {
+                  <article
+                    class="parque-detail__selected-photo"
+                    [class.parque-detail__selected-photo--uploading]="
+                      fotografia.estado === 'SUBIENDO'
+                    "
+                    [class.parque-detail__selected-photo--completed]="
+                      fotografia.estado === 'COMPLETADA'
+                    "
+                    [class.parque-detail__selected-photo--error]="
+                      fotografia.estado === 'ERROR'
+                    "
+                  >
+                    <div class="parque-detail__selected-photo-info">
+                      <div class="parque-detail__selected-photo-number">
+                        @if (fotografia.estado === 'COMPLETADA') {
+                          ✓
+                        } @else if (fotografia.estado === 'ERROR') {
+                          !
+                        } @else {
+                          IMG
+                        }
+                      </div>
+
+                      <div class="parque-detail__selected-photo-name">
+                        <strong>
+                          {{ fotografia.archivo.name }}
+                        </strong>
+
+                        <span>
+                          {{
+                            fotografia.archivo.size /
+                              1024 /
+                              1024
+                              | number: '1.2-2'
+                          }}
+                          MB
+                        </span>
+                      </div>
+
+                      @if (!subiendoFotografia()) {
+                        <button
+                          type="button"
+                          class="parque-detail__remove-selected"
+                          title="Quitar fotografía"
+                          (click)="
+                            quitarFotografiaSeleccionada(
+                              fotografia.id
+                            )
+                          "
+                        >
+                          ×
+                        </button>
+                      }
+                    </div>
+
+                    <label class="parque-detail__selected-description">
+                      <span>Descripción</span>
+
+                      <textarea
+                        #descripcionFoto
+                        rows="2"
+                        [value]="fotografia.descripcion"
+                        [disabled]="
+                          subiendoFotografia() ||
+                          fotografia.estado === 'COMPLETADA'
+                        "
+                        (input)="
+                          actualizarDescripcion(
+                            fotografia.id,
+                            descripcionFoto.value
+                          )
+                        "
+                        placeholder="Descripción opcional de esta fotografía"
+                      ></textarea>
+                    </label>
+
+                    @if (fotografia.estado === 'SUBIENDO') {
+                      <div class="parque-detail__upload-status">
+                        <span class="parque-detail__spinner"></span>
+                        Subiendo fotografía...
+                      </div>
+                    }
+
+                    @if (fotografia.estado === 'COMPLETADA') {
+                      <div
+                        class="parque-detail__upload-status parque-detail__upload-status--success"
+                      >
+                        ✓ Fotografía subida correctamente
+                      </div>
+                    }
+
+                    @if (
+                      fotografia.estado === 'ERROR' &&
+                      fotografia.error
+                    ) {
+                      <div
+                        class="parque-detail__upload-status parque-detail__upload-status--error"
+                      >
+                        {{ fotografia.error }}
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+
+              <div class="parque-detail__upload-footer">
+                @if (subiendoFotografia()) {
+                  <div class="parque-detail__upload-progress">
+                    <span>
+                      {{ totalCompletadas() }} de
+                      {{ totalSeleccionadas() }} completadas
+                    </span>
+
+                    @if (totalErrores() > 0) {
+                      <span>
+                        · {{ totalErrores() }} con error
+                      </span>
+                    }
+                  </div>
+                }
+
+                <button
+                  type="button"
+                  class="parque-detail__upload-button"
+                  [disabled]="
+                    fotografiasSeleccionadas().length === 0 ||
+                    subiendoFotografia()
+                  "
+                  (click)="subirFotografias()"
+                >
+                  @if (subiendoFotografia()) {
+                    Subiendo fotografías...
+                  } @else {
+                    Subir
+                    {{ totalSeleccionadas() }}
+                    {{
+                      totalSeleccionadas() === 1
+                        ? 'fotografía'
+                        : 'fotografías'
+                    }}
+                  }
+                </button>
+              </div>
+            </div>
+          }
         </div>
       }
     </section>
-
-    <!-- =========================================
-         INFORMACIÓN PATRIMONIAL
-         ========================================= -->
 
     <section class="parque-detail__information">
       <div class="parque-detail__section-header">
@@ -389,8 +501,8 @@
           <h2>Información del parque</h2>
 
           <p>
-            Datos descriptivos y administrativos
-            registrados en SIGPAC.
+            Datos descriptivos y administrativos registrados
+            en SIGPAC.
           </p>
         </div>
       </div>
@@ -400,9 +512,7 @@
           <span class="parque-detail__info-label">
             Descripción
           </span>
-
           <h2>Descripción general</h2>
-
           <p>{{ parqueActual.descripcion }}</p>
         </div>
 
@@ -411,12 +521,8 @@
             <span class="parque-detail__info-label">
               Patrimonio
             </span>
-
             <h2>Reseña histórica</h2>
-
-            <p>
-              {{ parqueActual.resenaHistorica }}
-            </p>
+            <p>{{ parqueActual.resenaHistorica }}</p>
           </div>
         }
 
@@ -426,7 +532,6 @@
           </span>
 
           <h2>Ubicación</h2>
-
           <p>{{ parqueActual.ubicacion }}</p>
 
           @if (
@@ -438,16 +543,12 @@
             <div class="parque-detail__coordinates">
               <div>
                 <span>Latitud</span>
-                <strong>
-                  {{ parqueActual.latitud }}
-                </strong>
+                <strong>{{ parqueActual.latitud }}</strong>
               </div>
 
               <div>
                 <span>Longitud</span>
-                <strong>
-                  {{ parqueActual.longitud }}
-                </strong>
+                <strong>{{ parqueActual.longitud }}</strong>
               </div>
             </div>
           }
@@ -458,12 +559,8 @@
             <span class="parque-detail__info-label">
               Cronología
             </span>
-
             <h2>Fecha de creación</h2>
-
-            <p>
-              {{ parqueActual.fechaCreacion }}
-            </p>
+            <p>{{ parqueActual.fechaCreacion }}</p>
           </div>
         }
 
@@ -472,12 +569,8 @@
             <span class="parque-detail__info-label">
               Referencias
             </span>
-
             <h2>Fuentes de información</h2>
-
-            <p>
-              {{ parqueActual.fuentesInformacion }}
-            </p>
+            <p>{{ parqueActual.fuentesInformacion }}</p>
           </div>
         }
 
@@ -486,12 +579,8 @@
             <span class="parque-detail__info-label">
               Información adicional
             </span>
-
             <h2>Observaciones</h2>
-
-            <p>
-              {{ parqueActual.observaciones }}
-            </p>
+            <p>{{ parqueActual.observaciones }}</p>
           </div>
         }
 

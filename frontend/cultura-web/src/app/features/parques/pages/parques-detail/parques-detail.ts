@@ -6,6 +6,14 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { Fotografia, FotografiasService } from '../../../../core/services/fotografias.service';
 import { EstadoParque, Parque, ParquesService } from '../../../../core/services/parques.service';
 
+interface FotografiaSeleccionada {
+  id: number;
+  archivo: File;
+  descripcion: string;
+  estado: 'PENDIENTE' | 'SUBIENDO' | 'COMPLETADA' | 'ERROR';
+  error?: string;
+}
+
 @Component({
   selector: 'app-parques-detail',
   imports: [CommonModule, RouterLink],
@@ -19,6 +27,8 @@ export class ParquesDetail implements OnInit {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
 
+  private contadorArchivos = 0;
+
   readonly puedeAdministrar = computed(() => {
     const rol = this.authService.rol();
 
@@ -28,8 +38,7 @@ export class ParquesDetail implements OnInit {
   parque = signal<Parque | null>(null);
   fotografias = signal<Fotografia[]>([]);
 
-  archivoSeleccionado = signal<File | null>(null);
-  descripcionFotografia = signal('');
+  fotografiasSeleccionadas = signal<FotografiaSeleccionada[]>([]);
 
   loading = signal(false);
   loadingFotografias = signal(false);
@@ -66,6 +75,16 @@ export class ParquesDetail implements OnInit {
 
     return this.fotografias().filter((foto) => String(foto.id) !== String(principal.id));
   });
+
+  readonly totalSeleccionadas = computed(() => this.fotografiasSeleccionadas().length);
+
+  readonly totalCompletadas = computed(
+    () => this.fotografiasSeleccionadas().filter((item) => item.estado === 'COMPLETADA').length,
+  );
+
+  readonly totalErrores = computed(
+    () => this.fotografiasSeleccionadas().filter((item) => item.estado === 'ERROR').length,
+  );
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -165,30 +184,82 @@ export class ParquesDetail implements OnInit {
     });
   }
 
-  seleccionarArchivo(event: Event): void {
+  seleccionarArchivos(event: Event): void {
     const input = event.target as HTMLInputElement;
+    const archivos = Array.from(input.files ?? []);
 
-    const file = input.files?.[0] ?? null;
+    this.mensajeFotografias.set('');
+    this.errorFotografias.set('');
 
-    this.archivoSeleccionado.set(file);
+    if (archivos.length === 0) {
+      return;
+    }
+
+    const nuevasFotografias: FotografiaSeleccionada[] = archivos.map((archivo) => ({
+      id: ++this.contadorArchivos,
+      archivo,
+      descripcion: '',
+      estado: 'PENDIENTE',
+    }));
+
+    this.fotografiasSeleccionadas.update((seleccionadas) => [
+      ...seleccionadas,
+      ...nuevasFotografias,
+    ]);
+
+    /*
+     * Permite volver a seleccionar posteriormente
+     * incluso el mismo archivo.
+     */
+    input.value = '';
+  }
+
+  actualizarDescripcion(id: number, descripcion: string): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              descripcion,
+            }
+          : fotografia,
+      ),
+    );
+  }
+
+  quitarFotografiaSeleccionada(id: number): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.filter((fotografia) => fotografia.id !== id),
+    );
+  }
+
+  limpiarSeleccion(): void {
+    if (this.subiendoFotografia()) {
+      return;
+    }
+
+    this.fotografiasSeleccionadas.set([]);
     this.mensajeFotografias.set('');
     this.errorFotografias.set('');
   }
 
-  actualizarDescripcion(valor: string): void {
-    this.descripcionFotografia.set(valor);
-  }
-
-  subirFotografia(): void {
+  subirFotografias(): void {
     const parqueActual = this.parque();
-    const file = this.archivoSeleccionado();
 
     if (!parqueActual) {
       return;
     }
 
-    if (!file) {
-      this.errorFotografias.set('Seleccione una imagen antes de continuar.');
+    const pendientes = this.fotografiasSeleccionadas().filter(
+      (item) => item.estado === 'PENDIENTE' || item.estado === 'ERROR',
+    );
+
+    if (pendientes.length === 0) {
+      this.errorFotografias.set('Seleccione al menos una imagen antes de continuar.');
       return;
     }
 
@@ -196,27 +267,123 @@ export class ParquesDetail implements OnInit {
     this.errorFotografias.set('');
     this.mensajeFotografias.set('');
 
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((item) =>
+        pendientes.some((pendiente) => pendiente.id === item.id)
+          ? {
+              ...item,
+              estado: 'PENDIENTE',
+              error: undefined,
+            }
+          : item,
+      ),
+    );
+
+    this.subirSiguienteFotografia(parqueActual.id, pendientes, 0, 0, 0);
+  }
+
+  private subirSiguienteFotografia(
+    parqueId: string,
+    fotografias: FotografiaSeleccionada[],
+    indice: number,
+    completadas: number,
+    errores: number,
+  ): void {
+    if (indice >= fotografias.length) {
+      this.finalizarCargaFotografias(completadas, errores);
+      return;
+    }
+
+    const fotografia = fotografias[indice];
+
+    this.actualizarEstadoSeleccionada(fotografia.id, 'SUBIENDO');
+
     this.fotografiasService
-      .upload('PARQUE', parqueActual.id, file, this.descripcionFotografia())
+      .upload('PARQUE', parqueId, fotografia.archivo, fotografia.descripcion.trim())
       .subscribe({
-        next: (fotografia) => {
-          this.fotografias.update((fotografias) => [fotografia, ...fotografias]);
+        next: (fotografiaCreada) => {
+          this.fotografias.update((fotografiasActuales) => [
+            fotografiaCreada,
+            ...fotografiasActuales,
+          ]);
 
-          this.archivoSeleccionado.set(null);
-          this.descripcionFotografia.set('');
+          this.actualizarEstadoSeleccionada(fotografia.id, 'COMPLETADA');
 
-          this.mensajeFotografias.set('Fotografía subida correctamente.');
-
-          this.subiendoFotografia.set(false);
+          this.subirSiguienteFotografia(
+            parqueId,
+            fotografias,
+            indice + 1,
+            completadas + 1,
+            errores,
+          );
         },
         error: (error) => {
-          console.error('Error al subir fotografía:', error);
+          console.error(`Error al subir ${fotografia.archivo.name}:`, error);
 
-          this.errorFotografias.set(error?.error?.message ?? 'No se pudo subir la fotografía.');
+          const mensaje = error?.error?.message ?? 'No se pudo subir esta fotografía.';
 
-          this.subiendoFotografia.set(false);
+          this.actualizarEstadoSeleccionada(fotografia.id, 'ERROR', mensaje);
+
+          this.subirSiguienteFotografia(
+            parqueId,
+            fotografias,
+            indice + 1,
+            completadas,
+            errores + 1,
+          );
         },
       });
+  }
+
+  private actualizarEstadoSeleccionada(
+    id: number,
+    estado: FotografiaSeleccionada['estado'],
+    error?: string,
+  ): void {
+    this.fotografiasSeleccionadas.update((fotografias) =>
+      fotografias.map((fotografia) =>
+        fotografia.id === id
+          ? {
+              ...fotografia,
+              estado,
+              error,
+            }
+          : fotografia,
+      ),
+    );
+  }
+
+  private finalizarCargaFotografias(completadas: number, errores: number): void {
+    this.subiendoFotografia.set(false);
+
+    if (errores === 0) {
+      this.mensajeFotografias.set(
+        completadas === 1
+          ? 'Fotografía subida correctamente.'
+          : `${completadas} fotografías subidas correctamente.`,
+      );
+
+      this.fotografiasSeleccionadas.set([]);
+      return;
+    }
+
+    if (completadas > 0) {
+      this.mensajeFotografias.set(
+        `${completadas} fotografía${completadas === 1 ? '' : 's'} subida${
+          completadas === 1 ? '' : 's'
+        } correctamente.`,
+      );
+
+      this.errorFotografias.set(
+        `${errores} fotografía${errores === 1 ? '' : 's'} no ${
+          errores === 1 ? 'pudo' : 'pudieron'
+        } subirse. Puede volver a intentar únicamente las que fallaron.`,
+      );
+
+      return;
+    }
+
+    this.errorFotografias.set('No se pudo subir ninguna de las fotografías seleccionadas.');
   }
 
   establecerPrincipal(fotografia: Fotografia): void {
