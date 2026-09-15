@@ -61,11 +61,9 @@
             @case ('PUBLICADO') {
               Publicado
             }
-
             @case ('INACTIVO') {
               Inactivo
             }
-
             @default {
               Borrador
             }
@@ -82,16 +80,16 @@
           </span>
 
           <h2>Fotografías</h2>
-        </div>
 
-        <span>
-          {{ fotografias().length }}
-          @if (fotografias().length === 1) {
-            fotografía
-          } @else {
-            fotografías
-          }
-        </span>
+          <p>
+            {{ fotografias().length }}
+            @if (fotografias().length === 1) {
+              fotografía registrada
+            } @else {
+              fotografías registradas
+            }
+          </p>
+        </div>
       </div>
 
       @if (errorFotografias()) {
@@ -110,10 +108,7 @@
             <div class="patrimonial-admin-main-photo__image">
               <img
                 [src]="principal.url"
-                [alt]="
-                  principal.descripcion ||
-                  plazaActual.nombre
-                "
+                [alt]="principal.descripcion || plazaActual.nombre"
               />
 
               <span class="patrimonial-admin-main-photo__badge">
@@ -130,8 +125,9 @@
             </div>
           </article>
         } @else {
-          <div class="patrimonial-admin-message">
-            Esta plaza aún no tiene fotografía principal.
+          <div class="patrimonial-admin-empty">
+            <strong>Sin fotografía principal</strong>
+            <p>Esta plaza aún no tiene una fotografía principal.</p>
           </div>
         }
 
@@ -153,11 +149,9 @@
                 </div>
 
                 <div class="patrimonial-admin-gallery__content">
-                  @if (fotografia.descripcion) {
-                    <p>{{ fotografia.descripcion }}</p>
-                  } @else {
-                    <p>Sin descripción.</p>
-                  }
+                  <p>
+                    {{ fotografia.descripcion || 'Sin descripción.' }}
+                  </p>
                 </div>
               </article>
             }
@@ -165,8 +159,9 @@
         }
 
         @if (fotografias().length === 0) {
-          <div class="patrimonial-admin-message">
-            No hay fotografías registradas.
+          <div class="patrimonial-admin-empty">
+            <strong>Sin fotografías</strong>
+            <p>No hay fotografías registradas para esta plaza.</p>
           </div>
         }
       }
@@ -180,6 +175,7 @@
           </span>
 
           <h2>Información de la plaza</h2>
+          <p>Datos generales y documentales del registro.</p>
         </div>
       </div>
 
@@ -189,9 +185,7 @@
             Descripción
           </span>
 
-          <p class="patrimonial-admin-info__value">
-            {{ plazaActual.descripcion }}
-          </p>
+          <p>{{ plazaActual.descripcion }}</p>
         </article>
 
         @if (plazaActual.resenaHistorica) {
@@ -200,9 +194,7 @@
               Reseña histórica
             </span>
 
-            <p class="patrimonial-admin-info__value">
-              {{ plazaActual.resenaHistorica }}
-            </p>
+            <p>{{ plazaActual.resenaHistorica }}</p>
           </article>
         }
 
@@ -212,9 +204,7 @@
               Fecha de creación
             </span>
 
-            <p class="patrimonial-admin-info__value">
-              {{ plazaActual.fechaCreacion }}
-            </p>
+            <p>{{ plazaActual.fechaCreacion }}</p>
           </article>
         }
 
@@ -223,9 +213,7 @@
             Ubicación
           </span>
 
-          <p class="patrimonial-admin-info__value">
-            {{ plazaActual.ubicacion }}
-          </p>
+          <p>{{ plazaActual.ubicacion }}</p>
 
           @if (
             plazaActual.latitud !== null &&
@@ -233,11 +221,17 @@
             plazaActual.longitud !== null &&
             plazaActual.longitud !== undefined
           ) {
-            <p class="patrimonial-admin-info__secondary">
-              Latitud: {{ plazaActual.latitud }}
-              <br />
-              Longitud: {{ plazaActual.longitud }}
-            </p>
+            <div class="patrimonial-admin-info__values">
+              <div class="patrimonial-admin-info__value">
+                <span>Latitud</span>
+                <strong>{{ plazaActual.latitud }}</strong>
+              </div>
+
+              <div class="patrimonial-admin-info__value">
+                <span>Longitud</span>
+                <strong>{{ plazaActual.longitud }}</strong>
+              </div>
+            </div>
           }
         </article>
 
@@ -247,9 +241,7 @@
               Fuentes de información
             </span>
 
-            <p class="patrimonial-admin-info__value">
-              {{ plazaActual.fuentesInformacion }}
-            </p>
+            <p>{{ plazaActual.fuentesInformacion }}</p>
           </article>
         }
 
@@ -259,9 +251,7 @@
               Observaciones
             </span>
 
-            <p class="patrimonial-admin-info__value">
-              {{ plazaActual.observaciones }}
-            </p>
+            <p>{{ plazaActual.observaciones }}</p>
           </article>
         }
 
@@ -270,12 +260,17 @@
             Información del registro
           </span>
 
-          <p class="patrimonial-admin-info__value">
-            Registrado: {{ plazaActual.fechaRegistro }}
-            <br />
-            Última modificación:
-            {{ plazaActual.fechaModificacion }}
-          </p>
+          <div class="patrimonial-admin-info__values">
+            <div class="patrimonial-admin-info__value">
+              <span>Registrado</span>
+              <strong>{{ plazaActual.fechaRegistro }}</strong>
+            </div>
+
+            <div class="patrimonial-admin-info__value">
+              <span>Última modificación</span>
+              <strong>{{ plazaActual.fechaModificacion }}</strong>
+            </div>
+          </div>
         </article>
       </div>
     </section>
