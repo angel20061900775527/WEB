@@ -1,12 +1,16 @@
-<section class="patrimonial-detail-page">
-  <div class="patrimonial-detail-actions">
-    <a routerLink="/plazas">
+<section class="patrimonial-admin-detail">
+  <div class="patrimonial-admin-detail__actions">
+    <a
+      class="patrimonial-admin-detail__back"
+      routerLink="/plazas"
+    >
       ← Volver a Plazas
     </a>
 
     @if (puedeAdministrar()) {
       <button
         type="button"
+        class="patrimonial-admin-detail__edit"
         (click)="editar()"
       >
         Editar plaza
@@ -15,143 +19,144 @@
   </div>
 
   @if (loading()) {
-    <p>Cargando información de la plaza...</p>
+    <div class="patrimonial-admin-message">
+      Cargando información de la plaza...
+    </div>
   }
 
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div class="patrimonial-admin-message patrimonial-admin-message--error">
+      {{ error() }}
+    </div>
   }
 
   @if (!loading() && !error() && plaza(); as plazaActual) {
-    <div class="patrimonial-detail-header">
-      <div>
+    <header class="patrimonial-admin-detail__hero">
+      <div class="patrimonial-admin-detail__hero-content">
+        <span class="patrimonial-admin-detail__eyebrow">
+          Patrimonio · Plaza
+        </span>
+
         <h1>{{ plazaActual.nombre }}</h1>
-        <p>{{ plazaActual.ubicacion }}</p>
+
+        <p class="patrimonial-admin-detail__location">
+          {{ plazaActual.ubicacion }}
+        </p>
       </div>
 
-      <div class="patrimonial-status-control">
-        <label for="estado">Estado</label>
+      <div class="patrimonial-admin-detail__hero-status">
+        <span
+          class="patrimonial-admin-detail__status"
+          [class.patrimonial-admin-detail__status--publicado]="
+            plazaActual.estado === 'PUBLICADO'
+          "
+          [class.patrimonial-admin-detail__status--borrador]="
+            plazaActual.estado === 'BORRADOR'
+          "
+          [class.patrimonial-admin-detail__status--inactivo]="
+            plazaActual.estado === 'INACTIVO'
+          "
+        >
+          @switch (plazaActual.estado) {
+            @case ('PUBLICADO') {
+              Publicado
+            }
 
-        @if (puedeAdministrar()) {
-          <select
-            #estadoSelect
-            id="estado"
-            [value]="plazaActual.estado"
-            [disabled]="cambiandoEstado()"
-            (change)="
-              cambiarEstado(
-                estadoSelect.value === 'PUBLICADO'
-                  ? 'PUBLICADO'
-                  : estadoSelect.value === 'INACTIVO'
-                    ? 'INACTIVO'
-                    : 'BORRADOR'
-              )
-            "
-          >
-            <option value="BORRADOR">Borrador</option>
-            <option value="PUBLICADO">Publicado</option>
-            <option value="INACTIVO">Inactivo</option>
-          </select>
+            @case ('INACTIVO') {
+              Inactivo
+            }
 
-          @if (cambiandoEstado()) {
-            <span>Actualizando...</span>
+            @default {
+              Borrador
+            }
           }
-
-          @if (mensajeEstado()) {
-            <span>{{ mensajeEstado() }}</span>
-          }
-        } @else {
-          <span>{{ plazaActual.estado }}</span>
-        }
+        </span>
       </div>
-    </div>
+    </header>
 
-    <section class="patrimonial-photos">
-      <div class="patrimonial-photos-header">
+    <section class="patrimonial-admin-section">
+      <div class="patrimonial-admin-section__header">
         <div>
+          <span class="patrimonial-admin-section__kicker">
+            Registro visual
+          </span>
+
           <h2>Fotografías</h2>
-          <p>Galería fotográfica de la plaza.</p>
         </div>
+
+        <span>
+          {{ fotografias().length }}
+          @if (fotografias().length === 1) {
+            fotografía
+          } @else {
+            fotografías
+          }
+        </span>
       </div>
 
       @if (errorFotografias()) {
-        <p>{{ errorFotografias() }}</p>
-      }
-
-      @if (mensajeFotografias()) {
-        <p>{{ mensajeFotografias() }}</p>
+        <div class="patrimonial-admin-message patrimonial-admin-message--error">
+          {{ errorFotografias() }}
+        </div>
       }
 
       @if (loadingFotografias()) {
-        <p>Cargando fotografías...</p>
+        <div class="patrimonial-admin-message">
+          Cargando fotografías...
+        </div>
       } @else {
         @if (fotografiaPrincipal(); as principal) {
-          <div class="patrimonial-main-photo">
-            <img
-              [src]="principal.url"
-              [alt]="principal.descripcion || plazaActual.nombre"
-            />
+          <article class="patrimonial-admin-main-photo">
+            <div class="patrimonial-admin-main-photo__image">
+              <img
+                [src]="principal.url"
+                [alt]="
+                  principal.descripcion ||
+                  plazaActual.nombre
+                "
+              />
 
-            <div>
+              <span class="patrimonial-admin-main-photo__badge">
+                Principal
+              </span>
+            </div>
+
+            <div class="patrimonial-admin-main-photo__content">
               <strong>Fotografía principal</strong>
 
               @if (principal.descripcion) {
                 <p>{{ principal.descripcion }}</p>
               }
             </div>
-          </div>
+          </article>
         } @else {
-          <p>
+          <div class="patrimonial-admin-message">
             Esta plaza aún no tiene fotografía principal.
-          </p>
+          </div>
         }
 
         @if (fotografiasSecundarias().length > 0) {
-          <div class="patrimonial-photo-gallery">
+          <div class="patrimonial-admin-gallery">
             @for (
               fotografia of fotografiasSecundarias();
               track fotografia.id
             ) {
-              <article class="patrimonial-photo-card">
-                <img
-                  [src]="fotografia.url"
-                  [alt]="
-                    fotografia.descripcion ||
-                    fotografia.nombreOriginal
-                  "
-                />
+              <article class="patrimonial-admin-gallery__item">
+                <div class="patrimonial-admin-gallery__image">
+                  <img
+                    [src]="fotografia.url"
+                    [alt]="
+                      fotografia.descripcion ||
+                      fotografia.nombreOriginal
+                    "
+                  />
+                </div>
 
-                <div>
+                <div class="patrimonial-admin-gallery__content">
                   @if (fotografia.descripcion) {
-                    <p>
-                      {{ fotografia.descripcion }}
-                    </p>
-                  }
-
-                  @if (puedeAdministrar()) {
-                    <div class="patrimonial-photo-actions">
-                      <button
-                        type="button"
-                        [disabled]="
-                          cambiandoPrincipal() ||
-                          eliminandoFotografia()
-                        "
-                        (click)="establecerPrincipal(fotografia)"
-                      >
-                        Hacer principal
-                      </button>
-
-                      <button
-                        type="button"
-                        [disabled]="
-                          cambiandoPrincipal() ||
-                          eliminandoFotografia()
-                        "
-                        (click)="eliminarFotografia(fotografia)"
-                      >
-                        Eliminar
-                      </button>
-                    </div>
+                    <p>{{ fotografia.descripcion }}</p>
+                  } @else {
+                    <p>Sin descripción.</p>
                   }
                 </div>
               </article>
@@ -159,126 +164,120 @@
           </div>
         }
 
-        @if (
-          !fotografiaPrincipal() &&
-          fotografias().length === 0
-        ) {
-          <p>No hay fotografías registradas.</p>
+        @if (fotografias().length === 0) {
+          <div class="patrimonial-admin-message">
+            No hay fotografías registradas.
+          </div>
         }
-      }
-
-      @if (puedeAdministrar()) {
-        <div class="patrimonial-photo-upload">
-          <h3>Agregar fotografía</h3>
-
-          <label>
-            <span>Imagen</span>
-
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              (change)="seleccionarArchivo($event)"
-            />
-          </label>
-
-          <label>
-            <span>Descripción</span>
-
-            <textarea
-              #descripcionInput
-              rows="3"
-              [value]="descripcionFotografia()"
-              (input)="
-                actualizarDescripcion(
-                  descripcionInput.value
-                )
-              "
-              placeholder="Descripción opcional de la fotografía"
-            ></textarea>
-          </label>
-
-          <button
-            type="button"
-            [disabled]="
-              !archivoSeleccionado() ||
-              subiendoFotografia()
-            "
-            (click)="subirFotografia()"
-          >
-            @if (subiendoFotografia()) {
-              Subiendo...
-            } @else {
-              Subir fotografía
-            }
-          </button>
-        </div>
       }
     </section>
 
-    <div class="patrimonial-detail-content">
-      <div>
-        <h2>Descripción</h2>
-        <p>{{ plazaActual.descripcion }}</p>
+    <section class="patrimonial-admin-section">
+      <div class="patrimonial-admin-section__header">
+        <div>
+          <span class="patrimonial-admin-section__kicker">
+            Ficha patrimonial
+          </span>
+
+          <h2>Información de la plaza</h2>
+        </div>
       </div>
 
-      @if (plazaActual.resenaHistorica) {
-        <div>
-          <h2>Reseña histórica</h2>
-          <p>{{ plazaActual.resenaHistorica }}</p>
-        </div>
-      }
+      <div class="patrimonial-admin-info">
+        <article class="patrimonial-admin-info__card patrimonial-admin-info__card--wide">
+          <span class="patrimonial-admin-info__label">
+            Descripción
+          </span>
 
-      @if (plazaActual.fechaCreacion) {
-        <div>
-          <h2>Fecha de creación</h2>
-          <p>{{ plazaActual.fechaCreacion }}</p>
-        </div>
-      }
-
-      <div>
-        <h2>Ubicación</h2>
-        <p>{{ plazaActual.ubicacion }}</p>
-      </div>
-
-      @if (
-        plazaActual.latitud !== null &&
-        plazaActual.latitud !== undefined &&
-        plazaActual.longitud !== null &&
-        plazaActual.longitud !== undefined
-      ) {
-        <div>
-          <h2>Coordenadas</h2>
-          <p>
-            Latitud: {{ plazaActual.latitud }}
-            <br />
-            Longitud: {{ plazaActual.longitud }}
+          <p class="patrimonial-admin-info__value">
+            {{ plazaActual.descripcion }}
           </p>
-        </div>
-      }
+        </article>
 
-      @if (plazaActual.fuentesInformacion) {
-        <div>
-          <h2>Fuentes de información</h2>
-          <p>{{ plazaActual.fuentesInformacion }}</p>
-        </div>
-      }
+        @if (plazaActual.resenaHistorica) {
+          <article class="patrimonial-admin-info__card patrimonial-admin-info__card--wide">
+            <span class="patrimonial-admin-info__label">
+              Reseña histórica
+            </span>
 
-      @if (plazaActual.observaciones) {
-        <div>
-          <h2>Observaciones</h2>
-          <p>{{ plazaActual.observaciones }}</p>
-        </div>
-      }
+            <p class="patrimonial-admin-info__value">
+              {{ plazaActual.resenaHistorica }}
+            </p>
+          </article>
+        }
 
-      <div>
-        <h2>Información del registro</h2>
+        @if (plazaActual.fechaCreacion) {
+          <article class="patrimonial-admin-info__card">
+            <span class="patrimonial-admin-info__label">
+              Fecha de creación
+            </span>
 
-        <p>
-          Registrado: {{ plazaActual.fechaRegistro }}
-          <br />
-          Última modificación: {{ plazaActual.fechaModificacion }}
-        </p>
+            <p class="patrimonial-admin-info__value">
+              {{ plazaActual.fechaCreacion }}
+            </p>
+          </article>
+        }
+
+        <article class="patrimonial-admin-info__card">
+          <span class="patrimonial-admin-info__label">
+            Ubicación
+          </span>
+
+          <p class="patrimonial-admin-info__value">
+            {{ plazaActual.ubicacion }}
+          </p>
+
+          @if (
+            plazaActual.latitud !== null &&
+            plazaActual.latitud !== undefined &&
+            plazaActual.longitud !== null &&
+            plazaActual.longitud !== undefined
+          ) {
+            <p class="patrimonial-admin-info__secondary">
+              Latitud: {{ plazaActual.latitud }}
+              <br />
+              Longitud: {{ plazaActual.longitud }}
+            </p>
+          }
+        </article>
+
+        @if (plazaActual.fuentesInformacion) {
+          <article class="patrimonial-admin-info__card patrimonial-admin-info__card--wide">
+            <span class="patrimonial-admin-info__label">
+              Fuentes de información
+            </span>
+
+            <p class="patrimonial-admin-info__value">
+              {{ plazaActual.fuentesInformacion }}
+            </p>
+          </article>
+        }
+
+        @if (plazaActual.observaciones) {
+          <article class="patrimonial-admin-info__card patrimonial-admin-info__card--wide">
+            <span class="patrimonial-admin-info__label">
+              Observaciones
+            </span>
+
+            <p class="patrimonial-admin-info__value">
+              {{ plazaActual.observaciones }}
+            </p>
+          </article>
+        }
+
+        <article class="patrimonial-admin-info__card patrimonial-admin-info__card--wide">
+          <span class="patrimonial-admin-info__label">
+            Información del registro
+          </span>
+
+          <p class="patrimonial-admin-info__value">
+            Registrado: {{ plazaActual.fechaRegistro }}
+            <br />
+            Última modificación:
+            {{ plazaActual.fechaModificacion }}
+          </p>
+        </article>
       </div>
-    </div>
+    </section>
   }
 </section>

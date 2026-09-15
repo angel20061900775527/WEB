@@ -1,193 +1,493 @@
-<section class="patrimonial-form-page">
-  <div class="patrimonial-form-header">
-    <div>
-      <h1>Editar auditorio</h1>
-      <p>Actualiza la información registrada en SIGPAC.</p>
-    </div>
+<section class="patrimonial-admin-form">
+  <div class="patrimonial-admin-form__topbar">
+    <button
+      type="button"
+      class="patrimonial-admin-form__back"
+      (click)="cancelar()"
+    >
+      ← Volver al auditorio
+    </button>
   </div>
 
+  <header class="patrimonial-admin-form__hero">
+    <div>
+      <span class="patrimonial-admin-form__eyebrow">
+        Gestión patrimonial
+      </span>
+
+      <h1>Editar auditorio</h1>
+
+      <p>
+        Actualiza la información, estado y fotografías
+        del auditorio.
+      </p>
+    </div>
+  </header>
+
   @if (loading()) {
-    <p>Cargando información del auditorio...</p>
+    <div class="patrimonial-admin-form__message">
+      Cargando información del auditorio...
+    </div>
   }
 
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="patrimonial-admin-form__message
+             patrimonial-admin-form__message--error"
+    >
+      {{ error() }}
+    </div>
   }
 
   @if (success()) {
-    <p>{{ success() }}</p>
+    <div
+      class="patrimonial-admin-form__message
+             patrimonial-admin-form__message--success"
+    >
+      {{ success() }}
+    </div>
   }
 
   @if (!loading()) {
     <form
-      class="patrimonial-form"
       [formGroup]="form"
       (ngSubmit)="guardar()"
     >
-      <div>
-        <label for="nombre">Nombre</label>
+      <section class="patrimonial-admin-form__section">
+        <div class="patrimonial-admin-form__section-header">
+          <div>
+            <h2>Información general</h2>
+            <p>
+              Datos principales y estado del registro.
+            </p>
+          </div>
+        </div>
 
-        <input
-          id="nombre"
-          type="text"
-          formControlName="nombre"
-        />
+        <div class="patrimonial-admin-form__grid">
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="nombre">Nombre *</label>
 
-        @if (
-          form.controls.nombre.touched &&
-          form.controls.nombre.invalid
-        ) {
-          <small>
-            El nombre es obligatorio y no puede superar 150 caracteres.
-          </small>
+            <input
+              id="nombre"
+              type="text"
+              formControlName="nombre"
+            />
+
+            @if (
+              form.controls.nombre.touched &&
+              form.controls.nombre.invalid
+            ) {
+              <small>
+                El nombre es obligatorio y no puede superar
+                150 caracteres.
+              </small>
+            }
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="estado">Estado</label>
+
+            <select
+              #estadoSelect
+              id="estado"
+              [value]="estado()"
+              (change)="
+                estado.set(
+                  estadoSelect.value === 'PUBLICADO'
+                    ? 'PUBLICADO'
+                    : estadoSelect.value === 'INACTIVO'
+                      ? 'INACTIVO'
+                      : 'BORRADOR'
+                )
+              "
+              [disabled]="saving()"
+            >
+              <option value="BORRADOR">
+                Borrador
+              </option>
+
+              <option value="PUBLICADO">
+                Publicado
+              </option>
+
+              <option value="INACTIVO">
+                Inactivo
+              </option>
+            </select>
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="horarioAtencion">
+              Horario de atención
+            </label>
+
+            <input
+              id="horarioAtencion"
+              type="text"
+              formControlName="horarioAtencion"
+            />
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="responsable">
+              Responsable
+            </label>
+
+            <input
+              id="responsable"
+              type="text"
+              formControlName="responsable"
+            />
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="sitioWeb">
+              Sitio web
+            </label>
+
+            <input
+              id="sitioWeb"
+              type="url"
+              formControlName="sitioWeb"
+            />
+          </div>
+
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="descripcion">
+              Descripción *
+            </label>
+
+            <textarea
+              id="descripcion"
+              rows="5"
+              formControlName="descripcion"
+            ></textarea>
+
+            @if (
+              form.controls.descripcion.touched &&
+              form.controls.descripcion.invalid
+            ) {
+              <small>
+                La descripción es obligatoria.
+              </small>
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div class="patrimonial-admin-form__section-header">
+          <div>
+            <h2>Ubicación</h2>
+            <p>
+              Localización y coordenadas geográficas.
+            </p>
+          </div>
+        </div>
+
+        <div class="patrimonial-admin-form__grid">
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="ubicacion">
+              Ubicación *
+            </label>
+
+            <input
+              id="ubicacion"
+              type="text"
+              formControlName="ubicacion"
+            />
+
+            @if (
+              form.controls.ubicacion.touched &&
+              form.controls.ubicacion.invalid
+            ) {
+              <small>
+                La ubicación es obligatoria y no puede
+                superar 255 caracteres.
+              </small>
+            }
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="latitud">
+              Latitud
+            </label>
+
+            <input
+              id="latitud"
+              type="number"
+              step="any"
+              formControlName="latitud"
+            />
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="longitud">
+              Longitud
+            </label>
+
+            <input
+              id="longitud"
+              type="number"
+              step="any"
+              formControlName="longitud"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div class="patrimonial-admin-form__section-header">
+          <div>
+            <h2>Información patrimonial</h2>
+            <p>
+              Historia, fuentes y observaciones.
+            </p>
+          </div>
+        </div>
+
+        <div class="patrimonial-admin-form__grid">
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="resenaHistorica">
+              Reseña histórica
+            </label>
+
+            <textarea
+              id="resenaHistorica"
+              rows="6"
+              formControlName="resenaHistorica"
+            ></textarea>
+          </div>
+
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="fuentesInformacion">
+              Fuentes de información
+            </label>
+
+            <textarea
+              id="fuentesInformacion"
+              rows="4"
+              formControlName="fuentesInformacion"
+            ></textarea>
+          </div>
+
+          <div
+            class="patrimonial-admin-form__field
+                   patrimonial-admin-form__field--wide"
+          >
+            <label for="observaciones">
+              Observaciones
+            </label>
+
+            <textarea
+              id="observaciones"
+              rows="4"
+              formControlName="observaciones"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div class="patrimonial-admin-form__section-header">
+          <div>
+            <h2>Fotografías</h2>
+
+            <p>
+              Administra la galería y fotografía principal
+              del auditorio.
+            </p>
+          </div>
+        </div>
+
+        @if (errorFotografias()) {
+          <div
+            class="patrimonial-admin-form__message
+                   patrimonial-admin-form__message--error"
+          >
+            {{ errorFotografias() }}
+          </div>
         }
-      </div>
 
-      <div>
-        <label for="estado">Estado</label>
-
-        <select
-          #estadoSelect
-          id="estado"
-          [value]="estado()"
-          (change)="
-            estado.set(
-              estadoSelect.value === 'PUBLICADO'
-                ? 'PUBLICADO'
-                : estadoSelect.value === 'INACTIVO'
-                  ? 'INACTIVO'
-                  : 'BORRADOR'
-            )
-          "
-          [disabled]="saving()"
-        >
-          <option value="BORRADOR">Borrador</option>
-          <option value="PUBLICADO">Publicado</option>
-          <option value="INACTIVO">Inactivo</option>
-        </select>
-      </div>
-
-      <div>
-        <label for="ubicacion">Ubicación</label>
-
-        <input
-          id="ubicacion"
-          type="text"
-          formControlName="ubicacion"
-        />
-
-        @if (
-          form.controls.ubicacion.touched &&
-          form.controls.ubicacion.invalid
-        ) {
-          <small>
-            La ubicación es obligatoria y no puede superar 255 caracteres.
-          </small>
+        @if (mensajeFotografias()) {
+          <div
+            class="patrimonial-admin-form__message
+                   patrimonial-admin-form__message--success"
+          >
+            {{ mensajeFotografias() }}
+          </div>
         }
-      </div>
 
-      <div>
-        <label for="horarioAtencion">Horario de atención</label>
+        @if (loadingFotografias()) {
+          <div class="patrimonial-admin-form__message">
+            Cargando fotografías...
+          </div>
+        } @else {
+          @if (fotografias().length > 0) {
+            <div class="patrimonial-admin-photo-manager">
+              @for (
+                fotografia of fotografias();
+                track fotografia.id
+              ) {
+                <article
+                  class="patrimonial-admin-photo-manager__card"
+                >
+                  <div
+                    class="patrimonial-admin-photo-manager__image"
+                  >
+                    <img
+                      [src]="fotografia.url"
+                      [alt]="
+                        fotografia.descripcion ||
+                        fotografia.nombreOriginal
+                      "
+                    />
 
-        <input
-          id="horarioAtencion"
-          type="text"
-          formControlName="horarioAtencion"
-        />
-      </div>
+                    @if (
+                      esFotografiaPrincipal(fotografia)
+                    ) {
+                      <span
+                        class="patrimonial-admin-photo-manager__badge"
+                      >
+                        Principal
+                      </span>
+                    }
+                  </div>
 
-      <div>
-        <label for="responsable">Responsable</label>
+                  <div
+                    class="patrimonial-admin-photo-manager__content"
+                  >
+                    @if (fotografia.descripcion) {
+                      <p>
+                        {{ fotografia.descripcion }}
+                      </p>
+                    } @else {
+                      <p>Sin descripción.</p>
+                    }
 
-        <input
-          id="responsable"
-          type="text"
-          formControlName="responsable"
-        />
-      </div>
+                    @if (
+                      !esFotografiaPrincipal(fotografia)
+                    ) {
+                      <div
+                        class="patrimonial-admin-photo-manager__actions"
+                      >
+                        <button
+                          type="button"
+                          [disabled]="
+                            cambiandoPrincipal() ||
+                            eliminandoFotografia()
+                          "
+                          (click)="
+                            establecerPrincipal(fotografia)
+                          "
+                        >
+                          Hacer principal
+                        </button>
 
-      <div>
-        <label for="sitioWeb">Sitio web</label>
-
-        <input
-          id="sitioWeb"
-          type="url"
-          formControlName="sitioWeb"
-        />
-      </div>
-
-      <div>
-        <label for="latitud">Latitud</label>
-
-        <input
-          id="latitud"
-          type="number"
-          step="any"
-          formControlName="latitud"
-        />
-      </div>
-
-      <div>
-        <label for="longitud">Longitud</label>
-
-        <input
-          id="longitud"
-          type="number"
-          step="any"
-          formControlName="longitud"
-        />
-      </div>
-
-      <div>
-        <label for="descripcion">Descripción</label>
-
-        <textarea
-          id="descripcion"
-          rows="4"
-          formControlName="descripcion"
-        ></textarea>
-
-        @if (
-          form.controls.descripcion.touched &&
-          form.controls.descripcion.invalid
-        ) {
-          <small>La descripción es obligatoria.</small>
+                        <button
+                          type="button"
+                          [disabled]="
+                            cambiandoPrincipal() ||
+                            eliminandoFotografia()
+                          "
+                          (click)="
+                            eliminarFotografia(fotografia)
+                          "
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="patrimonial-admin-form__empty">
+              No hay fotografías registradas.
+            </div>
+          }
         }
-      </div>
 
-      <div>
-        <label for="resenaHistorica">Reseña histórica</label>
+        <div class="patrimonial-admin-form__upload">
+          <h3>Agregar fotografía</h3>
 
-        <textarea
-          id="resenaHistorica"
-          rows="5"
-          formControlName="resenaHistorica"
-        ></textarea>
-      </div>
+          <div class="patrimonial-admin-form__grid">
+            <div class="patrimonial-admin-form__field">
+              <label for="fotografiaAuditorio">
+                Imagen
+              </label>
 
-      <div>
-        <label for="fuentesInformacion">Fuentes de información</label>
+              <input
+                id="fotografiaAuditorio"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                (change)="seleccionarArchivo($event)"
+              />
+            </div>
 
-        <textarea
-          id="fuentesInformacion"
-          rows="4"
-          formControlName="fuentesInformacion"
-        ></textarea>
-      </div>
+            <div
+              class="patrimonial-admin-form__field
+                     patrimonial-admin-form__field--wide"
+            >
+              <label for="descripcionFotografia">
+                Descripción
+              </label>
 
-      <div>
-        <label for="observaciones">Observaciones</label>
+              <textarea
+                #descripcionInput
+                id="descripcionFotografia"
+                rows="3"
+                [value]="descripcionFotografia()"
+                (input)="
+                  actualizarDescripcion(
+                    descripcionInput.value
+                  )
+                "
+                placeholder="Descripción opcional de la fotografía"
+              ></textarea>
+            </div>
+          </div>
 
-        <textarea
-          id="observaciones"
-          rows="4"
-          formControlName="observaciones"
-        ></textarea>
-      </div>
+          <button
+            type="button"
+            class="patrimonial-admin-form__button
+                   patrimonial-admin-form__button--primary"
+            [disabled]="
+              !archivoSeleccionado() ||
+              subiendoFotografia()
+            "
+            (click)="subirFotografia()"
+          >
+            @if (subiendoFotografia()) {
+              Subiendo...
+            } @else {
+              Subir fotografía
+            }
+          </button>
+        </div>
+      </section>
 
-      <div class="patrimonial-form-actions">
+      <div class="patrimonial-admin-form__actions">
         <button
           type="button"
+          class="patrimonial-admin-form__button
+                 patrimonial-admin-form__button--secondary"
           (click)="cancelar()"
           [disabled]="saving()"
         >
@@ -196,6 +496,8 @@
 
         <button
           type="submit"
+          class="patrimonial-admin-form__button
+                 patrimonial-admin-form__button--primary"
           [disabled]="form.invalid || saving()"
         >
           @if (saving()) {

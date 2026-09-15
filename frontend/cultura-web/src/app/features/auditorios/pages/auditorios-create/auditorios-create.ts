@@ -50,23 +50,14 @@ export class AuditoriosCreate {
     const payload: CreateAuditorioPayload = {
       nombre: value.nombre.trim(),
       descripcion: value.descripcion.trim(),
-
       resenaHistorica: value.resenaHistorica.trim() || null,
-
       ubicacion: value.ubicacion.trim(),
-
       horarioAtencion: value.horarioAtencion.trim() || null,
-
       responsable: value.responsable.trim() || null,
-
       sitioWeb: value.sitioWeb.trim() || null,
-
       latitud: latitudTexto ? Number(latitudTexto) : null,
-
       longitud: longitudTexto ? Number(longitudTexto) : null,
-
       fuentesInformacion: value.fuentesInformacion.trim() || null,
-
       observaciones: value.observaciones.trim() || null,
     };
 
