@@ -1,17 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
-import {
-  CallesService,
-  CreateCallePayload,
-  EstadoCalle,
-} from '../../../../core/services/calles.service';
+import { CallesService, CreateCallePayload } from '../../../../core/services/calles.service';
 
 @Component({
   selector: 'app-calles-create',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './calles-create.html',
   styleUrl: './calles-create.scss',
 })
@@ -22,7 +18,6 @@ export class CallesCreate {
 
   saving = signal(false);
   error = signal('');
-  estado = signal<EstadoCalle>('BORRADOR');
 
   form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, Validators.maxLength(150)]],
@@ -46,6 +41,7 @@ export class CallesCreate {
     const value = this.form.getRawValue();
 
     const latitudTexto = String(value.latitud ?? '').trim();
+
     const longitudTexto = String(value.longitud ?? '').trim();
 
     const payload: CreateCallePayload = {
@@ -69,6 +65,7 @@ export class CallesCreate {
         this.saving.set(false);
         this.router.navigate(['/calles']);
       },
+
       error: (error) => {
         console.error('Error al registrar calle:', error);
 

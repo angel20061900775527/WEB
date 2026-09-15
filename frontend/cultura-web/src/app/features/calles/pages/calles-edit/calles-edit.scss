@@ -1,0 +1,495 @@
+:host {
+  display: block;
+}
+
+.patrimonial-admin-edit {
+  width: min(100%, 1050px);
+  margin: 0 auto;
+  padding: 22px 24px 48px;
+  box-sizing: border-box;
+}
+
+.patrimonial-admin-edit__topbar {
+  margin-bottom: 14px;
+}
+
+.patrimonial-admin-edit__back {
+  display: inline-flex;
+  color: var(--sigpac-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.patrimonial-admin-edit__back:hover {
+  color: var(--sigpac-primary);
+}
+
+.patrimonial-admin-edit__header {
+  position: relative;
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  overflow: hidden;
+  border: 1px solid rgba(31, 107, 45, 0.18);
+  border-radius: 16px;
+  background:
+    radial-gradient(
+      circle at 94% 10%,
+      rgba(246, 181, 27, 0.12),
+      transparent 28%
+    ),
+    linear-gradient(
+      135deg,
+      var(--sigpac-green-950),
+      var(--sigpac-green-900)
+    );
+  box-shadow: var(--sigpac-shadow-md);
+}
+
+.patrimonial-admin-edit__eyebrow {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--sigpac-yellow);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.patrimonial-admin-edit__header h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.patrimonial-admin-edit__header p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+}
+
+.patrimonial-admin-message {
+  margin-bottom: 14px;
+  padding: 11px 13px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 9px;
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text-muted);
+  font-size: 11px;
+}
+
+.patrimonial-admin-message--success {
+  border-color: rgba(31, 107, 45, 0.2);
+  background: var(--sigpac-primary-soft);
+  color: var(--sigpac-primary);
+}
+
+.patrimonial-admin-message--error {
+  border-color: #efcece;
+  background: #fff7f7;
+  color: var(--sigpac-danger);
+}
+
+.patrimonial-admin-edit__section,
+.patrimonial-admin-photo-manager {
+  margin-bottom: 16px;
+  padding: 20px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 13px;
+  background: var(--sigpac-surface);
+  box-shadow: var(--sigpac-shadow);
+}
+
+.patrimonial-admin-edit__section-header,
+.patrimonial-admin-photo-manager__header {
+  margin-bottom: 17px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--sigpac-border);
+}
+
+.patrimonial-admin-photo-manager__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.patrimonial-admin-edit__section-header h2,
+.patrimonial-admin-photo-manager__header h2 {
+  margin: 0;
+  color: var(--sigpac-text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.patrimonial-admin-edit__section-header p,
+.patrimonial-admin-photo-manager__header p {
+  margin: 4px 0 0;
+  color: var(--sigpac-text-muted);
+  font-size: 10px;
+}
+
+.patrimonial-admin-edit__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px 18px;
+}
+
+.patrimonial-admin-edit__field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.patrimonial-admin-edit__field--wide {
+  grid-column: 1 / -1;
+}
+
+.patrimonial-admin-edit__field label {
+  color: var(--sigpac-text);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.patrimonial-admin-edit__field input,
+.patrimonial-admin-edit__field textarea,
+.patrimonial-admin-edit__field select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--sigpac-border-dark);
+  border-radius: 9px;
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text);
+  font: inherit;
+  font-size: 11px;
+  outline: none;
+}
+
+.patrimonial-admin-edit__field input,
+.patrimonial-admin-edit__field select {
+  min-height: 40px;
+  padding: 0 11px;
+}
+
+.patrimonial-admin-edit__field textarea {
+  min-height: 90px;
+  padding: 10px 11px;
+  resize: vertical;
+}
+
+.patrimonial-admin-edit__field input:focus,
+.patrimonial-admin-edit__field textarea:focus,
+.patrimonial-admin-edit__field select:focus {
+  border-color: var(--sigpac-primary);
+  box-shadow: 0 0 0 3px rgba(31, 107, 45, 0.08);
+}
+
+.patrimonial-admin-edit__field small {
+  color: var(--sigpac-danger);
+  font-size: 9px;
+}
+
+.patrimonial-admin-edit__actions {
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin: 20px 0;
+  padding: 11px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: var(--sigpac-shadow-md);
+}
+
+.patrimonial-admin-edit__cancel,
+.patrimonial-admin-edit__save,
+.patrimonial-admin-upload__button {
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.patrimonial-admin-edit__cancel {
+  border: 1px solid var(--sigpac-border-dark);
+  background: var(--sigpac-surface);
+  color: var(--sigpac-text-muted);
+}
+
+.patrimonial-admin-edit__save,
+.patrimonial-admin-upload__button {
+  border: 0;
+  background: var(--sigpac-primary);
+  color: #fff;
+}
+
+.patrimonial-admin-edit__save:hover:not(:disabled),
+.patrimonial-admin-upload__button:hover:not(:disabled) {
+  background: var(--sigpac-primary-hover);
+}
+
+.patrimonial-admin-photo-manager__count {
+  padding: 5px 9px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 999px;
+  background: var(--sigpac-surface-soft);
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.patrimonial-admin-photo-manager__gallery {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(180px, 210px)
+  );
+  justify-content: start;
+  gap: 12px;
+}
+
+.patrimonial-admin-photo-manager__card {
+  width: 100%;
+  max-width: 210px;
+  overflow: hidden;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 11px;
+  background: var(--sigpac-surface);
+}
+
+.patrimonial-admin-photo-manager__image {
+  position: relative;
+  width: 100%;
+  height: 125px;
+  overflow: hidden;
+  background: var(--sigpac-surface-muted);
+}
+
+.patrimonial-admin-photo-manager__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.patrimonial-admin-photo-manager__principal {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--sigpac-primary);
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.patrimonial-admin-photo-manager__body {
+  padding: 9px;
+}
+
+.patrimonial-admin-photo-manager__description {
+  min-height: 29px;
+  margin: 0;
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+}
+
+.patrimonial-admin-photo-manager__actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.patrimonial-admin-photo-manager__actions button {
+  flex: 1;
+  min-height: 29px;
+  padding: 4px 6px;
+  border-radius: 7px;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.patrimonial-admin-photo-manager__make-primary {
+  border: 1px solid var(--sigpac-border-dark);
+  background: var(--sigpac-surface);
+  color: var(--sigpac-primary);
+}
+
+.patrimonial-admin-photo-manager__delete {
+  border: 1px solid #e8caca;
+  background: #fffafa;
+  color: var(--sigpac-danger);
+}
+
+.patrimonial-admin-upload {
+  margin-top: 20px;
+  padding-top: 17px;
+  border-top: 1px solid var(--sigpac-border);
+}
+
+.patrimonial-admin-upload__selector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px 17px;
+  border: 1px dashed var(--sigpac-border-dark);
+  border-radius: 10px;
+  background: var(--sigpac-surface-soft);
+  cursor: pointer;
+}
+
+.patrimonial-admin-upload__selector strong {
+  color: var(--sigpac-primary);
+  font-size: 11px;
+}
+
+.patrimonial-admin-upload__selector span {
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+}
+
+.patrimonial-admin-upload__selector input {
+  margin-top: 6px;
+  font-size: 10px;
+}
+
+.patrimonial-admin-upload__list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.patrimonial-admin-upload__item {
+  padding: 11px 12px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 9px;
+}
+
+.patrimonial-admin-upload__item-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.patrimonial-admin-upload__filename {
+  min-width: 0;
+  flex: 1;
+}
+
+.patrimonial-admin-upload__filename strong {
+  display: block;
+  overflow: hidden;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patrimonial-admin-upload__filename span {
+  color: var(--sigpac-text-soft);
+  font-size: 8px;
+}
+
+.patrimonial-admin-upload__remove {
+  width: 27px;
+  height: 27px;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 7px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.patrimonial-admin-upload__description {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 9px;
+  padding: 8px 9px;
+  box-sizing: border-box;
+  border: 1px solid var(--sigpac-border);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 9px;
+  resize: vertical;
+}
+
+.patrimonial-admin-upload__item small {
+  display: block;
+  margin-top: 6px;
+  color: var(--sigpac-text-muted);
+  font-size: 9px;
+}
+
+.patrimonial-admin-upload__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+@media (max-width: 800px) {
+  .patrimonial-admin-edit__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patrimonial-admin-edit__field--wide {
+    grid-column: auto;
+  }
+
+  .patrimonial-admin-photo-manager__gallery {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(170px, 1fr)
+    );
+  }
+
+  .patrimonial-admin-photo-manager__card {
+    max-width: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .patrimonial-admin-edit {
+    padding: 14px 12px 38px;
+  }
+
+  .patrimonial-admin-edit__section,
+  .patrimonial-admin-photo-manager {
+    padding: 15px;
+  }
+
+  .patrimonial-admin-photo-manager__header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .patrimonial-admin-photo-manager__gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .patrimonial-admin-edit__actions,
+  .patrimonial-admin-upload__footer {
+    flex-direction: column-reverse;
+  }
+
+  .patrimonial-admin-edit__cancel,
+  .patrimonial-admin-edit__save,
+  .patrimonial-admin-upload__button {
+    width: 100%;
+  }
+}

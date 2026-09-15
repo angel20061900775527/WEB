@@ -1,172 +1,292 @@
-<section class="patrimonial-form-page">
-  <div class="patrimonial-form-header">
-    <div>
-      <h1>Nueva calle</h1>
-      <p>Registra una nueva calle en SIGPAC.</p>
-    </div>
+<section class="calle-create">
+  <div class="calle-create__topbar">
+    <a
+      routerLink="/calles"
+      class="calle-create__back"
+    >
+      ← Volver a Calles
+    </a>
   </div>
 
+  <header class="calle-create__header">
+    <span class="calle-create__eyebrow">
+      Administración · Calle
+    </span>
+
+    <h1>Nueva calle</h1>
+
+    <p>
+      Registra una nueva calle dentro del patrimonio
+      cultural administrado en SIGPAC.
+    </p>
+  </header>
+
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        calle-create__message
+        calle-create__message--error
+      "
+    >
+      {{ error() }}
+    </div>
   }
 
   <form
-    class="patrimonial-form"
     [formGroup]="form"
     (ngSubmit)="guardar()"
   >
-    <div>
-      <label for="nombre">Nombre</label>
+    <section class="calle-create__section">
+      <div class="calle-create__section-header">
+        <h2>Información general</h2>
+        <p>
+          Datos principales de identificación de la calle.
+        </p>
+      </div>
 
-      <input
-        id="nombre"
-        type="text"
-        formControlName="nombre"
-      />
+      <div class="calle-create__grid">
+        <div class="calle-create__field">
+          <label for="nombre">Nombre</label>
 
-      @if (
-        form.controls.nombre.touched &&
-        form.controls.nombre.invalid
-      ) {
-        <small>
-          El nombre es obligatorio y no puede superar 150 caracteres.
-        </small>
-      }
-    </div>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre de la calle"
+          />
 
-    <div>
-      <label for="descripcion">Descripción</label>
+          @if (
+            form.controls.nombre.touched &&
+            form.controls.nombre.invalid
+          ) {
+            <small>
+              El nombre es obligatorio y no puede superar
+              150 caracteres.
+            </small>
+          }
+        </div>
 
-      <textarea
-        id="descripcion"
-        rows="4"
-        formControlName="descripcion"
-      ></textarea>
+        <div class="calle-create__field">
+          <label>Estado</label>
 
-      @if (
-        form.controls.descripcion.touched &&
-        form.controls.descripcion.invalid
-      ) {
-        <small>La descripción es obligatoria.</small>
-      }
-    </div>
+          <div class="calle-create__status">
+            <span class="calle-create__status-dot"></span>
+            Borrador
+          </div>
 
-    <div>
-      <label for="resenaHistorica">Reseña histórica</label>
+          <span class="calle-create__field-help">
+            El nuevo registro se crea inicialmente como
+            borrador.
+          </span>
+        </div>
 
-      <textarea
-        id="resenaHistorica"
-        rows="5"
-        formControlName="resenaHistorica"
-      ></textarea>
-    </div>
+        <div
+          class="
+            calle-create__field
+            calle-create__field--wide
+          "
+        >
+          <label for="descripcion">
+            Descripción
+          </label>
 
-    <div>
-      <label for="fechaDenominacion">Fecha de denominación</label>
+          <textarea
+            id="descripcion"
+            rows="4"
+            formControlName="descripcion"
+            placeholder="Descripción general de la calle"
+          ></textarea>
 
-      <input
-        id="fechaDenominacion"
-        type="date"
-        formControlName="fechaDenominacion"
-      />
-    </div>
+          @if (
+            form.controls.descripcion.touched &&
+            form.controls.descripcion.invalid
+          ) {
+            <small>
+              La descripción es obligatoria.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label>Estado</label>
+        <div
+          class="
+            calle-create__field
+            calle-create__field--wide
+          "
+        >
+          <label for="resenaHistorica">
+            Reseña histórica
+          </label>
 
-      <input
-        type="text"
-        value="BORRADOR"
-        disabled
-      />
-    </div>
+          <textarea
+            id="resenaHistorica"
+            rows="5"
+            formControlName="resenaHistorica"
+            placeholder="Antecedentes o reseña histórica de la calle"
+          ></textarea>
+        </div>
 
-    <div>
-      <label for="ubicacion">Ubicación</label>
+        <div class="calle-create__field">
+          <label for="fechaDenominacion">
+            Fecha de denominación
+          </label>
 
-      <input
-        id="ubicacion"
-        type="text"
-        formControlName="ubicacion"
-      />
+          <input
+            id="fechaDenominacion"
+            type="date"
+            formControlName="fechaDenominacion"
+          />
+        </div>
+      </div>
+    </section>
 
-      @if (
-        form.controls.ubicacion.touched &&
-        form.controls.ubicacion.invalid
-      ) {
-        <small>
-          La ubicación es obligatoria y no puede superar 255 caracteres.
-        </small>
-      }
-    </div>
+    <section class="calle-create__section">
+      <div class="calle-create__section-header">
+        <h2>Ubicación</h2>
 
-    <div>
-      <label for="sector">Sector</label>
+        <p>
+          Sector, dirección y coordenadas geográficas
+          asociadas a la calle.
+        </p>
+      </div>
 
-      <input
-        id="sector"
-        type="text"
-        formControlName="sector"
-      />
-    </div>
+      <div class="calle-create__grid">
+        <div
+          class="
+            calle-create__field
+            calle-create__field--wide
+          "
+        >
+          <label for="ubicacion">
+            Ubicación
+          </label>
 
-    <div>
-      <label for="latitud">Latitud</label>
+          <input
+            id="ubicacion"
+            type="text"
+            formControlName="ubicacion"
+            placeholder="Dirección o referencia de ubicación"
+          />
 
-      <input
-        id="latitud"
-        type="number"
-        step="any"
-        formControlName="latitud"
-      />
-    </div>
+          @if (
+            form.controls.ubicacion.touched &&
+            form.controls.ubicacion.invalid
+          ) {
+            <small>
+              La ubicación es obligatoria y no puede superar
+              255 caracteres.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label for="longitud">Longitud</label>
+        <div class="calle-create__field">
+          <label for="sector">
+            Sector
+          </label>
 
-      <input
-        id="longitud"
-        type="number"
-        step="any"
-        formControlName="longitud"
-      />
-    </div>
+          <input
+            id="sector"
+            type="text"
+            formControlName="sector"
+            placeholder="Sector o barrio"
+          />
+        </div>
 
-    <div>
-      <label for="fuentesInformacion">Fuentes de información</label>
+        <div class="calle-create__field">
+          <label for="latitud">
+            Latitud
+          </label>
 
-      <textarea
-        id="fuentesInformacion"
-        rows="4"
-        formControlName="fuentesInformacion"
-      ></textarea>
-    </div>
+          <input
+            id="latitud"
+            type="number"
+            step="any"
+            formControlName="latitud"
+            placeholder="-4.000000"
+          />
+        </div>
 
-    <div>
-      <label for="observaciones">Observaciones</label>
+        <div class="calle-create__field">
+          <label for="longitud">
+            Longitud
+          </label>
 
-      <textarea
-        id="observaciones"
-        rows="4"
-        formControlName="observaciones"
-      ></textarea>
-    </div>
+          <input
+            id="longitud"
+            type="number"
+            step="any"
+            formControlName="longitud"
+            placeholder="-79.000000"
+          />
+        </div>
+      </div>
+    </section>
 
-    <div class="patrimonial-form-actions">
+    <section class="calle-create__section">
+      <div class="calle-create__section-header">
+        <h2>Información complementaria</h2>
+
+        <p>
+          Fuentes y observaciones relacionadas con el
+          registro patrimonial.
+        </p>
+      </div>
+
+      <div class="calle-create__grid">
+        <div
+          class="
+            calle-create__field
+            calle-create__field--wide
+          "
+        >
+          <label for="fuentesInformacion">
+            Fuentes de información
+          </label>
+
+          <textarea
+            id="fuentesInformacion"
+            rows="4"
+            formControlName="fuentesInformacion"
+            placeholder="Documentos, archivos, referencias o fuentes consultadas"
+          ></textarea>
+        </div>
+
+        <div
+          class="
+            calle-create__field
+            calle-create__field--wide
+          "
+        >
+          <label for="observaciones">
+            Observaciones
+          </label>
+
+          <textarea
+            id="observaciones"
+            rows="4"
+            formControlName="observaciones"
+            placeholder="Observaciones adicionales"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <div class="calle-create__actions">
       <button
         type="button"
-        (click)="cancelar()"
+        class="calle-create__cancel"
         [disabled]="saving()"
+        (click)="cancelar()"
       >
         Cancelar
       </button>
 
       <button
         type="submit"
+        class="calle-create__save"
         [disabled]="form.invalid || saving()"
       >
         @if (saving()) {
-          Guardando...
+          Registrando...
         } @else {
           Registrar calle
         }
