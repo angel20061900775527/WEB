@@ -23,9 +23,9 @@
       </p>
     </div>
 
-    <div class="patrimonial-admin-form__fixed-status">
-      <span>Estado</span>
-      <strong>Borrador</strong>
+    <div class="patrimonial-admin-form__status">
+      <span class="patrimonial-admin-form__status-dot"></span>
+      Borrador
     </div>
   </header>
 
@@ -41,10 +41,8 @@
   <form [formGroup]="form" (ngSubmit)="guardar()">
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Información general</h2>
-          <p>Datos principales para identificar el auditorio.</p>
-        </div>
+        <h2>Información general</h2>
+        <p>Datos principales para identificar el auditorio.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
@@ -72,7 +70,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="horarioAtencion">Horario de atención</label>
+          <label for="horarioAtencion">
+            Horario de atención
+          </label>
 
           <input
             id="horarioAtencion"
@@ -83,7 +83,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="responsable">Responsable</label>
+          <label for="responsable">
+            Responsable
+          </label>
 
           <input
             id="responsable"
@@ -124,7 +126,9 @@
             form.controls.descripcion.touched &&
             form.controls.descripcion.invalid
           ) {
-            <small>La descripción es obligatoria.</small>
+            <small>
+              La descripción es obligatoria.
+            </small>
           }
         </div>
       </div>
@@ -132,10 +136,8 @@
 
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Ubicación</h2>
-          <p>Información geográfica del auditorio.</p>
-        </div>
+        <h2>Ubicación</h2>
+        <p>Información geográfica del auditorio.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
@@ -190,10 +192,8 @@
 
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Información patrimonial</h2>
-          <p>Antecedentes, fuentes y observaciones.</p>
-        </div>
+        <h2>Información patrimonial</h2>
+        <p>Antecedentes, fuentes y observaciones.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
@@ -201,7 +201,9 @@
           class="patrimonial-admin-form__field
                  patrimonial-admin-form__field--wide"
         >
-          <label for="resenaHistorica">Reseña histórica</label>
+          <label for="resenaHistorica">
+            Reseña histórica
+          </label>
 
           <textarea
             id="resenaHistorica"
@@ -215,7 +217,9 @@
           class="patrimonial-admin-form__field
                  patrimonial-admin-form__field--wide"
         >
-          <label for="fuentesInformacion">Fuentes de información</label>
+          <label for="fuentesInformacion">
+            Fuentes de información
+          </label>
 
           <textarea
             id="fuentesInformacion"
@@ -229,7 +233,9 @@
           class="patrimonial-admin-form__field
                  patrimonial-admin-form__field--wide"
         >
-          <label for="observaciones">Observaciones</label>
+          <label for="observaciones">
+            Observaciones
+          </label>
 
           <textarea
             id="observaciones"
@@ -244,8 +250,7 @@
     <div class="patrimonial-admin-form__actions">
       <button
         type="button"
-        class="patrimonial-admin-form__button
-               patrimonial-admin-form__button--secondary"
+        class="patrimonial-admin-form__cancel"
         (click)="cancelar()"
         [disabled]="saving()"
       >
@@ -254,8 +259,7 @@
 
       <button
         type="submit"
-        class="patrimonial-admin-form__button
-               patrimonial-admin-form__button--primary"
+        class="patrimonial-admin-form__save"
         [disabled]="form.invalid || saving()"
       >
         @if (saving()) {

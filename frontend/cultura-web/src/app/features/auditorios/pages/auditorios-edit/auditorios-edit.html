@@ -55,12 +55,11 @@
     >
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
-          <div>
-            <h2>Información general</h2>
-            <p>
-              Datos principales y estado del registro.
-            </p>
-          </div>
+          <h2>Información general</h2>
+
+          <p>
+            Datos principales y estado del registro.
+          </p>
         </div>
 
         <div class="patrimonial-admin-form__grid">
@@ -68,7 +67,9 @@
             class="patrimonial-admin-form__field
                    patrimonial-admin-form__field--wide"
           >
-            <label for="nombre">Nombre *</label>
+            <label for="nombre">
+              Nombre *
+            </label>
 
             <input
               id="nombre"
@@ -88,7 +89,9 @@
           </div>
 
           <div class="patrimonial-admin-form__field">
-            <label for="estado">Estado</label>
+            <label for="estado">
+              Estado
+            </label>
 
             <select
               #estadoSelect
@@ -183,12 +186,11 @@
 
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
-          <div>
-            <h2>Ubicación</h2>
-            <p>
-              Localización y coordenadas geográficas.
-            </p>
-          </div>
+          <h2>Ubicación</h2>
+
+          <p>
+            Localización y coordenadas geográficas.
+          </p>
         </div>
 
         <div class="patrimonial-admin-form__grid">
@@ -247,12 +249,11 @@
 
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
-          <div>
-            <h2>Información patrimonial</h2>
-            <p>
-              Historia, fuentes y observaciones.
-            </p>
-          </div>
+          <h2>Información patrimonial</h2>
+
+          <p>
+            Historia, fuentes y observaciones.
+          </p>
         </div>
 
         <div class="patrimonial-admin-form__grid">
@@ -303,16 +304,15 @@
         </div>
       </section>
 
+      <!-- FOTOGRAFÍAS -->
       <section class="patrimonial-admin-form__section">
         <div class="patrimonial-admin-form__section-header">
-          <div>
-            <h2>Fotografías</h2>
+          <h2>Fotografías</h2>
 
-            <p>
-              Administra la galería y fotografía principal
-              del auditorio.
-            </p>
-          </div>
+          <p>
+            Administra la galería y fotografía principal
+            del auditorio.
+          </p>
         </div>
 
         @if (errorFotografias()) {
@@ -339,17 +339,13 @@
           </div>
         } @else {
           @if (fotografias().length > 0) {
-            <div class="patrimonial-admin-photo-manager">
+            <div class="patrimonial-admin-edit-gallery">
               @for (
                 fotografia of fotografias();
                 track fotografia.id
               ) {
-                <article
-                  class="patrimonial-admin-photo-manager__card"
-                >
-                  <div
-                    class="patrimonial-admin-photo-manager__image"
-                  >
+                <article class="patrimonial-admin-edit-photo">
+                  <div class="patrimonial-admin-edit-photo__image">
                     <img
                       [src]="fotografia.url"
                       [alt]="
@@ -358,33 +354,26 @@
                       "
                     />
 
-                    @if (
-                      esFotografiaPrincipal(fotografia)
-                    ) {
+                    @if (esFotografiaPrincipal(fotografia)) {
                       <span
-                        class="patrimonial-admin-photo-manager__badge"
+                        class="patrimonial-admin-edit-photo__badge"
                       >
                         Principal
                       </span>
                     }
                   </div>
 
-                  <div
-                    class="patrimonial-admin-photo-manager__content"
-                  >
-                    @if (fotografia.descripcion) {
-                      <p>
-                        {{ fotografia.descripcion }}
-                      </p>
-                    } @else {
-                      <p>Sin descripción.</p>
-                    }
+                  <div class="patrimonial-admin-edit-photo__body">
+                    <p>
+                      {{
+                        fotografia.descripcion ||
+                        'Sin descripción.'
+                      }}
+                    </p>
 
-                    @if (
-                      !esFotografiaPrincipal(fotografia)
-                    ) {
+                    @if (!esFotografiaPrincipal(fotografia)) {
                       <div
-                        class="patrimonial-admin-photo-manager__actions"
+                        class="patrimonial-admin-edit-photo__actions"
                       >
                         <button
                           type="button"
@@ -401,6 +390,7 @@
 
                         <button
                           type="button"
+                          class="patrimonial-admin-edit-photo__delete"
                           [disabled]="
                             cambiandoPrincipal() ||
                             eliminandoFotografia()
@@ -418,13 +408,17 @@
               }
             </div>
           } @else {
-            <div class="patrimonial-admin-form__empty">
-              No hay fotografías registradas.
+            <div class="patrimonial-admin-empty">
+              <strong>Sin fotografías</strong>
+
+              <p>
+                No hay fotografías registradas para este auditorio.
+              </p>
             </div>
           }
         }
 
-        <div class="patrimonial-admin-form__upload">
+        <div class="patrimonial-admin-upload">
           <h3>Agregar fotografía</h3>
 
           <div class="patrimonial-admin-form__grid">
@@ -466,8 +460,7 @@
 
           <button
             type="button"
-            class="patrimonial-admin-form__button
-                   patrimonial-admin-form__button--primary"
+            class="patrimonial-admin-upload__button"
             [disabled]="
               !archivoSeleccionado() ||
               subiendoFotografia()
@@ -483,11 +476,11 @@
         </div>
       </section>
 
+      <!-- ACCIONES: SIEMPRE AL FINAL -->
       <div class="patrimonial-admin-form__actions">
         <button
           type="button"
-          class="patrimonial-admin-form__button
-                 patrimonial-admin-form__button--secondary"
+          class="patrimonial-admin-form__cancel"
           (click)="cancelar()"
           [disabled]="saving()"
         >
@@ -496,8 +489,7 @@
 
         <button
           type="submit"
-          class="patrimonial-admin-form__button
-                 patrimonial-admin-form__button--primary"
+          class="patrimonial-admin-form__save"
           [disabled]="form.invalid || saving()"
         >
           @if (saving()) {

@@ -23,14 +23,17 @@
       </p>
     </div>
 
-    <div class="patrimonial-admin-form__fixed-status">
-      <span>Estado</span>
-      <strong>Borrador</strong>
+    <div class="patrimonial-admin-form__status">
+      <span class="patrimonial-admin-form__status-dot"></span>
+      Borrador
     </div>
   </header>
 
   @if (error()) {
-    <div class="patrimonial-admin-form__message patrimonial-admin-form__message--error">
+    <div
+      class="patrimonial-admin-form__message
+             patrimonial-admin-form__message--error"
+    >
       {{ error() }}
     </div>
   }
@@ -38,14 +41,15 @@
   <form [formGroup]="form" (ngSubmit)="guardar()">
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Información general</h2>
-          <p>Datos principales para identificar el museo.</p>
-        </div>
+        <h2>Información general</h2>
+        <p>Datos principales para identificar el museo.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
           <label for="nombre">Nombre *</label>
 
           <input
@@ -55,7 +59,10 @@
             placeholder="Nombre del museo"
           />
 
-          @if (form.controls.nombre.touched && form.controls.nombre.invalid) {
+          @if (
+            form.controls.nombre.touched &&
+            form.controls.nombre.invalid
+          ) {
             <small>
               El nombre es obligatorio y no puede superar 150 caracteres.
             </small>
@@ -63,7 +70,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="horarioAtencion">Horario de atención</label>
+          <label for="horarioAtencion">
+            Horario de atención
+          </label>
 
           <input
             id="horarioAtencion"
@@ -74,7 +83,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="responsable">Responsable</label>
+          <label for="responsable">
+            Responsable
+          </label>
 
           <input
             id="responsable"
@@ -84,8 +95,13 @@
           />
         </div>
 
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="sitioWeb">Sitio web</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="sitioWeb">
+            Sitio web
+          </label>
 
           <input
             id="sitioWeb"
@@ -95,8 +111,13 @@
           />
         </div>
 
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="descripcion">Descripción *</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="descripcion">
+            Descripción *
+          </label>
 
           <textarea
             id="descripcion"
@@ -109,7 +130,9 @@
             form.controls.descripcion.touched &&
             form.controls.descripcion.invalid
           ) {
-            <small>La descripción es obligatoria.</small>
+            <small>
+              La descripción es obligatoria.
+            </small>
           }
         </div>
       </div>
@@ -117,15 +140,18 @@
 
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Ubicación</h2>
-          <p>Información geográfica del museo.</p>
-        </div>
+        <h2>Ubicación</h2>
+        <p>Información geográfica del museo.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="ubicacion">Ubicación *</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="ubicacion">
+            Ubicación *
+          </label>
 
           <input
             id="ubicacion"
@@ -145,7 +171,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="latitud">Latitud</label>
+          <label for="latitud">
+            Latitud
+          </label>
 
           <input
             id="latitud"
@@ -157,7 +185,9 @@
         </div>
 
         <div class="patrimonial-admin-form__field">
-          <label for="longitud">Longitud</label>
+          <label for="longitud">
+            Longitud
+          </label>
 
           <input
             id="longitud"
@@ -172,15 +202,18 @@
 
     <section class="patrimonial-admin-form__section">
       <div class="patrimonial-admin-form__section-header">
-        <div>
-          <h2>Información histórica</h2>
-          <p>Antecedentes y referencias documentales.</p>
-        </div>
+        <h2>Información histórica</h2>
+        <p>Antecedentes y referencias documentales.</p>
       </div>
 
       <div class="patrimonial-admin-form__grid">
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="resenaHistorica">Reseña histórica</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="resenaHistorica">
+            Reseña histórica
+          </label>
 
           <textarea
             id="resenaHistorica"
@@ -190,8 +223,13 @@
           ></textarea>
         </div>
 
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="fuentesInformacion">Fuentes de información</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="fuentesInformacion">
+            Fuentes de información
+          </label>
 
           <textarea
             id="fuentesInformacion"
@@ -201,8 +239,13 @@
           ></textarea>
         </div>
 
-        <div class="patrimonial-admin-form__field patrimonial-admin-form__field--wide">
-          <label for="observaciones">Observaciones</label>
+        <div
+          class="patrimonial-admin-form__field
+                 patrimonial-admin-form__field--wide"
+        >
+          <label for="observaciones">
+            Observaciones
+          </label>
 
           <textarea
             id="observaciones"
@@ -217,7 +260,7 @@
     <div class="patrimonial-admin-form__actions">
       <button
         type="button"
-        class="patrimonial-admin-form__button patrimonial-admin-form__button--secondary"
+        class="patrimonial-admin-form__cancel"
         (click)="cancelar()"
         [disabled]="saving()"
       >
@@ -226,7 +269,7 @@
 
       <button
         type="submit"
-        class="patrimonial-admin-form__button patrimonial-admin-form__button--primary"
+        class="patrimonial-admin-form__save"
         [disabled]="form.invalid || saving()"
       >
         @if (saving()) {
