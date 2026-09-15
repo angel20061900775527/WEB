@@ -1,162 +1,301 @@
-<section class="patrimonial-form-page">
-  <div class="patrimonial-form-header">
-    <div>
-      <h1>Nuevo parque</h1>
-      <p>Registra un nuevo parque en SIGPAC.</p>
-    </div>
+<section class="parque-create">
+  <div class="parque-create__topbar">
+    <a
+      routerLink="/parques"
+      class="parque-create__back"
+    >
+      ← Volver a Parques
+    </a>
   </div>
 
+  <header class="parque-create__header">
+    <span class="parque-create__eyebrow">
+      Administración · Parque
+    </span>
+
+    <h1>Nuevo parque</h1>
+
+    <p>
+      Registra un nuevo parque dentro del patrimonio
+      cultural administrado en SIGPAC.
+    </p>
+  </header>
+
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        parque-create__message
+        parque-create__message--error
+      "
+    >
+      {{ error() }}
+    </div>
   }
 
   <form
-    class="patrimonial-form"
     [formGroup]="form"
     (ngSubmit)="guardar()"
   >
-    <div>
-      <label for="nombre">Nombre</label>
+    <!-- =========================================
+         INFORMACIÓN GENERAL
+         ========================================= -->
 
-      <input
-        id="nombre"
-        type="text"
-        formControlName="nombre"
-      />
+    <section class="parque-create__section">
+      <div class="parque-create__section-header">
+        <h2>Información general</h2>
 
-      @if (
-        form.controls.nombre.touched &&
-        form.controls.nombre.invalid
-      ) {
-        <small>
-          El nombre es obligatorio y no puede superar 150 caracteres.
-        </small>
-      }
-    </div>
+        <p>
+          Datos principales de identificación del parque.
+        </p>
+      </div>
 
-    <div>
-      <label for="descripcion">Descripción</label>
+      <div class="parque-create__grid">
+        <div class="parque-create__field">
+          <label for="nombre">
+            Nombre
+          </label>
 
-      <textarea
-        id="descripcion"
-        rows="4"
-        formControlName="descripcion"
-      ></textarea>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre del parque"
+          />
 
-      @if (
-        form.controls.descripcion.touched &&
-        form.controls.descripcion.invalid
-      ) {
-        <small>La descripción es obligatoria.</small>
-      }
-    </div>
+          @if (
+            form.controls.nombre.touched &&
+            form.controls.nombre.invalid
+          ) {
+            <small>
+              El nombre es obligatorio y no puede superar
+              150 caracteres.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label for="resenaHistorica">Reseña histórica</label>
+        <div class="parque-create__field">
+          <label for="estado">
+            Estado
+          </label>
 
-      <textarea
-        id="resenaHistorica"
-        rows="5"
-        formControlName="resenaHistorica"
-      ></textarea>
-    </div>
+          <div class="parque-create__status">
+            <span class="parque-create__status-dot"></span>
 
-    <div>
-      <label for="fechaCreacion">Fecha de creación</label>
+            Borrador
+          </div>
 
-      <input
-        id="fechaCreacion"
-        type="date"
-        formControlName="fechaCreacion"
-      />
-    </div>
+          <span class="parque-create__field-help">
+            El nuevo registro se crea inicialmente como
+            borrador.
+          </span>
+        </div>
 
-    <div>
-      <label>Estado</label>
+        <div
+          class="
+            parque-create__field
+            parque-create__field--wide
+          "
+        >
+          <label for="descripcion">
+            Descripción
+          </label>
 
-      <input
-        type="text"
-        value="BORRADOR"
-        disabled
-      />
-    </div>
+          <textarea
+            id="descripcion"
+            rows="4"
+            formControlName="descripcion"
+            placeholder="Descripción general del parque"
+          ></textarea>
 
-    <div>
-      <label for="ubicacion">Ubicación</label>
+          @if (
+            form.controls.descripcion.touched &&
+            form.controls.descripcion.invalid
+          ) {
+            <small>
+              La descripción es obligatoria.
+            </small>
+          }
+        </div>
 
-      <input
-        id="ubicacion"
-        type="text"
-        formControlName="ubicacion"
-      />
+        <div
+          class="
+            parque-create__field
+            parque-create__field--wide
+          "
+        >
+          <label for="resenaHistorica">
+            Reseña histórica
+          </label>
 
-      @if (
-        form.controls.ubicacion.touched &&
-        form.controls.ubicacion.invalid
-      ) {
-        <small>
-          La ubicación es obligatoria y no puede superar 255 caracteres.
-        </small>
-      }
-    </div>
+          <textarea
+            id="resenaHistorica"
+            rows="5"
+            formControlName="resenaHistorica"
+            placeholder="Antecedentes o reseña histórica del parque"
+          ></textarea>
+        </div>
 
-    <div>
-      <label for="latitud">Latitud</label>
+        <div class="parque-create__field">
+          <label for="fechaCreacion">
+            Fecha de creación
+          </label>
 
-      <input
-        id="latitud"
-        type="number"
-        step="any"
-        formControlName="latitud"
-      />
-    </div>
+          <input
+            id="fechaCreacion"
+            type="date"
+            formControlName="fechaCreacion"
+          />
+        </div>
+      </div>
+    </section>
 
-    <div>
-      <label for="longitud">Longitud</label>
+    <!-- =========================================
+         UBICACIÓN
+         ========================================= -->
 
-      <input
-        id="longitud"
-        type="number"
-        step="any"
-        formControlName="longitud"
-      />
-    </div>
+    <section class="parque-create__section">
+      <div class="parque-create__section-header">
+        <h2>Ubicación</h2>
 
-    <div>
-      <label for="fuentesInformacion">Fuentes de información</label>
+        <p>
+          Dirección y coordenadas geográficas asociadas
+          al parque.
+        </p>
+      </div>
 
-      <textarea
-        id="fuentesInformacion"
-        rows="4"
-        formControlName="fuentesInformacion"
-      ></textarea>
-    </div>
+      <div class="parque-create__grid">
+        <div
+          class="
+            parque-create__field
+            parque-create__field--wide
+          "
+        >
+          <label for="ubicacion">
+            Ubicación
+          </label>
 
-    <div>
-      <label for="observaciones">Observaciones</label>
+          <input
+            id="ubicacion"
+            type="text"
+            formControlName="ubicacion"
+            placeholder="Dirección o referencia de ubicación"
+          />
 
-      <textarea
-        id="observaciones"
-        rows="4"
-        formControlName="observaciones"
-      ></textarea>
-    </div>
+          @if (
+            form.controls.ubicacion.touched &&
+            form.controls.ubicacion.invalid
+          ) {
+            <small>
+              La ubicación es obligatoria y no puede superar
+              255 caracteres.
+            </small>
+          }
+        </div>
 
-    <div class="patrimonial-form-actions">
+        <div class="parque-create__field">
+          <label for="latitud">
+            Latitud
+          </label>
+
+          <input
+            id="latitud"
+            type="number"
+            step="any"
+            formControlName="latitud"
+            placeholder="-4.000000"
+          />
+        </div>
+
+        <div class="parque-create__field">
+          <label for="longitud">
+            Longitud
+          </label>
+
+          <input
+            id="longitud"
+            type="number"
+            step="any"
+            formControlName="longitud"
+            placeholder="-79.000000"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+         INFORMACIÓN COMPLEMENTARIA
+         ========================================= -->
+
+    <section class="parque-create__section">
+      <div class="parque-create__section-header">
+        <h2>Información complementaria</h2>
+
+        <p>
+          Fuentes y observaciones relacionadas con el
+          registro patrimonial.
+        </p>
+      </div>
+
+      <div class="parque-create__grid">
+        <div
+          class="
+            parque-create__field
+            parque-create__field--wide
+          "
+        >
+          <label for="fuentesInformacion">
+            Fuentes de información
+          </label>
+
+          <textarea
+            id="fuentesInformacion"
+            rows="4"
+            formControlName="fuentesInformacion"
+            placeholder="Documentos, archivos, referencias o fuentes consultadas"
+          ></textarea>
+        </div>
+
+        <div
+          class="
+            parque-create__field
+            parque-create__field--wide
+          "
+        >
+          <label for="observaciones">
+            Observaciones
+          </label>
+
+          <textarea
+            id="observaciones"
+            rows="4"
+            formControlName="observaciones"
+            placeholder="Observaciones adicionales"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+         ACCIONES
+         ========================================= -->
+
+    <div class="parque-create__actions">
       <button
         type="button"
-        (click)="cancelar()"
+        class="parque-create__cancel"
         [disabled]="saving()"
+        (click)="cancelar()"
       >
         Cancelar
       </button>
 
       <button
         type="submit"
+        class="parque-create__save"
         [disabled]="form.invalid || saving()"
       >
         @if (saving()) {
-          Guardando...
+          Registrando...
         } @else {
           Registrar parque
         }
