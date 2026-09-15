@@ -7,9 +7,7 @@
             Patrimonio · Cultura · Identidad
           </span>
 
-          <h1>
-            Descubre Zamora
-          </h1>
+          <h1>Descubre Zamora</h1>
 
           <p>
             Un espacio para conocer los lugares, historias y elementos
@@ -37,7 +35,9 @@
           class="hero-search"
         >
           <div class="hero-search__heading">
-            <span class="hero-search__icon">⌕</span>
+            <span class="hero-search__icon">
+              <mat-icon>search</mat-icon>
+            </span>
 
             <div>
               <strong>¿Qué deseas conocer?</strong>
@@ -130,7 +130,11 @@
 
             <span class="results-heading__count">
               {{ resultados().length }}
-              {{ resultados().length === 1 ? 'resultado' : 'resultados' }}
+              {{
+                resultados().length === 1
+                  ? 'resultado'
+                  : 'resultados'
+              }}
             </span>
           </div>
 
@@ -140,36 +144,41 @@
               *ngFor="let resultado of resultados()"
               [routerLink]="resultado.ruta"
             >
-              <span class="result-card__category">
-                {{ resultado.categoria }}
-              </span>
-
-              <h3>
-                <ng-container
-                  *ngFor="
-                    let segmento of segmentarCoincidencias(
-                      resultado.nombre
-                    )
+              <div class="result-card__media">
+                <img
+                  *ngIf="
+                    resultado.fotografiaPrincipalUrl;
+                    else sinFotografia
                   "
-                >
-                  <mark *ngIf="segmento.coincide">
-                    {{ segmento.texto }}
-                  </mark>
+                  [src]="resultado.fotografiaPrincipalUrl"
+                  [alt]="resultado.nombre"
+                />
 
-                  <ng-container *ngIf="!segmento.coincide">
-                    {{ segmento.texto }}
-                  </ng-container>
-                </ng-container>
-              </h3>
+                <ng-template #sinFotografia>
+                  <div class="result-card__placeholder">
+                    <div class="result-card__placeholder-icon">
+                      <mat-icon>
+                        {{ resultado.icono }}
+                      </mat-icon>
+                    </div>
 
-              <p class="result-card__location">
-                <span class="result-card__pin">●</span>
+                    <span>
+                      Patrimonio de Zamora
+                    </span>
+                  </div>
+                </ng-template>
 
-                <span>
+                <span class="result-card__category">
+                  {{ resultado.categoria }}
+                </span>
+              </div>
+
+              <div class="result-card__content">
+                <h3>
                   <ng-container
                     *ngFor="
                       let segmento of segmentarCoincidencias(
-                        resultado.ubicacion
+                        resultado.nombre
                       )
                     "
                   >
@@ -177,29 +186,22 @@
                       {{ segmento.texto }}
                     </mark>
 
-                    <ng-container *ngIf="!segmento.coincide">
+                    <ng-container
+                      *ngIf="!segmento.coincide"
+                    >
                       {{ segmento.texto }}
                     </ng-container>
                   </ng-container>
-                </span>
-              </p>
+                </h3>
 
-              <ng-container
-                *ngIf="
-                  obtenerCoincidenciaSecundaria(resultado)
-                    as coincidencia
-                "
-              >
-                <div class="result-card__match">
-                  <span class="result-card__match-label">
-                    {{ coincidencia.etiqueta }}
-                  </span>
+                <p class="result-card__location">
+                  <mat-icon>location_on</mat-icon>
 
-                  <p>
+                  <span>
                     <ng-container
                       *ngFor="
                         let segmento of segmentarCoincidencias(
-                          coincidencia.texto
+                          resultado.ubicacion
                         )
                       "
                     >
@@ -207,18 +209,54 @@
                         {{ segmento.texto }}
                       </mark>
 
-                      <ng-container *ngIf="!segmento.coincide">
+                      <ng-container
+                        *ngIf="!segmento.coincide"
+                      >
                         {{ segmento.texto }}
                       </ng-container>
                     </ng-container>
-                  </p>
-                </div>
-              </ng-container>
+                  </span>
+                </p>
 
-              <span class="result-card__action">
-                Conocer más
-                <span>→</span>
-              </span>
+                <ng-container
+                  *ngIf="
+                    obtenerCoincidenciaSecundaria(resultado)
+                      as coincidencia
+                  "
+                >
+                  <div class="result-card__match">
+                    <span class="result-card__match-label">
+                      Coincidencia en
+                      {{ coincidencia.etiqueta }}
+                    </span>
+
+                    <p>
+                      <ng-container
+                        *ngFor="
+                          let segmento of segmentarCoincidencias(
+                            coincidencia.texto
+                          )
+                        "
+                      >
+                        <mark *ngIf="segmento.coincide">
+                          {{ segmento.texto }}
+                        </mark>
+
+                        <ng-container
+                          *ngIf="!segmento.coincide"
+                        >
+                          {{ segmento.texto }}
+                        </ng-container>
+                      </ng-container>
+                    </p>
+                  </div>
+                </ng-container>
+
+                <span class="result-card__action">
+                  <span>Conocer más</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </span>
+              </div>
             </a>
           </div>
         </div>
@@ -268,34 +306,17 @@
           <a
             *ngFor="let categoria of categorias()"
             class="category-card"
-            [class]="'category-card category-card--' + categoria.clave"
+            [class]="
+              'category-card category-card--' +
+              categoria.clave
+            "
             [routerLink]="categoria.ruta"
           >
             <div class="category-card__top">
               <span class="category-card__visual">
-                @switch (categoria.clave) {
-                  @case ('parques') {
-                    P
-                  }
-                  @case ('calles') {
-                    C
-                  }
-                  @case ('monumentos') {
-                    M
-                  }
-                  @case ('rios') {
-                    R
-                  }
-                  @case ('plazas') {
-                    PZ
-                  }
-                  @case ('museos') {
-                    MU
-                  }
-                  @case ('auditorios') {
-                    A
-                  }
-                }
+                <mat-icon>
+                  {{ categoria.icono }}
+                </mat-icon>
               </span>
 
               <span class="category-card__count">
@@ -314,8 +335,13 @@
             </div>
 
             <span class="category-card__action">
-              Explorar categoría
-              <span>→</span>
+              <span>Explorar categoría</span>
+
+              <span class="category-card__arrow">
+                <mat-icon>
+                  arrow_forward
+                </mat-icon>
+              </span>
             </span>
           </a>
         </div>
@@ -327,7 +353,9 @@
     <div class="portal-footer__inner">
       <div>
         <strong>SIGPAC</strong>
-        <span>Patrimonio cultural de Zamora</span>
+        <span>
+          Patrimonio cultural de Zamora
+        </span>
       </div>
 
       <span>

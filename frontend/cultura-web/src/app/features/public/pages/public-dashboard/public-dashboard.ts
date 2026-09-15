@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 import { Subject, debounceTime, distinctUntilChanged, forkJoin, takeUntil } from 'rxjs';
 
 import { AuditoriosPublicService } from '../../../../core/services/auditorios-public.service';
@@ -17,6 +18,7 @@ interface CategoriaPatrimonial {
   ruta: string;
   total: number;
   clave: string;
+  icono: string;
 }
 
 interface CampoBusqueda {
@@ -29,7 +31,10 @@ interface ResultadoBusquedaGlobal {
   nombre: string;
   ubicacion: string;
   categoria: string;
+  clave: string;
   ruta: string;
+  icono: string;
+  fotografiaPrincipalUrl?: string | null;
   descripcion?: string | null;
   resenaHistorica?: string | null;
   fuentesInformacion?: string | null;
@@ -39,7 +44,7 @@ interface ResultadoBusquedaGlobal {
 
 @Component({
   selector: 'app-public-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatIconModule],
   templateUrl: './public-dashboard.html',
   styleUrl: './public-dashboard.scss',
 })
@@ -85,6 +90,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/parques',
         total: totales?.['parques'] ?? 0,
         clave: 'parques',
+        icono: 'park',
       },
       {
         titulo: 'Calles',
@@ -92,6 +98,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/calles',
         total: totales?.['calles'] ?? 0,
         clave: 'calles',
+        icono: 'signpost',
       },
       {
         titulo: 'Monumentos',
@@ -99,6 +106,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/monumentos',
         total: totales?.['monumentos'] ?? 0,
         clave: 'monumentos',
+        icono: 'account_balance',
       },
       {
         titulo: 'Ríos',
@@ -106,6 +114,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/rios',
         total: totales?.['rios'] ?? 0,
         clave: 'rios',
+        icono: 'waves',
       },
       {
         titulo: 'Plazas',
@@ -113,6 +122,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/plazas',
         total: totales?.['plazas'] ?? 0,
         clave: 'plazas',
+        icono: 'location_city',
       },
       {
         titulo: 'Museos',
@@ -120,6 +130,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/museos',
         total: totales?.['museos'] ?? 0,
         clave: 'museos',
+        icono: 'museum',
       },
       {
         titulo: 'Auditorios',
@@ -127,6 +138,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
         ruta: '/public/auditorios',
         total: totales?.['auditorios'] ?? 0,
         clave: 'auditorios',
+        icono: 'theater_comedy',
       },
     ];
   }
@@ -194,8 +206,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
 
         this.cargando.set(false);
       },
+
       error: () => {
         this.error.set('No se pudo cargar la información del patrimonio.');
+
         this.cargando.set(false);
       },
     });
@@ -221,7 +235,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Parque',
+            clave: 'parques',
+            icono: 'park',
             ruta: `/public/parques/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -233,7 +250,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Calle',
+            clave: 'calles',
+            icono: 'signpost',
             ruta: `/public/calles/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -251,7 +271,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Monumento',
+            clave: 'monumentos',
+            icono: 'account_balance',
             ruta: `/public/monumentos/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -277,7 +300,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Río',
+            clave: 'rios',
+            icono: 'waves',
             ruta: `/public/rios/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -307,7 +333,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Plaza',
+            clave: 'plazas',
+            icono: 'location_city',
             ruta: `/public/plazas/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -319,7 +348,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Museo',
+            clave: 'museos',
+            icono: 'museum',
             ruta: `/public/museos/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -345,7 +377,10 @@ export class PublicDashboard implements OnInit, OnDestroy {
             nombre: item.nombre,
             ubicacion: item.ubicacion,
             categoria: 'Auditorio',
+            clave: 'auditorios',
+            icono: 'theater_comedy',
             ruta: `/public/auditorios/${item.id}`,
+            fotografiaPrincipalUrl: item.fotografiaPrincipalUrl,
             descripcion: item.descripcion,
             resenaHistorica: item.resenaHistorica,
             fuentesInformacion: item.fuentesInformacion,
@@ -370,24 +405,38 @@ export class PublicDashboard implements OnInit, OnDestroy {
         this.resultados.set(resultados);
         this.buscando.set(false);
       },
+
       error: () => {
         this.resultados.set([]);
+
         this.errorBusqueda.set('No se pudo realizar la búsqueda.');
+
         this.buscando.set(false);
       },
     });
   }
 
-  segmentarCoincidencias(texto: string): { texto: string; coincide: boolean }[] {
+  segmentarCoincidencias(texto: string): {
+    texto: string;
+    coincide: boolean;
+  }[] {
     const busquedaOriginal = this.search().trim();
 
     if (!busquedaOriginal) {
-      return [{ texto, coincide: false }];
+      return [
+        {
+          texto,
+          coincide: false,
+        },
+      ];
     }
 
     const busquedaNormalizada = this.normalizarTexto(busquedaOriginal);
 
-    const segmentos: { texto: string; coincide: boolean }[] = [];
+    const segmentos: {
+      texto: string;
+      coincide: boolean;
+    }[] = [];
 
     let inicioSegmento = 0;
     let indice = 0;
@@ -435,12 +484,20 @@ export class PublicDashboard implements OnInit, OnDestroy {
       });
     }
 
-    return segmentos.length > 0 ? segmentos : [{ texto, coincide: false }];
+    return segmentos.length > 0
+      ? segmentos
+      : [
+          {
+            texto,
+            coincide: false,
+          },
+        ];
   }
 
-  obtenerCoincidenciaSecundaria(
-    resultado: ResultadoBusquedaGlobal,
-  ): { etiqueta: string; texto: string } | null {
+  obtenerCoincidenciaSecundaria(resultado: ResultadoBusquedaGlobal): {
+    etiqueta: string;
+    texto: string;
+  } | null {
     const busqueda = this.normalizarTexto(this.search().trim());
 
     if (!busqueda) {
@@ -503,6 +560,7 @@ export class PublicDashboard implements OnInit, OnDestroy {
 
     return `${inicio > 0 ? '…' : ''}${texto.slice(inicio, fin)}${fin < texto.length ? '…' : ''}`;
   }
+
   private normalizarTexto(texto: string): string {
     return texto
       .normalize('NFD')
