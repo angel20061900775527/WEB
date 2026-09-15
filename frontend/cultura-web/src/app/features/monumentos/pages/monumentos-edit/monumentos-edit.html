@@ -1,211 +1,532 @@
-<section class="patrimonial-form-page">
-  <div class="patrimonial-form-header">
-    <div>
-      <h1>Editar monumento</h1>
-      <p>Actualiza la información registrada en SIGPAC.</p>
-    </div>
+<section class="patrimonial-admin-form">
+  <div class="patrimonial-admin-form__topbar">
+    <a
+      [routerLink]="['/monumentos', monumentoId]"
+      class="patrimonial-admin-form__back"
+    >
+      ← Volver al monumento
+    </a>
   </div>
 
+  <header class="patrimonial-admin-form__hero">
+    <span class="patrimonial-admin-form__eyebrow">
+      Administración · Monumento
+    </span>
+
+    <h1>Editar monumento</h1>
+
+    <p>
+      Actualiza la información, estado y archivo
+      fotográfico del monumento.
+    </p>
+  </header>
+
   @if (loading()) {
-    <p>Cargando información del monumento...</p>
+    <div class="patrimonial-admin-form__message">
+      Cargando información del monumento...
+    </div>
   }
 
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        patrimonial-admin-form__message
+        patrimonial-admin-form__message--error
+      "
+    >
+      {{ error() }}
+    </div>
   }
 
   @if (success()) {
-    <p>{{ success() }}</p>
+    <div
+      class="
+        patrimonial-admin-form__message
+        patrimonial-admin-form__message--success
+      "
+    >
+      {{ success() }}
+    </div>
   }
 
   @if (!loading()) {
     <form
-      class="patrimonial-form"
       [formGroup]="form"
       (ngSubmit)="guardar()"
     >
-      <div>
-        <label for="nombre">Nombre</label>
-
-        <input
-          id="nombre"
-          type="text"
-          formControlName="nombre"
-        />
-
-        @if (
-          form.controls.nombre.touched &&
-          form.controls.nombre.invalid
-        ) {
-          <small>
-            El nombre es obligatorio y no puede superar 150 caracteres.
-          </small>
-        }
-      </div>
-
-      <div>
-        <label for="tipo">Tipo</label>
-
-        <input
-          id="tipo"
-          type="text"
-          formControlName="tipo"
-        />
-      </div>
-
-      <div>
-        <label for="autor">Autor</label>
-
-        <input
-          id="autor"
-          type="text"
-          formControlName="autor"
-        />
-      </div>
-
-      <div>
-        <label for="personajeHomenajeado">Personaje homenajeado</label>
-
-        <input
-          id="personajeHomenajeado"
-          type="text"
-          formControlName="personajeHomenajeado"
-        />
-      </div>
-
-      <div>
-        <label for="descripcion">Descripción</label>
-
-        <textarea
-          id="descripcion"
-          rows="4"
-          formControlName="descripcion"
-        ></textarea>
-
-        @if (
-          form.controls.descripcion.touched &&
-          form.controls.descripcion.invalid
-        ) {
-          <small>La descripción es obligatoria.</small>
-        }
-      </div>
-
-      <div>
-        <label for="resenaHistorica">Reseña histórica</label>
-
-        <textarea
-          id="resenaHistorica"
-          rows="5"
-          formControlName="resenaHistorica"
-        ></textarea>
-      </div>
-
-      <div>
-        <label for="fechaConstruccion">Fecha de construcción</label>
-
-        <input
-          id="fechaConstruccion"
-          type="date"
-          formControlName="fechaConstruccion"
-        />
-      </div>
-
-      <div>
-        <label for="estado">Estado</label>
-
-        <select
-          #estadoSelect
-          id="estado"
-          [value]="estado()"
-          (change)="
-            estado.set(
-              estadoSelect.value === 'PUBLICADO'
-                ? 'PUBLICADO'
-                : estadoSelect.value === 'INACTIVO'
-                  ? 'INACTIVO'
-                  : 'BORRADOR'
-            )
-          "
-          [disabled]="saving()"
+      <section class="patrimonial-admin-form__section">
+        <div
+          class="patrimonial-admin-form__section-header"
         >
-          <option value="BORRADOR">Borrador</option>
-          <option value="PUBLICADO">Publicado</option>
-          <option value="INACTIVO">Inactivo</option>
-        </select>
-      </div>
+          <h2>Información general</h2>
 
-      <div>
-        <label for="ubicacion">Ubicación</label>
+          <p>
+            Datos principales de identificación y
+            características del monumento.
+          </p>
+        </div>
 
-        <input
-          id="ubicacion"
-          type="text"
-          formControlName="ubicacion"
-        />
+        <div class="patrimonial-admin-form__grid">
+          <div class="patrimonial-admin-form__field">
+            <label for="nombre">Nombre</label>
 
-        @if (
-          form.controls.ubicacion.touched &&
-          form.controls.ubicacion.invalid
-        ) {
-          <small>
-            La ubicación es obligatoria y no puede superar 255 caracteres.
-          </small>
+            <input
+              id="nombre"
+              type="text"
+              formControlName="nombre"
+            />
+
+            @if (
+              form.controls.nombre.touched &&
+              form.controls.nombre.invalid
+            ) {
+              <small>
+                El nombre es obligatorio y no puede superar
+                150 caracteres.
+              </small>
+            }
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="estado">Estado</label>
+
+            <select
+              #estadoSelect
+              id="estado"
+              [value]="estado()"
+              [disabled]="saving()"
+              (change)="
+                estado.set(
+                  estadoSelect.value === 'PUBLICADO'
+                    ? 'PUBLICADO'
+                    : estadoSelect.value === 'INACTIVO'
+                      ? 'INACTIVO'
+                      : 'BORRADOR'
+                )
+              "
+            >
+              <option value="BORRADOR">
+                Borrador
+              </option>
+
+              <option value="PUBLICADO">
+                Publicado
+              </option>
+
+              <option value="INACTIVO">
+                Inactivo
+              </option>
+            </select>
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="tipo">Tipo</label>
+
+            <input
+              id="tipo"
+              type="text"
+              formControlName="tipo"
+            />
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="autor">Autor</label>
+
+            <input
+              id="autor"
+              type="text"
+              formControlName="autor"
+            />
+          </div>
+
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="personajeHomenajeado">
+              Personaje homenajeado
+            </label>
+
+            <input
+              id="personajeHomenajeado"
+              type="text"
+              formControlName="personajeHomenajeado"
+            />
+          </div>
+
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="descripcion">
+              Descripción
+            </label>
+
+            <textarea
+              id="descripcion"
+              rows="4"
+              formControlName="descripcion"
+            ></textarea>
+
+            @if (
+              form.controls.descripcion.touched &&
+              form.controls.descripcion.invalid
+            ) {
+              <small>
+                La descripción es obligatoria.
+              </small>
+            }
+          </div>
+
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="resenaHistorica">
+              Reseña histórica
+            </label>
+
+            <textarea
+              id="resenaHistorica"
+              rows="5"
+              formControlName="resenaHistorica"
+            ></textarea>
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="fechaConstruccion">
+              Fecha de construcción
+            </label>
+
+            <input
+              id="fechaConstruccion"
+              type="date"
+              formControlName="fechaConstruccion"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div
+          class="patrimonial-admin-form__section-header"
+        >
+          <h2>Ubicación</h2>
+
+          <p>
+            Dirección y coordenadas geográficas asociadas
+            al monumento.
+          </p>
+        </div>
+
+        <div class="patrimonial-admin-form__grid">
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="ubicacion">
+              Ubicación
+            </label>
+
+            <input
+              id="ubicacion"
+              type="text"
+              formControlName="ubicacion"
+            />
+
+            @if (
+              form.controls.ubicacion.touched &&
+              form.controls.ubicacion.invalid
+            ) {
+              <small>
+                La ubicación es obligatoria y no puede
+                superar 255 caracteres.
+              </small>
+            }
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="latitud">
+              Latitud
+            </label>
+
+            <input
+              id="latitud"
+              type="number"
+              step="any"
+              formControlName="latitud"
+            />
+          </div>
+
+          <div class="patrimonial-admin-form__field">
+            <label for="longitud">
+              Longitud
+            </label>
+
+            <input
+              id="longitud"
+              type="number"
+              step="any"
+              formControlName="longitud"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div
+          class="patrimonial-admin-form__section-header"
+        >
+          <h2>Información complementaria</h2>
+
+          <p>
+            Fuentes y observaciones relacionadas con el
+            registro patrimonial.
+          </p>
+        </div>
+
+        <div class="patrimonial-admin-form__grid">
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="fuentesInformacion">
+              Fuentes de información
+            </label>
+
+            <textarea
+              id="fuentesInformacion"
+              rows="4"
+              formControlName="fuentesInformacion"
+            ></textarea>
+          </div>
+
+          <div
+            class="
+              patrimonial-admin-form__field
+              patrimonial-admin-form__field--wide
+            "
+          >
+            <label for="observaciones">
+              Observaciones
+            </label>
+
+            <textarea
+              id="observaciones"
+              rows="4"
+              formControlName="observaciones"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="patrimonial-admin-form__section">
+        <div
+          class="patrimonial-admin-form__section-header"
+        >
+          <h2>Fotografías</h2>
+
+          <p>
+            Administra el archivo fotográfico asociado al
+            monumento.
+          </p>
+        </div>
+
+        @if (errorFotografias()) {
+          <div
+            class="
+              patrimonial-admin-form__message
+              patrimonial-admin-form__message--error
+            "
+          >
+            {{ errorFotografias() }}
+          </div>
         }
-      </div>
 
-      <div>
-        <label for="latitud">Latitud</label>
+        @if (mensajeFotografias()) {
+          <div
+            class="
+              patrimonial-admin-form__message
+              patrimonial-admin-form__message--success
+            "
+          >
+            {{ mensajeFotografias() }}
+          </div>
+        }
 
-        <input
-          id="latitud"
-          type="number"
-          step="any"
-          formControlName="latitud"
-        />
-      </div>
+        @if (loadingFotografias()) {
+          <div class="patrimonial-admin-form__message">
+            Cargando fotografías...
+          </div>
+        } @else {
+          @if (fotografias().length > 0) {
+            <div class="patrimonial-admin-edit-gallery">
+              @for (
+                fotografia of fotografias();
+                track fotografia.id
+              ) {
+                <article
+                  class="patrimonial-admin-edit-photo"
+                >
+                  <div
+                    class="patrimonial-admin-edit-photo__image"
+                  >
+                    <img
+                      [src]="fotografia.url"
+                      [alt]="
+                        fotografia.descripcion ||
+                        fotografia.nombreOriginal
+                      "
+                    />
 
-      <div>
-        <label for="longitud">Longitud</label>
+                    @if (esPrincipal(fotografia)) {
+                      <span
+                        class="patrimonial-admin-edit-photo__badge"
+                      >
+                        Principal
+                      </span>
+                    }
+                  </div>
 
-        <input
-          id="longitud"
-          type="number"
-          step="any"
-          formControlName="longitud"
-        />
-      </div>
+                  <div
+                    class="patrimonial-admin-edit-photo__body"
+                  >
+                    <p>
+                      {{
+                        fotografia.descripcion ||
+                        'Sin descripción'
+                      }}
+                    </p>
 
-      <div>
-        <label for="fuentesInformacion">Fuentes de información</label>
+                    <div
+                      class="patrimonial-admin-edit-photo__actions"
+                    >
+                      @if (!esPrincipal(fotografia)) {
+                        <button
+                          type="button"
+                          [disabled]="
+                            cambiandoPrincipal() ||
+                            eliminandoFotografia()
+                          "
+                          (click)="
+                            establecerPrincipal(fotografia)
+                          "
+                        >
+                          Hacer principal
+                        </button>
 
-        <textarea
-          id="fuentesInformacion"
-          rows="4"
-          formControlName="fuentesInformacion"
-        ></textarea>
-      </div>
+                        <button
+                          type="button"
+                          class="
+                            patrimonial-admin-edit-photo__delete
+                          "
+                          [disabled]="
+                            cambiandoPrincipal() ||
+                            eliminandoFotografia()
+                          "
+                          (click)="
+                            eliminarFotografia(fotografia)
+                          "
+                        >
+                          Eliminar
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          } @else {
+            <div class="patrimonial-admin-empty">
+              <strong>
+                No hay fotografías registradas
+              </strong>
 
-      <div>
-        <label for="observaciones">Observaciones</label>
+              <p>
+                Agrega la primera fotografía del monumento.
+              </p>
+            </div>
+          }
+        }
 
-        <textarea
-          id="observaciones"
-          rows="4"
-          formControlName="observaciones"
-        ></textarea>
-      </div>
+        <div class="patrimonial-admin-upload">
+          <h3>Agregar fotografía</h3>
 
-      <div class="patrimonial-form-actions">
+          <div class="patrimonial-admin-form__grid">
+            <div class="patrimonial-admin-form__field">
+              <label for="fotoMonumento">
+                Imagen
+              </label>
+
+              <input
+                id="fotoMonumento"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                (change)="seleccionarArchivo($event)"
+              />
+            </div>
+
+            <div class="patrimonial-admin-form__field">
+              <label for="descripcionFotografia">
+                Descripción
+              </label>
+
+              <textarea
+                #descripcionInput
+                id="descripcionFotografia"
+                rows="3"
+                [value]="descripcionFotografia()"
+                (input)="
+                  actualizarDescripcion(
+                    descripcionInput.value
+                  )
+                "
+                placeholder="Descripción opcional de la fotografía"
+              ></textarea>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="patrimonial-admin-upload__button"
+            [disabled]="
+              !archivoSeleccionado() ||
+              subiendoFotografia()
+            "
+            (click)="subirFotografia()"
+          >
+            @if (subiendoFotografia()) {
+              Subiendo...
+            } @else {
+              Subir fotografía
+            }
+          </button>
+        </div>
+      </section>
+
+      <div class="patrimonial-admin-form__actions">
         <button
           type="button"
-          (click)="cancelar()"
+          class="patrimonial-admin-form__cancel"
           [disabled]="saving()"
+          (click)="cancelar()"
         >
           Cancelar
         </button>
 
         <button
           type="submit"
+          class="patrimonial-admin-form__save"
           [disabled]="form.invalid || saving()"
         >
           @if (saving()) {

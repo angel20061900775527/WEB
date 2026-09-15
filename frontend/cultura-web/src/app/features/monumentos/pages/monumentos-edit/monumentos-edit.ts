@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+
+import { Fotografia, FotografiasService } from '../../../../core/services/fotografias.service';
 
 import {
   EstadoMonumento,
@@ -12,7 +14,7 @@ import {
 
 @Component({
   selector: 'app-monumentos-edit',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './monumentos-edit.html',
   styleUrl: './monumentos-edit.scss',
 })
@@ -20,14 +22,32 @@ export class MonumentosEdit implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+
   private readonly monumentosService = inject(MonumentosService);
+
+  private readonly fotografiasService = inject(FotografiasService);
 
   monumentoId = '';
 
+  monumento = signal<Monumento | null>(null);
+  fotografias = signal<Fotografia[]>([]);
+
   loading = signal(false);
   saving = signal(false);
+  loadingFotografias = signal(false);
+
+  subiendoFotografia = signal(false);
+  cambiandoPrincipal = signal(false);
+  eliminandoFotografia = signal(false);
+
   error = signal('');
   success = signal('');
+
+  errorFotografias = signal('');
+  mensajeFotografias = signal('');
+
+  archivoSeleccionado = signal<File | null>(null);
+  descripcionFotografia = signal('');
 
   estado = signal<EstadoMonumento>('BORRADOR');
 
@@ -55,7 +75,9 @@ export class MonumentosEdit implements OnInit {
     }
 
     this.monumentoId = id;
+
     this.cargarMonumento(id);
+    this.cargarFotografias(id);
   }
 
   private cargarMonumento(id: string): void {
@@ -64,6 +86,7 @@ export class MonumentosEdit implements OnInit {
 
     this.monumentosService.getById(id).subscribe({
       next: (monumento: Monumento) => {
+        this.monumento.set(monumento);
         this.estado.set(monumento.estado);
 
         this.form.patchValue({
@@ -75,26 +98,190 @@ export class MonumentosEdit implements OnInit {
           resenaHistorica: monumento.resenaHistorica ?? '',
           fechaConstruccion: monumento.fechaConstruccion ?? '',
           ubicacion: monumento.ubicacion,
+
           latitud:
             monumento.latitud !== null && monumento.latitud !== undefined
               ? String(monumento.latitud)
               : '',
+
           longitud:
             monumento.longitud !== null && monumento.longitud !== undefined
               ? String(monumento.longitud)
               : '',
+
           fuentesInformacion: monumento.fuentesInformacion ?? '',
+
           observaciones: monumento.observaciones ?? '',
         });
 
         this.loading.set(false);
       },
+
       error: (error) => {
         console.error('Error al cargar monumento:', error);
 
         this.error.set('No se pudo cargar la información del monumento.');
 
         this.loading.set(false);
+      },
+    });
+  }
+
+  private cargarFotografias(id: string): void {
+    this.loadingFotografias.set(true);
+    this.errorFotografias.set('');
+
+    this.fotografiasService.getAll('MONUMENTO', id).subscribe({
+      next: (fotografias) => {
+        this.fotografias.set(fotografias);
+        this.loadingFotografias.set(false);
+      },
+
+      error: (error) => {
+        console.error('Error al cargar fotografías:', error);
+
+        this.errorFotografias.set(
+          error?.error?.message ?? 'No se pudieron cargar las fotografías.',
+        );
+
+        this.loadingFotografias.set(false);
+      },
+    });
+  }
+
+  esPrincipal(fotografia: Fotografia): boolean {
+    const monumentoActual = this.monumento();
+
+    if (!monumentoActual?.fotografiaPrincipalId) {
+      return false;
+    }
+
+    return String(monumentoActual.fotografiaPrincipalId) === String(fotografia.id);
+  }
+
+  seleccionarArchivo(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    const file = input.files?.[0] ?? null;
+
+    this.archivoSeleccionado.set(file);
+
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+  }
+
+  actualizarDescripcion(valor: string): void {
+    this.descripcionFotografia.set(valor);
+  }
+
+  subirFotografia(): void {
+    const file = this.archivoSeleccionado();
+
+    if (!file) {
+      this.errorFotografias.set('Seleccione una imagen antes de continuar.');
+      return;
+    }
+
+    this.subiendoFotografia.set(true);
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+
+    this.fotografiasService
+      .upload('MONUMENTO', this.monumentoId, file, this.descripcionFotografia())
+      .subscribe({
+        next: (fotografia) => {
+          this.fotografias.update((fotografias) => [fotografia, ...fotografias]);
+
+          this.archivoSeleccionado.set(null);
+          this.descripcionFotografia.set('');
+
+          this.mensajeFotografias.set('Fotografía subida correctamente.');
+
+          this.subiendoFotografia.set(false);
+        },
+
+        error: (error) => {
+          console.error('Error al subir fotografía:', error);
+
+          this.errorFotografias.set(error?.error?.message ?? 'No se pudo subir la fotografía.');
+
+          this.subiendoFotografia.set(false);
+        },
+      });
+  }
+
+  establecerPrincipal(fotografia: Fotografia): void {
+    if (this.esPrincipal(fotografia)) {
+      return;
+    }
+
+    this.cambiandoPrincipal.set(true);
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+
+    this.fotografiasService.setPrincipal(fotografia.id).subscribe({
+      next: () => {
+        this.monumento.update((monumento) =>
+          monumento
+            ? {
+                ...monumento,
+                fotografiaPrincipalId: fotografia.id,
+              }
+            : null,
+        );
+
+        this.mensajeFotografias.set('Fotografía principal actualizada correctamente.');
+
+        this.cambiandoPrincipal.set(false);
+      },
+
+      error: (error) => {
+        console.error('Error al establecer fotografía principal:', error);
+
+        this.errorFotografias.set(
+          error?.error?.message ?? 'No se pudo establecer la fotografía principal.',
+        );
+
+        this.cambiandoPrincipal.set(false);
+      },
+    });
+  }
+
+  eliminarFotografia(fotografia: Fotografia): void {
+    if (this.esPrincipal(fotografia)) {
+      this.errorFotografias.set('No puede eliminar la fotografía principal.');
+      return;
+    }
+
+    const confirmado = window.confirm(
+      `¿Está seguro de eliminar la fotografía "${fotografia.nombreOriginal}"?`,
+    );
+
+    if (!confirmado) {
+      return;
+    }
+
+    this.eliminandoFotografia.set(true);
+    this.errorFotografias.set('');
+    this.mensajeFotografias.set('');
+
+    this.fotografiasService.delete(fotografia.id).subscribe({
+      next: () => {
+        this.fotografias.update((fotografias) =>
+          fotografias.filter((item) => String(item.id) !== String(fotografia.id)),
+        );
+
+        this.mensajeFotografias.set('Fotografía eliminada correctamente.');
+
+        this.eliminandoFotografia.set(false);
+      },
+
+      error: (error) => {
+        console.error('Error al eliminar fotografía:', error);
+
+        this.errorFotografias.set(error?.error?.message ?? 'No se pudo eliminar la fotografía.');
+
+        this.eliminandoFotografia.set(false);
       },
     });
   }
@@ -108,6 +295,7 @@ export class MonumentosEdit implements OnInit {
     const value = this.form.getRawValue();
 
     const latitudTexto = String(value.latitud ?? '').trim();
+
     const longitudTexto = String(value.longitud ?? '').trim();
 
     const payload: UpdateMonumentoPayload = {
@@ -115,13 +303,21 @@ export class MonumentosEdit implements OnInit {
       descripcion: value.descripcion.trim(),
       tipo: value.tipo.trim() || null,
       autor: value.autor.trim() || null,
+
       personajeHomenajeado: value.personajeHomenajeado.trim() || null,
+
       resenaHistorica: value.resenaHistorica.trim() || null,
+
       fechaConstruccion: value.fechaConstruccion || null,
+
       ubicacion: value.ubicacion.trim(),
+
       latitud: latitudTexto ? Number(latitudTexto) : null,
+
       longitud: longitudTexto ? Number(longitudTexto) : null,
+
       fuentesInformacion: value.fuentesInformacion.trim() || null,
+
       observaciones: value.observaciones.trim() || null,
     };
 
@@ -134,10 +330,12 @@ export class MonumentosEdit implements OnInit {
         this.monumentosService.updateEstado(this.monumentoId, this.estado()).subscribe({
           next: () => {
             this.saving.set(false);
+
             this.success.set('Monumento actualizado correctamente.');
 
             this.router.navigate(['/monumentos', this.monumentoId]);
           },
+
           error: (error) => {
             console.error('Error al actualizar estado del monumento:', error);
 
@@ -150,6 +348,7 @@ export class MonumentosEdit implements OnInit {
           },
         });
       },
+
       error: (error) => {
         console.error('Error al actualizar monumento:', error);
 

@@ -1,192 +1,318 @@
-<section class="patrimonial-form-page">
-  <div class="patrimonial-form-header">
-    <div>
-      <h1>Nuevo monumento</h1>
-      <p>Registra un nuevo monumento en SIGPAC.</p>
-    </div>
+<section class="patrimonial-admin-form">
+  <div class="patrimonial-admin-form__topbar">
+    <a
+      routerLink="/monumentos"
+      class="patrimonial-admin-form__back"
+    >
+      ← Volver a Monumentos
+    </a>
   </div>
 
+  <header class="patrimonial-admin-form__hero">
+    <span class="patrimonial-admin-form__eyebrow">
+      Administración · Monumento
+    </span>
+
+    <h1>Nuevo monumento</h1>
+
+    <p>
+      Registra un nuevo monumento dentro del patrimonio
+      cultural administrado en SIGPAC.
+    </p>
+  </header>
+
   @if (error()) {
-    <p>{{ error() }}</p>
+    <div
+      class="
+        patrimonial-admin-form__message
+        patrimonial-admin-form__message--error
+      "
+    >
+      {{ error() }}
+    </div>
   }
 
   <form
-    class="patrimonial-form"
     [formGroup]="form"
     (ngSubmit)="guardar()"
   >
-    <div>
-      <label for="nombre">Nombre</label>
+    <section class="patrimonial-admin-form__section">
+      <div class="patrimonial-admin-form__section-header">
+        <h2>Información general</h2>
 
-      <input
-        id="nombre"
-        type="text"
-        formControlName="nombre"
-      />
+        <p>
+          Datos principales de identificación y
+          características del monumento.
+        </p>
+      </div>
 
-      @if (
-        form.controls.nombre.touched &&
-        form.controls.nombre.invalid
-      ) {
-        <small>
-          El nombre es obligatorio y no puede superar 150 caracteres.
-        </small>
-      }
-    </div>
+      <div class="patrimonial-admin-form__grid">
+        <div class="patrimonial-admin-form__field">
+          <label for="nombre">Nombre</label>
 
-    <div>
-      <label for="tipo">Tipo</label>
+          <input
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            placeholder="Nombre del monumento"
+          />
 
-      <input
-        id="tipo"
-        type="text"
-        formControlName="tipo"
-      />
-    </div>
+          @if (
+            form.controls.nombre.touched &&
+            form.controls.nombre.invalid
+          ) {
+            <small>
+              El nombre es obligatorio y no puede superar
+              150 caracteres.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label for="autor">Autor</label>
+        <div class="patrimonial-admin-form__field">
+          <label>Estado</label>
 
-      <input
-        id="autor"
-        type="text"
-        formControlName="autor"
-      />
-    </div>
+          <div class="patrimonial-admin-form__status">
+            <span
+              class="patrimonial-admin-form__status-dot"
+            ></span>
 
-    <div>
-      <label for="personajeHomenajeado">Personaje homenajeado</label>
+            Borrador
+          </div>
 
-      <input
-        id="personajeHomenajeado"
-        type="text"
-        formControlName="personajeHomenajeado"
-      />
-    </div>
+          <span class="patrimonial-admin-form__field-help">
+            El nuevo registro se crea inicialmente como
+            borrador.
+          </span>
+        </div>
 
-    <div>
-      <label for="descripcion">Descripción</label>
+        <div class="patrimonial-admin-form__field">
+          <label for="tipo">Tipo</label>
 
-      <textarea
-        id="descripcion"
-        rows="4"
-        formControlName="descripcion"
-      ></textarea>
+          <input
+            id="tipo"
+            type="text"
+            formControlName="tipo"
+            placeholder="Ej. estatua, busto, obelisco"
+          />
+        </div>
 
-      @if (
-        form.controls.descripcion.touched &&
-        form.controls.descripcion.invalid
-      ) {
-        <small>La descripción es obligatoria.</small>
-      }
-    </div>
+        <div class="patrimonial-admin-form__field">
+          <label for="autor">Autor</label>
 
-    <div>
-      <label for="resenaHistorica">Reseña histórica</label>
+          <input
+            id="autor"
+            type="text"
+            formControlName="autor"
+            placeholder="Autor o creador del monumento"
+          />
+        </div>
 
-      <textarea
-        id="resenaHistorica"
-        rows="5"
-        formControlName="resenaHistorica"
-      ></textarea>
-    </div>
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="personajeHomenajeado">
+            Personaje homenajeado
+          </label>
 
-    <div>
-      <label for="fechaConstruccion">Fecha de construcción</label>
+          <input
+            id="personajeHomenajeado"
+            type="text"
+            formControlName="personajeHomenajeado"
+            placeholder="Persona o personaje al que está dedicado"
+          />
+        </div>
 
-      <input
-        id="fechaConstruccion"
-        type="date"
-        formControlName="fechaConstruccion"
-      />
-    </div>
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="descripcion">
+            Descripción
+          </label>
 
-    <div>
-      <label>Estado</label>
+          <textarea
+            id="descripcion"
+            rows="4"
+            formControlName="descripcion"
+            placeholder="Descripción general del monumento"
+          ></textarea>
 
-      <input
-        type="text"
-        value="BORRADOR"
-        disabled
-      />
-    </div>
+          @if (
+            form.controls.descripcion.touched &&
+            form.controls.descripcion.invalid
+          ) {
+            <small>
+              La descripción es obligatoria.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label for="ubicacion">Ubicación</label>
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="resenaHistorica">
+            Reseña histórica
+          </label>
 
-      <input
-        id="ubicacion"
-        type="text"
-        formControlName="ubicacion"
-      />
+          <textarea
+            id="resenaHistorica"
+            rows="5"
+            formControlName="resenaHistorica"
+            placeholder="Antecedentes o reseña histórica del monumento"
+          ></textarea>
+        </div>
 
-      @if (
-        form.controls.ubicacion.touched &&
-        form.controls.ubicacion.invalid
-      ) {
-        <small>
-          La ubicación es obligatoria y no puede superar 255 caracteres.
-        </small>
-      }
-    </div>
+        <div class="patrimonial-admin-form__field">
+          <label for="fechaConstruccion">
+            Fecha de construcción
+          </label>
 
-    <div>
-      <label for="latitud">Latitud</label>
+          <input
+            id="fechaConstruccion"
+            type="date"
+            formControlName="fechaConstruccion"
+          />
+        </div>
+      </div>
+    </section>
 
-      <input
-        id="latitud"
-        type="number"
-        step="any"
-        formControlName="latitud"
-      />
-    </div>
+    <section class="patrimonial-admin-form__section">
+      <div class="patrimonial-admin-form__section-header">
+        <h2>Ubicación</h2>
 
-    <div>
-      <label for="longitud">Longitud</label>
+        <p>
+          Dirección, referencia y coordenadas geográficas
+          asociadas al monumento.
+        </p>
+      </div>
 
-      <input
-        id="longitud"
-        type="number"
-        step="any"
-        formControlName="longitud"
-      />
-    </div>
+      <div class="patrimonial-admin-form__grid">
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="ubicacion">Ubicación</label>
 
-    <div>
-      <label for="fuentesInformacion">Fuentes de información</label>
+          <input
+            id="ubicacion"
+            type="text"
+            formControlName="ubicacion"
+            placeholder="Dirección o referencia de ubicación"
+          />
 
-      <textarea
-        id="fuentesInformacion"
-        rows="4"
-        formControlName="fuentesInformacion"
-      ></textarea>
-    </div>
+          @if (
+            form.controls.ubicacion.touched &&
+            form.controls.ubicacion.invalid
+          ) {
+            <small>
+              La ubicación es obligatoria y no puede superar
+              255 caracteres.
+            </small>
+          }
+        </div>
 
-    <div>
-      <label for="observaciones">Observaciones</label>
+        <div class="patrimonial-admin-form__field">
+          <label for="latitud">Latitud</label>
 
-      <textarea
-        id="observaciones"
-        rows="4"
-        formControlName="observaciones"
-      ></textarea>
-    </div>
+          <input
+            id="latitud"
+            type="number"
+            step="any"
+            formControlName="latitud"
+            placeholder="-4.000000"
+          />
+        </div>
 
-    <div class="patrimonial-form-actions">
+        <div class="patrimonial-admin-form__field">
+          <label for="longitud">Longitud</label>
+
+          <input
+            id="longitud"
+            type="number"
+            step="any"
+            formControlName="longitud"
+            placeholder="-79.000000"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section class="patrimonial-admin-form__section">
+      <div class="patrimonial-admin-form__section-header">
+        <h2>Información complementaria</h2>
+
+        <p>
+          Fuentes y observaciones relacionadas con el
+          registro patrimonial.
+        </p>
+      </div>
+
+      <div class="patrimonial-admin-form__grid">
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="fuentesInformacion">
+            Fuentes de información
+          </label>
+
+          <textarea
+            id="fuentesInformacion"
+            rows="4"
+            formControlName="fuentesInformacion"
+            placeholder="Documentos, archivos, referencias o fuentes consultadas"
+          ></textarea>
+        </div>
+
+        <div
+          class="
+            patrimonial-admin-form__field
+            patrimonial-admin-form__field--wide
+          "
+        >
+          <label for="observaciones">
+            Observaciones
+          </label>
+
+          <textarea
+            id="observaciones"
+            rows="4"
+            formControlName="observaciones"
+            placeholder="Observaciones adicionales"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <div class="patrimonial-admin-form__actions">
       <button
         type="button"
-        (click)="cancelar()"
+        class="patrimonial-admin-form__cancel"
         [disabled]="saving()"
+        (click)="cancelar()"
       >
         Cancelar
       </button>
 
       <button
         type="submit"
+        class="patrimonial-admin-form__save"
         [disabled]="form.invalid || saving()"
       >
         @if (saving()) {
-          Guardando...
+          Registrando...
         } @else {
           Registrar monumento
         }
