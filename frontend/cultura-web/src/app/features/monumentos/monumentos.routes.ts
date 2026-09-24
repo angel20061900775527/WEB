@@ -9,7 +9,7 @@ export const MONUMENTOS_ROUTES: Routes = [
       import('./pages/monumentos-list/monumentos-list').then(
         (component) => component.MonumentosList,
       ),
-    title: 'Monumentos | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'nuevo',
@@ -21,7 +21,7 @@ export const MONUMENTOS_ROUTES: Routes = [
       import('./pages/monumentos-create/monumentos-create').then(
         (component) => component.MonumentosCreate,
       ),
-    title: 'Nuevo monumento | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'eliminados',
@@ -33,7 +33,7 @@ export const MONUMENTOS_ROUTES: Routes = [
       import('./pages/monumentos-deleted/monumentos-deleted').then(
         (component) => component.MonumentosDeleted,
       ),
-    title: 'Monumentos eliminados | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id/editar',
@@ -45,7 +45,7 @@ export const MONUMENTOS_ROUTES: Routes = [
       import('./pages/monumentos-edit/monumentos-edit').then(
         (component) => component.MonumentosEdit,
       ),
-    title: 'Editar monumento | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id',
@@ -53,6 +53,6 @@ export const MONUMENTOS_ROUTES: Routes = [
       import('./pages/monumentos-detail/monumentos-detail').then(
         (component) => component.MonumentosDetail,
       ),
-    title: 'Detalle de monumento | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
 ];

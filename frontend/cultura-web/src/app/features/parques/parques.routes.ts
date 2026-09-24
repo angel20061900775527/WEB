@@ -7,7 +7,7 @@ export const PARQUES_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/parques-list/parques-list').then((component) => component.ParquesList),
-    title: 'Parques | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'nuevo',
@@ -17,7 +17,7 @@ export const PARQUES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/parques-create/parques-create').then((component) => component.ParquesCreate),
-    title: 'Nuevo parque | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id/editar',
@@ -27,7 +27,7 @@ export const PARQUES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/parques-edit/parques-edit').then((component) => component.ParquesEdit),
-    title: 'Editar parque | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'eliminados',
@@ -39,12 +39,12 @@ export const PARQUES_ROUTES: Routes = [
       import('./pages/parques-deleted/parques-deleted').then(
         (component) => component.ParquesDeleted,
       ),
-    title: 'Parques eliminados | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id',
     loadComponent: () =>
       import('./pages/parques-detail/parques-detail').then((component) => component.ParquesDetail),
-    title: 'Detalle del parque | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
 ];

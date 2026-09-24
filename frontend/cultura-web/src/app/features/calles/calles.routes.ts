@@ -7,7 +7,7 @@ export const CALLES_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/calles-list/calles-list').then((component) => component.CallesList),
-    title: 'Calles | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'nuevo',
@@ -17,7 +17,7 @@ export const CALLES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/calles-create/calles-create').then((component) => component.CallesCreate),
-    title: 'Nueva calle | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: 'eliminados',
@@ -27,7 +27,7 @@ export const CALLES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/calles-deleted/calles-deleted').then((component) => component.CallesDeleted),
-    title: 'Calles eliminadas | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id/editar',
@@ -37,12 +37,12 @@ export const CALLES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/calles-edit/calles-edit').then((component) => component.CallesEdit),
-    title: 'Editar calle | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
   {
     path: ':id',
     loadComponent: () =>
       import('./pages/calles-detail/calles-detail').then((component) => component.CallesDetail),
-    title: 'Detalle de calle | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
 ];

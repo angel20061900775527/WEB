@@ -4,6 +4,6 @@ export const DASHBOARD_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () => import('./dashboard').then((component) => component.Dashboard),
-    title: 'Dashboard | ¡Descubre Zamora...!',
+    title: 'Conoce Zamora',
   },
 ];
