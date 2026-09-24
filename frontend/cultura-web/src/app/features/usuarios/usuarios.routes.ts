@@ -10,7 +10,7 @@ export const USUARIOS_ROUTES: Routes = [
       roles: ['ADMINISTRADOR'],
     },
     loadComponent: () => import('./pages/usuarios-list/usuarios-list').then((m) => m.UsuariosList),
-    title: 'Usuarios | SIGPAC',
+    title: 'Usuarios | ¡Descubre Zamora...!',
   },
   {
     path: 'nuevo',
@@ -20,7 +20,7 @@ export const USUARIOS_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/usuarios-create/usuarios-create').then((m) => m.UsuariosCreate),
-    title: 'Nuevo usuario | SIGPAC',
+    title: 'Nuevo usuario | ¡Descubre Zamora...!',
   },
   {
     path: ':id/editar',
@@ -29,7 +29,7 @@ export const USUARIOS_ROUTES: Routes = [
       roles: ['ADMINISTRADOR'],
     },
     loadComponent: () => import('./pages/usuarios-edit/usuarios-edit').then((m) => m.UsuariosEdit),
-    title: 'Editar usuario | SIGPAC',
+    title: 'Editar usuario | ¡Descubre Zamora...!',
   },
   {
     path: ':id/password',
@@ -39,6 +39,6 @@ export const USUARIOS_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/usuarios-password/usuarios-password').then((m) => m.UsuariosPassword),
-    title: 'Restablecer contraseña | SIGPAC',
+    title: 'Restablecer contraseña | ¡Descubre Zamora...!',
   },
 ];

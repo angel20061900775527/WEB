@@ -7,7 +7,7 @@ export const PARQUES_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./pages/parques-list/parques-list').then((component) => component.ParquesList),
-    title: 'Parques | SIGPAC',
+    title: 'Parques | ¡Descubre Zamora...!',
   },
   {
     path: 'nuevo',
@@ -17,7 +17,7 @@ export const PARQUES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/parques-create/parques-create').then((component) => component.ParquesCreate),
-    title: 'Nuevo parque | SIGPAC',
+    title: 'Nuevo parque | ¡Descubre Zamora...!',
   },
   {
     path: ':id/editar',
@@ -27,7 +27,7 @@ export const PARQUES_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('./pages/parques-edit/parques-edit').then((component) => component.ParquesEdit),
-    title: 'Editar parque | SIGPAC',
+    title: 'Editar parque | ¡Descubre Zamora...!',
   },
   {
     path: 'eliminados',
@@ -39,12 +39,12 @@ export const PARQUES_ROUTES: Routes = [
       import('./pages/parques-deleted/parques-deleted').then(
         (component) => component.ParquesDeleted,
       ),
-    title: 'Parques eliminados | SIGPAC',
+    title: 'Parques eliminados | ¡Descubre Zamora...!',
   },
   {
     path: ':id',
     loadComponent: () =>
       import('./pages/parques-detail/parques-detail').then((component) => component.ParquesDetail),
-    title: 'Detalle del parque | SIGPAC',
+    title: 'Detalle del parque | ¡Descubre Zamora...!',
   },
 ];

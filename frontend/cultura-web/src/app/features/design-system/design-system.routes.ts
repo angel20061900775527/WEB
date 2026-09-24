@@ -5,6 +5,6 @@ export const DESIGN_SYSTEM_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./design-system/design-system').then((component) => component.DesignSystem),
-    title: 'Design System | SIGPAC',
+    title: 'Design System | ¡Descubre Zamora...!',
   },
 ];
