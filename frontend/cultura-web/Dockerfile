@@ -21,8 +21,10 @@ FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+COPY nginx-ssl.conf /etc/nginx/conf.d/sigpac-ssl.conf.disabled
+
 COPY --from=builder /app/dist/cultura-web/browser /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 80 443
 
 CMD ["nginx", "-g", "daemon off;"]
